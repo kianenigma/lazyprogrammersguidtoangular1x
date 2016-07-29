@@ -1,0 +1,50 @@
+
+# Lazy Programmer's Guide to Angular 1.x
+## Introduction
+Angular JS is an open source modern front end web framework mostly maintained by Google. It Mostly takes the burden of developing a large scale web application away by introducing a set of capabilities such as
+
+
+ - **Modules** for breaking a large web app (aka. Single Page Application) into smaller modules 
+ - **Controllers** for handling UI interactions 
+ - **Directives** for creating an isolated component on the web encapsulating a specific view and behaviour
+ - **Services** for *isolating Application* logic and *data logic*
+ - **Template 2-way Data Binding** for managing your HTML more easily
+and many other capabilities. 
+
+
+Usually when i introduce this framework to a friend, after he/she starts learning it one of the first questions that i'm asked is this: 
+
+
+> So... can I use JQuery alongside it?
+
+
+Some newcomers to Angular misunderstand its concept by think that this framework somehow is going to force to use it alone (or even worse, some people might think that it is **not javascript!** it's some magical language that google created!) which is obviously wrong and technically there is nothing keeping you away form using Angular alongside JQuery (although, I might personally hate you for doing that! It's nothing more that plain Javascript!) or any other framework . So keep in mind that AngularJS is nothing more than a frontend framework, but it really is more **Sophisticated** than most of them. 
+
+
+## Seriously? Angular 1? 
+Ok, assuming that you believe Angular is something really worth learning, but these days everyone is now talking about a new version of Angular, Angular2! So a doubt pops into mind here about whether to start with Angular1 or Angular2. Let's make this issue clear, Once and for all.
+
+
+At the time of writing of this book, Angular2 two is still in beta version, but many people are learning it, many frameworks that depend on Angular1 or use it (like my personal favorite, the lovely Ionic) are working on shifting their core code to Angular2, and if your are a *community person* (meaning that you like catching up with other developers often, read many blogs etc.) you will see that Angular 2 is **Very HOT** right now. By HOT i mean everyone is talking about, everyone is exited to go and hack around with it. It's basically everywhere! And Angular2 really does bring a lot of improvements such as a new Design, less size, more speed, etc. 
+
+
+But! with all that said, something that should not be forgotten is that Angular2 was announced not because Angular1 was no longer able to deliver a specific capability or was lacking horribly in some aspect, No! There a new version because they were both developed to **serve different purposes**. *Angular1 is a **Framework** for building large scale fast web applications*, that can be extended to mobile and desktop. *Angular2 is a Platform for building fast, optimized Desktop, web and mobile applications with emphasis on Mobile and making one source code reusable for both mobile and desktop*. This does not mean at all that Angular1 in an obsolete technology. **if you still face the challenge of creating a web application and you want it to be fast, yet have a lot of complicated features and you want it to be easy to develop and test, Angular1 is there to use.** and in terms of support, at time of this writing the last announcement about future of Angular declared that **both versions will be maintained** as different projects. Even if one day Google decides to stop its official maintenance of Angular1, the community of libraries and developers using it is big enough to keep it in good shape. 
+
+
+As time goes by, you will understand more about differences of Angular versions and why *in some ways, Learning both of them are necessarily, **with respect to their purpose**. Here are many more aspects to be compared when it comes to differences between Angular1 and Angular2, but since it is not the main topic of this book, we are not going to cover them. For the rest of this book by mentioning Angular, we mean **Angular version 1** (aka Angular 1.x, Angular 1.5.x)
+
+
+## Who is this book for? 
+This book assumes that you have sufficient knowledge of javascript, web pages (HTML, CSS) and basic knowledge of networking. The main goal of this book is to serve as a handbook to help someone who is just about to learn Angular. It's important to mention that this books aim to get you up and running with Angular as soon as possible. Angular is well known and popular framework and many long books and documentations has been written about it so far, therefor this book is not going to be one of those. It will be short, direct to the point with no extra boring detail that you might not never use it.
+
+
+## Notes on Codes, The Text and this book 
+Some final notes about this book, and how to read it:
+
+
+ - I (honestly) don't believe in learning **if it's not fun**. If it does not feel friendly. Therefor this text might feel - just a little - informal compare to other books
+ - aside from being friendly, I REALLY don't believe in programming with just reading a text. Try to play around for a while after each section with what you have learned. If you reach end of a chapter without going back to your browser, i really suggest not going any further. 
+ - and! I do believe that writing a code snippet, as frustrating as it might be, even if you understand it completely, will have some good effects. Try not copy the code and instead write it yourself. 
+ - each code snippet will be mentioned with a specific URL or commit from a github repository that contains the code for this book.
+ - Forgot to mention: I also believe that writing a piece of code that you do not understand it fully, both from syntax and architecture point of view, is nothing but a dead end. New generation web frameworks that introduce an Architecture with them are now well known and pretty famous and if we want to stay on the edge of technology, we must learn them. But many people (specifically those who i referr to as *Traditional web developer*) are facing problems with this transition from old libraries to new ones, just because more architectural stuff are involved. Few years ago, while java developers were struggling with Design Patterns, Classes and Software Architectures, we web developers were happily getting all of the things worked out using just `$("...")`! Those days are over now. So, if you are a very good *Traditional Web developer*, meaning that you master both HTML and CSS and know a wide variety of JQuery plugin there is a good chance that some architectural concepts will be new to you, and DO NOT ignore them at all.Thinkk about them and try to convince yourself why there are right. Challenge yourself! 
+
