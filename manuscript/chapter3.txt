@@ -1,0 +1,148 @@
+## Angular, Reader, Reader, Angular! 
+Enough with small talk! Let's code: 
+In this chapter we will begin with importing Angular library and discuss the structure of an Application built with Angular, Its main components and the duty of each of these components. 
+
+### Building blocks of an Angular app
+Angular provides a modular structure for creating applications. Which means we can (and should) use them to encapsulate different pieces of our application together, meanwhile keeping each module simple and clean. 
+
+An Angular module itself is actually, well nothing but one line of code declaring its name and dependencies. But, what gives power to a module are the components that can *attach* to a module. Each module is consisted of the following *major* components: 
+
+1. A list of dependencies (which is just a list of other modules)
+ 2. One or more ** Controller**. Where each is responsible for managing the **UI Logic** a specific section (aka. scope) of the page.
+ 3. One or more **Factories** . Where each is responsible for managing **Data / Business Logic** of a specific entity. 
+ 4. One or more **Directive**. Where each is responsible for creating a *reusable* DOM element.
+(Definitions above are somehow simplistic, well, because at this point we want things to be simple. a more sophisticated definition of each of the following will be provided on the chapter dedicated to each of them)
+
+and - perhaps - the following *minor* components : 
+
+ 1. Filters 
+ 2. Services
+ 3. Constants
+ 4. Etc. 
+
+
+In the upcoming sections we will scratch each of these components briefly so that you get clear understanding of what they really are, and then focus on each of them more in a separate chapter. 
+
+
+### Module
+
+
+Let's Begin coding with defining a module, and attaching a controller to it and see what can we achieve in terms of *managing the UI Logic*
+
+Create a `main.js` file in your working directory and link it to your HTML after including Angular. 
+```html
+<head>
+  <title>Learning AngularJS is a lazy manner</title>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
+  <script type="text/javascript" src="./main.js"></script>
+</head>
+```
+
+define a module inside your js file with the following syntax: 
+```
+var myApp = angular.module('myApp', []) ;
+```
+Where the first argument, `myApp` is the actual name of the module. The variable name is just for further referencing this module. 
+The second argument is an empty array. Which is fine because now we do not have any dependent angular module.
+
+Now, when this module want's to take control of the HTML in the future, it must have an idea of which portion of our HTML. This could be done using the `ng-app` directive. wi'll discuss directives later on, for now just think about it as an indicator that links a module (Javascript logic ), to a portion of HTML. we'll assign this module to our entire `<body>` tag for now.
+```html
+<body ng-app="myApp">
+  <h3>
+    Hello Angular!
+  </h3>
+</body>
+```
+And your first module is now set up!
+
+### Controller, Scope, Data binding and more
+
+Good. Refresh and double check the console is your browser for no errors. unfortunately a module alone can't give us much to see. Let's add a controller to this module, assign it to control some input tag and a bunch of buttons! 
+Add the following to your `main.js` javascript file. 
+```
+myApp.controller('mainCtrl', function ($scope) {})
+```
+ Similar, to defining a module, we create a controller with the first argument being the name and the second argument a function that the main logic of our Controller will go into. Two good points can be mentioned here:
+ **First**, unlike a module, we are not calling a construction from the library (`angular.module(..)`) to create something, we are calling a constructor from the module that we created (`myApp.controller(..)`) earlier! this is why it's common to say that *Some Controller* attaches to *Some Module* 
+ **Secondly**, a module had some dependencies, a controller has that to! the list of arguments passed to the function declaring the controller is actually **Injecting** the arguments into the controller. for example, here the `$scope` variable is dependency being injected into the controller. These dependencies are either angular internal Services, which all start with a $, or the services that we write them our self. We'll examine this dependency injection later on this book.
+
+So, going back to the controller. Just like linking the module to the HTML with an `ng-app`, we must to the same with controllers with `ng-controller` directive. Just for simplicity, add an internal `<div>` to your `<body>` tag and assign `ng-controller='mainCtrl'` to it. check again for errors.
+```html
+<div ng-controller='mainCtrl'>
+    <h3>
+      Hello Angular!
+    </h3>
+</div>
+```
+
+The `$scope` variable that we inject into to controller is a special Angular variable which is binded to the view. This enables a lot a functionality and we're going to see some of them now.
+
+**Any property added to the $scope variable will be visible for rendering inside html. And the binding is two way**. this is the most important thing to know about each controller. 
+
+Let's test this. remove the text inside `<h2>` and replace it with `{{ Title }}`. Placing anything between `{{ }}` will mean that Angular will expect to find them as properties of the `$scope` and replace them with the appropriate value. To complete this, add the **Title** as a property of `$scope`. 
+```javascript
+myApp.controller('mainCtrl', function($scope){
+  $scope.Title = 'Hello Angualr from data binding';
+});
+```
+You should see the new text displayed inside `<h2>`. Open up your browser inspection tools and see how the content of the `<h2>` is being replaced. 
+
+OK, Cool! What else? 
+**Any function assigned to $scope can be used as event listeners for different events (aside from being visible inside {{}}**
+On normal vanilla Javascript we listen to events like `onclick`, `oninit` etc. angular provides wrappers around these events as directives and if we want to use **$scope defined function** as listeners, we must use angular directives instead normal event listeners. One of these directives is `ng-click`. That's what we're going to use.
+Add some functions to your `$scope` . 
+```javascript
+  $scope.alert = function() {
+    alert("Yay!"); 
+  }
+  $scope.title = function() {
+    return "Hello form a function"; 
+  }
+```
+and inside html: 
+```html
+<div ng-controller='mainCtrl'>
+    <h3>
+      {{ Title }}
+    </h3>
+    <button ng-click="alert()"> Alert Btn </button>
+    <h2> Function returned value : {{ title() }}</h2>
+</div>
+```
+note how the names of `title` and `Title` must match and how `title` and `()` because it's actually a function. 
+Also, notice how the names of variables and functions inside directives that are provided by angular do not need to be wrapped inside `{{ }}`. Just to double check this, add an `<input type="text">` and try ti assign its `value` property to `$scope.Title` how would you do this? Keep in mind that `values` is a generic HTML attribute, not a directive, so something like this would do: 
+```html
+<input type="text" value="{{Title}}" />
+```
+
+Last thing to know is that keep in mind that all of this is happening, you have the power over your UI from a controller because you are doing all of it inside the `ng-controller` try and move the `{{Title}}` outside and see that nothing happens!
+
+What we actually did right now, assigning a Scope variable to `value` is something that we actually should never do! Angular has a very powerful directive for HTML tags that have a value, it's called ng-model and we're going to write about it in our next **Bold Title**: 
+
+**Any attribute of the $scope can be binded two ways to a HTML value using the ng-model directive**
+
+What do we mean by two-way? it means that if you change the value from your code, the HTML will update automatically and if a value gets changed by the user from the HTML, the value in `$scope` will be changed automatically. we mentioned the property earlier but we didn't really test it. First lets do some tests.
+
+We mentioned that Angular services can be injected inside a controller as an argument. One of these services are `$interval` which is actually just a wrapper around `setInterval()` function and has the same functionality. Inject this service into the controller and change the value of `$scope.Title` and see what happens: 
+```javascript
+myApp.controller('mainCtrl', function($scope, $interval){
+  $scope.Title = 'Hello Angualr from data binding';
+  $interval(function() {$scope.Title = 'Hello Angualr from data binding at ' + new Date()});
+  // ...
+}); 
+```
+
+Now lets make things more interesting with `ng-model`.  Assign this directive to an attribute in your `$scope`, meanwhile display it somewhere in the page. 
+```html
+<div ng-controller='mainCtrl'>
+    ...
+    <input ng-model="inputModel" type="text" />
+    {{ inputModel }}
+  </div>
+```
+You'll see that as you change the value of `inputModel` (which can be accessed via `$scope.inputModel` from the controller), the value inside `{{inputModel}}` updates on the fly!
+
+So far we saw how controller can be used to control the HTML and bind data to it, we also saw how some of the build in directives of angular work, line `ng-model` and `ng-click`.
+
+### Services, handling the data maturely 
+

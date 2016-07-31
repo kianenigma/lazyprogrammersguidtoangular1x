@@ -1,9 +1,20 @@
 <head>
   <title>Learning AngularJS is a lazy manner</title>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
+  <script type="text/javascript" src="./main.js"></script>
 </head>
-<body>
-  <h3>
-    Hello Angular!
-  </h3>
+<body ng-app="myApp">
+  <div ng-controller='mainCtrl'>
+    <h3>
+      {{ Title }}
+    </h3>
+    <button ng-click="alert()"> Alert Btn </button>
+    <h2> Function returned value : {{ title() }}</h2>
+    <input type="text" value="{{Title}}" />
+
+    <input ng-model="inputModel" type="text" />
+    {{ inputModel }}
+  </div>
+
+
 </body>
