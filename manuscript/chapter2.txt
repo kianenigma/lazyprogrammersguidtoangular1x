@@ -1,0 +1,43 @@
+
+## Getting you up and running
+
+
+In this (mini) chapter we'll briefly mention the tools required to get started with Angular. 
+
+
+### What you'll need for learning
+
+
+I highly suggest keeping things out of the way when you just want to learn something new. Good or bad, there are a lot of different tools that you can use nowadays as a helper for your develop, build and distribution in front end projects. I'll suggest the minimal set of following tools: 
+
+
+ - [Node](www.nodejs.org) js runtime for having a HTTP server.
+ - A simple Editor. [Atom](https://atom.io/) or [Sublime Text](https://www.sublimetext.com/3). 
+
+
+And that's it! No gulp, grunt, bower, npm build etc. 
+Don't get me wrong, these tools are awesome, but in Production environment, nut when you want to learn. Besides, each of these tools have lots of tricks to learn and will just over complicate things.  
+
+
+After installing Node runtime on your machine, run the following command
+``` 
+npm install -g live-server
+```
+This will install a global node module that runs a http server. Then create a directory for this book and create html file in it named `index.html`: 
+```
+$ mkdir learningangular 
+$ cd learningangular 
+```
+and just grab a copy of the latest version of angular 1.x and put it inside the of your HTML file 
+```
+<head>
+  <title>Learning AngularJS is a lazy manner</title>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
+  ...
+</head>
+```
+
+
+Just remember to grab the latest 1.x version! 
+To try the node server that we have just installed, write something inside your tag and just run `live-server` inside your Terminal inside the directory that the `index.html` file exists. You will probably see it pop up inside your browser. `live-server` actually has live-reloading as well which will be very handy later in this book. And now you are good to go!
+
