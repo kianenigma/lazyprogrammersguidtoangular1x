@@ -144,5 +144,165 @@ You'll see that as you change the value of `inputModel` (which can be accessed v
 
 So far we saw how controller can be used to control the HTML and bind data to it, we also saw how some of the build in directives of angular work, line `ng-model` and `ng-click`.
 
+the examples of this section could be found in [this link](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/f2de9170ca9c34a24046ed6eaa2ff4cee67db923/code).
+
+
+### Directives, adding supernatural power to HTML
+So far we have seen some of angular directives in action, `ng-model` and `ng-click`. you might have noticed that all of them start with `ng-*`. this means that they are directives that angular provides out of the box. but of course, we can create them our selfs as well. 
+Actually these directives names which are now **dash-delimited**, can be referenced as **camelCase** . like `ngModel=""` etc. you can read more about them [here](https://docs.angularjs.org/guide/directive). 
+We will forts examine of the other important built in directives, and then write a simple one using the `directive()` constructor. 
+
+**List and Objects can be easily iterated with ng-repeat.** let's jump into how this works directly. Create an array inside your controller, attached to `$scope` (obviously). 
+```javascript
+$scope.names = ["Marshall", "Ted", "Barney", "Robin"] ; 
+```
+
+Now create an HTML `ul` element and display this list, item by item inside it:
+```html
+<ul>
+  <li ng-repeat="name in names">
+    {{ name }}
+  </li>
+</ul>
+```
+
+You should see the names being rendered properly inside the `ul` element. In this code snippet, the `names` variable is the same as what yo you defined in `mainCtrl`. the `name` variable is trivial with respect to `mainCtrl`. Meaning that it could be anything and  it is used to reference the current index of the `names` array.  what happens here is very important in concept of understanding the heir-achy of controllers. We mentioned that a page/app can be consisted of many controllers, this means that one controller could be placed inside another. This is actually exactly what is happening here. Each directive **might** have it's own $scope nested inside the parent $scope. ng-repeat is a directive that creates a separate $scope for each of its elements and each of these $scope variables have a property named the same as we declared inside `ng-repeat`, `name` in this case. You can easily check this by testing weather any `{{name}}` property is visible outside the `ng-repeat` or not. See keep in mind that directives can created their own -child- $scopes. Another property that this child $scope has is a property called `$index`. try and change the content of `<li>` to `{{ $index }} ) {{ name }}` and see what happens. 
+
+Another cool thing about nested $scopes is that each child $scope, has access to its parent $scope properties. this means that inside the ng-repeat, we can still use the $scope associated with `mainCtrl` and its a attributes. 
+Try this with: 
+```html
+<ul>
+  <li ng-repeat="name in names">
+    {{ $index }} ) {{ name }} ( btw sth from my parent : {{ Title }} ) 
+  </li>
+</ul>
+```
+
+Although you have access to all of the values that you bind into your html from your $scope, inside that $scope, but you can also pass some of them back as arguments of listener functions back to $scope. As an example, let's pass the `name`  property from `ng-repeat` back to a function inside the `mianCtrl`. Create a function `onListItemClick` inside the controller:
+```javascript
+  $scope.onListItemClick = function ( name ) { alert(name) }  
+``` 
+and pass the `name` to it :
+```html
+<li ng-repeat="name in names" ng-click="onListItemClick(name)">
+    {{ $index }} ) {{ name }} ( btw sth from my parent : {{ Title }} ) 
+</li>
+```
+
+Now let's go into creating a custom directive. Like controllers, directives must also be attached to a module.
+Add this to `mian.js`:
+```javascript
+myApp.directive('titleEditor', function() {
+  return {
+    restrict: 'AE', // how this directive can be used. <attribute> and <element> in this case
+    // scope: true, // isolated scope
+    template: '<h1> I Am poped inside from a directive! </h1>' +
+      ' <p>{{ directiveData }}</p> <p>{{ Title }}</p>',
+    // controller: function($scope) {
+    //     $scope.directiveData = "I Live inside the directive!";
+    //   }, // custom controller for this directive
+    link: function(scope, iElem, iAttr, ctrl) {
+      console.log(scope, iElem, iAttr, ctrl);
+    }
+  }
+})
+```
+
+Just like a controller, a directive has a name as the first argument. note that since we mentioned that a directive name like `ngModel` is equivalent to `ng-model`, **a Directive name MUST start with lowercase letter**. Let's begin by inspecting the code. the second argument, the function, **must return an object that declares the directive**. this object must have specific keys that each have e meaning: 
+
+ - **Restrict**: defines how this directive can be used. `A` stand for a attribute ( like `<div title-editor> ..`) and `E` stands for element (like `<title-editor>`
+ - **Scope**: declares weather the directive creates a new scope of it owns or not. Remember what we said about how `ng-repeat` is creating multiple scopes, each having `name` and `$index` properties? this is exactly that! 
+ - **template**: defines the html template that should be rendered inside the directive. you can also use `templateUrl` to link an HTML file to be rendered inside. 
+ - **controller**: just like normal declaration of a controller, a directive can also define its own controller. notice that we can inject `$scope` variable (and services like `$timeout` etc.) in the same way. 
+ - **link**: a function that will be invoked as the template is getting rendered, which has access to the directives scope, controller, DOM element and DOM attributes. So it's actually quite good for manipulation the DOM! 
+
+Unfortunately, there is more to these attributes, and more detail that can be learned. but the portion above is what you probably need (might even more that what you need) and we are going to cover them now.
+
+With all things said, let's start examining the directive. place a `<title-editor></title-editor>` anywhere inside the `mainCtrl` and see both the HTML and your console. 
+
+You should notice that: 
+**First**, since we did not declared an isolated scope for this directive, and since it is inside `mainCtrl` it has access to all it's properties. aside from `{{Title}}` which is being displayed in the screen, you can see in the console that when we logged the `scope` parameter of the `link` function, it actually has all of the:
+
+```
+Title "Hello Angular from data binding at Mon Aug 01 2016"
+alert()
+names Array[4]
+onListItemClick = function(name)
+```
+ 
+ You should check yourself that if we place `<title-editor>` outside of the `mainCtrl` we do not get this properties anymore. 
+
+So, let's start by making the directive isolated. Directives are meant to be **Reusable** component, so it is a very bad idea to let each of them have *Full Access* to its parent scope. 
+
+Change `scope: true` inside the directive declaration and check the results again.
+You see no changes. why is the new scope still having access to the parent scope? Well, because so far we have defined a scope for the directive, but no specific isolation! this is because scopes naturally inherit from their parents, unless said not to do so! So we basically created a copy of the scope associated with `mainCtrl` inside the scope associated with `<title-editor>`. there is one small thing that you can use to convince yourself that this new scope, even though it has the same `Title` and .. is not the same. on the log of the scope inside `link` function pay attention to an attribute named `$id`. you should see that there are not the same with `scope: true/ false` and actually when it is `false` it is equal to the `$id` inside `mainCtrl`! (try this with printing `scope.$id` inside `mainCtrl`) 
+
+Now let's change to `scope: {}` and see what happens. You should see no more sign of the `{{Title}}` inside of `titleEditor` and the `$id` must be different from `mainCtrl`. Now we have an isolated Scope! 
+but this is ... well not good! It might be a very  common situation that we need to access something from the parent scope or pass a data back to it. There are ways for that to! Actually, there are two ways, a good one and a bad one.
+**The bad way** is to use the `$parent` property in a scope. As you - should - remember, scopes are nested inside each other. and each scope has a reference to its parent scope under this name. Check inside the console that a `$parent` property which contains `Title`, `alert()`, `title()`, `names[]` and.. and we can use them  inside javascript and HTML  by using the `$parent` prefix . Change `{{Title}}` to `{{ $parent.Title }}` and see that the title from `mainCtrl` is visible again. 
+
+Speaking of the devil.. I mean controllers and scopes, lets uncomment the controller section as well inside the directive declaration object and check `$parent` inside of that. aside from that a property named `directiveData` should be as well visible now. 
+```javascript
+return { ...
+    controller: function($scope) {
+       $scope.directiveData = "I Live inside the directive!";
+       console.log($scope.$parent.Title); // Should be the same as defined inside mainCtrl 
+    }, // custom controller for this directive
+    ...
+}
+```
+
+**The Good Way** of accessing the data from a parent scope to a directive scope is to specify them inside `scope: {}`. The simplest of examples. Define scope inside directive as the following: `scope: {parentTitle: @title}`
+What this means is that a property named `parentTitle` will be added to the **Isolated Scpoe** (since we are using `{}` as the `scope` value, not `ture/false`) and **its expecting to receive its value from the parent scope via an attribute named `title`. Ignore the `@` for now. we'll get to that in a second. Let's implement this inside out HTML and javascript file. 
+```javascript
+// inside main.js directive function
+scope: {
+      'parentTitle': '@title'
+    },
+    template: '<h1> I Am poped inside from a directive! </h1>' +
+      ' <p>{{ directiveData }}</p>' +
+      '<p> i am $parent.Title : {{ $parent.Title }} </p>' +
+      '<p> i am parentTitle : {{ parentTitle }} </p>' ,
+    controller: function($scope) {
+        $scope.directiveData = "I Live inside the directive!";
+        console.log($scope.$parent.Title); // the bad way 
+        console.log($scope.parentTitle); // the GOOOOD way!
+    }, // custom controller for this directive
+    // link and ... 
+}
+```
+And inside your html file: 
+```html
+<title-editor title="{{Title}}"></title-editor> 
+```
+ Note that here, Title belongs to `mainCtrl`.
+
+So what was the deal with that mysterious `@`? There are basically 3 main ways to bind data to a directive scope. any of these ways have a special character that you must put before the name for angular to recognize it : 
+
+ 1. `@` binds a local scope property to the value defined inside the DOM attribute. this means that the value that we provided to the `title=""` attribute, `{{Title}}` will be resolved and then binded to `parentTitle` which we defined. Since DOM attributes are strings by nature, the values binded to the scope are also strings by nature. 
+ 2. `=` binds a **Two way** data to a local property. this might look similar to the last one, but there is crucial difference between them. `@` interprets an expression as *string* and then just passes it down to directive scope. But `=` knows that there is going to be a binding between a **Properties** from the two scopes, so it actually does not expect to see something like `{{ Title }}` or .. instead the **Name** of that  **property**. Long story short, if you want to achieve the same thing with two way data binding, you should to something like: `<title-editor title="Title"></title-editor>` and `scope: {'parentTitle': '=title'}`
+ 3. The `<` works exactly the same as `=` but it as a one way flow of data, **meaning that changes in parent scope will reflect on child scope, but changes on child scope will not reflect on the parent scope.**  
+
+Last way, `&` is only for when we want to pass an executable expression and is (in my experience) rarely used. for more info on scope binding types, see [this link](https://docs.angularjs.org/api/ng/service/$compile#directive-definition-object).
+
+Let's move on to the last part. The `link` function, with the arguments that you are already familiar with gets called only when the directive is being maped inside the HTML, once in its lifetime in other words. The main advantage of link function is that it has full access to the DOM Node associated with this directive, therefor it is pretty good to bind some events! 
+As an example you could easily do something like: 
+```javascript
+link: function(scope, iElem, iAttr, ctrl) {
+      iElem.on('click', function(){
+        console.log("clicked!");
+      })
+ }
+```
+
+To listen to some events, manipulate directive scope, manipulate the parent scope (which we just learned how using the `=`) etc.
+
+To wrap up our understanding of directives, we are going to complete a simple directive that gets a property from a parent controller using `=` in scope definition, and provide user with an input tag tag to change that title, and we can then clearly see how these changes propagate everywhere.Actually, doing this is quite easy. just add this to directive `template`: `'<input ng-model="parentTitle" type="text" />' + `. And from now on, you will probably see the changes to both `$scope.title` and `$scope.parentTitle` will be reflected everywhere. 
+
+The code for this section so far could be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/e5fdd4ca9056e11478b5625df2ba01a2e5f458f7/code). 
+ 
+### Services, handling the data maturely 
+
+
 ### Services, handling the data maturely 
 
