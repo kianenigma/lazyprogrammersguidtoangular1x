@@ -5,16 +5,26 @@
 </head>
 <body ng-app="myApp">
   <div ng-controller='mainCtrl'>
-    <h3>
+    <h5>
       {{ Title }}
-    </h3>
+    </h5>
     <button ng-click="alert()"> Alert Btn </button>
-    <h2> Function returned value : {{ title() }}</h2>
+    <h5> Function returned value : {{ title() }}</h5>
     <input type="text" value="{{Title}}" />
 
     <input ng-model="inputModel" type="text" />
     {{ inputModel }}
-  </div>
+    <hr />
 
+    <ul>
+      <li ng-repeat="name in names" ng-click="onListItemClick(name)">
+        {{ $index }} ) {{ name }} ( btw sth from my parent : {{ Title }} )
+      </li>
+    </ul>
+
+    <hr />
+
+    <title-editor title="Title"></title-editor>
+  </div>
 
 </body>
