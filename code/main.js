@@ -1,6 +1,6 @@
 var myApp = angular.module('myApp', []);
 
-myApp.directive('titleEditor', function() {
+myApp.directive('titleEditor', function () {
   return {
     restrict: 'AE', // how this directive can be used. <attribute> and <element> in this case
     scope: {
@@ -10,14 +10,14 @@ myApp.directive('titleEditor', function() {
       ' <p>{{ directiveData }}</p>' +
       '<p> i am $parent.Title : {{ $parent.Title }} </p>' +
       '<p> i am parentTitle : {{ parentTitle }} </p>' +
-      '<input ng-model="parentTitle" type="text" />' ,
-    controller: function($scope) {
-        $scope.directiveData = "I Live inside the directive!";
-        console.log($scope.$parent.Title);
-        console.log($scope.parentTitle);
-      }, // custom controller for this directive
-    link: function(scope, iElem, iAttr, ctrl) {
-      iElem.on('click', function(){
+      '<input ng-model="parentTitle" type="text" />',
+    controller: function ($scope) {
+      $scope.directiveData = "I Live inside the directive!";
+      console.log($scope.$parent.Title);
+      console.log($scope.parentTitle);
+    }, // custom controller for this directive
+    link: function (scope, iElem, iAttr, ctrl) {
+      iElem.on('click', function () {
         console.log("clicked!");
       })
       console.log(scope, iElem, iAttr, ctrl);
@@ -25,39 +25,43 @@ myApp.directive('titleEditor', function() {
   }
 })
 
-myApp.controller('mainCtrl', function($scope, $interval, nameService) {
+myApp.controller('mainCtrl', function ($scope, $interval, actorService) {
   $scope.Title = 'Hello Angualr from data binding';
-  $scope.names = nameService.getNames();
+  $scope.actors = actorService.getactors();
 
-  $scope.alert = function() {
+  $scope.alert = function () {
     alert("Yay!");
   }
 
-  $scope.onListItemClick = function(name) {
+  $scope.onListItemClick = function (name) {
     alert(name);
   }
 
-  $scope.title = function() {
+  $scope.title = function () {
     return "Hello form a function";
   }
 
 });
-// 
-// myApp.factory("nameService", function() {
-//   var names = ["Marshall", "Ted", "Barney", "Robin"];
-//   var getNames = function() { return names }
-//   var getName = function(idx) { return names[idx] }
+//
+// myApp.factory("actorService", function() {
+//   var actors = ["Marshall", "Ted", "Barney", "Robin"];
+//   var getActors = function() { return actors }
+//   var getActor = function(idx) { return actors[idx] }
 //
 //   return {
-//     getName: getName,
-//     getNames: getNames
+//     getActors: getActors,
+//     getActor: getActor
 //   }
 // })
 
-myApp.service('nameService', function() {
-  this.names = ["Marshall", "Ted", "Barney", "Robin"];
+myApp.service('actorService', function () {
+  this.actors = ["Marshall", "Ted", "Barney", "Robin"];
 
-  this.getNames = function() { return this.names }
-  this.getName = function(idx) { return this.name[idx] }
+  this.getActors = function () {
+    return this.actors
+  }
+  this.getActor = function (idx) {
+    return this.actors[idx]
+  }
 
 })
