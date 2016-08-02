@@ -9,7 +9,7 @@ myApp.directive('titleEditor', function() {
     template: '<h1> I Am poped inside from a directive! </h1>' +
       ' <p>{{ directiveData }}</p>' +
       '<p> i am $parent.Title : {{ $parent.Title }} </p>' +
-      '<p> i am parentTitle : {{ parentTitle }} </p>' + 
+      '<p> i am parentTitle : {{ parentTitle }} </p>' +
       '<input ng-model="parentTitle" type="text" />' ,
     controller: function($scope) {
         $scope.directiveData = "I Live inside the directive!";
@@ -25,9 +25,9 @@ myApp.directive('titleEditor', function() {
   }
 })
 
-myApp.controller('mainCtrl', function($scope, $interval) {
+myApp.controller('mainCtrl', function($scope, $interval, nameService) {
   $scope.Title = 'Hello Angualr from data binding';
-  $scope.names = ["Marshall", "Ted", "Barney", "Robin"];
+  $scope.names = nameService.getNames();
 
   $scope.alert = function() {
     alert("Yay!");
@@ -42,3 +42,22 @@ myApp.controller('mainCtrl', function($scope, $interval) {
   }
 
 });
+// 
+// myApp.factory("nameService", function() {
+//   var names = ["Marshall", "Ted", "Barney", "Robin"];
+//   var getNames = function() { return names }
+//   var getName = function(idx) { return names[idx] }
+//
+//   return {
+//     getName: getName,
+//     getNames: getNames
+//   }
+// })
+
+myApp.service('nameService', function() {
+  this.names = ["Marshall", "Ted", "Barney", "Robin"];
+
+  this.getNames = function() { return this.names }
+  this.getName = function(idx) { return this.name[idx] }
+
+})
