@@ -27,7 +27,7 @@ myApp.directive('titleEditor', function () {
 
 myApp.controller('mainCtrl', function ($scope, $interval, actorService) {
   $scope.Title = 'Hello Angualr from data binding';
-  $scope.actors = actorService.getactors();
+  $scope.actors = actorService.getActors();
 
   $scope.alert = function () {
     alert("Yay!");
