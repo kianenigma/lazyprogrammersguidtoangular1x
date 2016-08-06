@@ -7,8 +7,22 @@
 </head>
 <body ng-app="myApp">
   <div ng-controller='mainCtrl'>
-    <div class="jumbotron">
-      <h1 align="center"> {{ Title }} </h1>
+    <div class="container">
+      <div class="jumbotron">
+        <h1 align="center"> {{ Title }} </h1>
+      </div>
+      <hr />
+      <h3> Array Iteration </h3>
+      <ul class="list-group">
+        <li class="list-group-item" ng-repeat="(name, detail) in actors">
+          {{ name }} [{{detail.lastName}}] is {{ detail.age }} years old!
+          I like catching a beer in
+          <span ng-repeat="bar in detail.bars">
+             {{ bar }} {{ ($index === ($parent.detail.bars.length-1)) ? '' : 'or' }} 
+           </span>
+        </li>
+      </ul>
     </div>
+
   </div>
 </body>

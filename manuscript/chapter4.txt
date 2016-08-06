@@ -1,0 +1,103 @@
+# Controllers, templates and more!
+In the prevous chapter, although we learned some very good fundamental details of Angular (specially on controllers and `$scope`) , but the code that we worked on was mostly like a *Hello World* for Angular. 
+In this chapter we will learn more technical details of Angular. by technical I mean that they are going to be details that you surely will need to know them and use them in your next Angular project! 
+
+The code for this chapter can be found under a  seprate folder under the [github repository](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/master/code/chapter4) associated with this project.
+
+As a *heads up* for this chapter, it is good to mention that we are going to learn a LOT in this chapter. and as the name suggests, they are all going to be implemented inside and using a controller. in the next chapter we are going to dedicate our time to revisit all that we learn here to see which of them are suited to be implemented via a **Service** or a **Directive** so they become **Reusable components**.
+
+We are going to start with a single page application with an `index.html` and `main.js` file linked like the previous chapter. I also included twitter bootstrap to make the pages that we create a little bit brighter! if you are not familiar with it, it's just library that you can use a set of css classes it provides to have a better looking HTML. 
+
+## More advance iteration with ng-repeat and pipe filters
+
+In the previous chapter we barely introduced ng-repeat, while one of the most commonly used angular directives. Let's inspect it more and see how it behaves with objects instead of arrays. 
+
+You now know how to iterate a simple array. Two more things to learn: 
+
+ 1. Iterating over objects
+ 2. Iterating over arrays of objects
+
+We'll change our list of actor to the following: 
+```javascript 
+$scope.actors = {
+    "Ted": { lastName: "Mosbey", age: 27 },
+    "Barney": { lastName: "Stinson", age: 30 }
+  }
+```
+
+If you iterate over this object with the same way as we did before, you'll find something like this: 
+
+```html
+	<li class="list-group-item">
+		{ lastName: "Mosbey", age: 27 }
+	</li>
+	<li class="list-group-item">
+		{ lastName: "Stinson", age: 30 }
+	</li>
+	...
+```
+
+We have no access to the `key` of the object and the values are displayed as plaing object.
+
+Two point will solve this: 
+
+**First**, you can use `ng-repeat="for (key, value) in someObject"` to have access to both the keys and both the values. 
+
+**Second**, you should know that Angular's template syntax actually supports a large subset of javascript operation, like : `{{ a + b }}`, `{{ someFunction(someProp) }}`, `{{ someString + ' , I am concatenated! }}'`, so you can use the **dot operation** to access the properties the object associated with a key. Change the html template: 
+
+```html
+<li class="list-group-item" ng-repeat="(name, detail) in actors">
+	{{ name }} [{{detail.lastName}}] is {{ detail.age }} years old!
+</li>
+``` 
+
+Having this in mind you can even figure out how you can have nested loops. change to `actors` property to:
+
+```javascript
+$scope.actors = {
+    "Ted": {
+      lastName: "Mosbey",
+      age: 27,
+      bars: ["Blind Tiger", "Torst", "Good Beer"]
+    },
+    "Barney": {
+      lastName: "Stinson",
+      age: 30,
+      bars: ["The Poney Bar"]
+    }
+  }
+```
+
+And your HTML to: 
+
+```html
+<li class="list-group-item" ng-repeat="(name, detail) in actors">
+          {{ name }} [{{detail.lastName}}] is {{ detail.age }} years old!
+          I like catching a beer in
+          <span ng-repeat="bar in detail.bars"> {{ bar }} , </span>
+</li>
+```
+
+There is a problem here! We really don't want the last `,` there. Let's use some template magic to get rid of it:
+
+```html
+<span ng-repeat="bar in detail.bars">
+      {{ bar }} {{ ($index === ( $parent.detail.bars.length-1 ) ) ? '' : ',' }} 
+</span>
+```
+As you see, we used an if statement to check the index of the bar being printed, with the length of all of the bars, and when we reach the last one, we omit the `,`
+
+You should know clearly why `$parent.detail.bar` is what we compared it's length with `$index` (nested loops! each creating their own scopes!) , if you don't, jump right back to the section about `ng-repeat` in chapter 3!
+
+
+## Ups and down of form management with angular
+
+## Using $http and $watch 
+
+## Style manipulation with angular
+
+## Controller Events and communication 
+
+## The great $rootScope 
+
+
