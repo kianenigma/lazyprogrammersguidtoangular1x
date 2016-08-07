@@ -1,8 +1,9 @@
+
 # Controllers, templates and more!
-In the prevous chapter, although we learned some very good fundamental details of Angular (specially on controllers and `$scope`) , but the code that we worked on was mostly like a *Hello World* for Angular. 
+In the previous chapter, although we learned some very good fundamental details of Angular (specially on controllers and `$scope`) , but the code that we worked on was mostly like a *Hello World* for Angular. 
 In this chapter we will learn more technical details of Angular. by technical I mean that they are going to be details that you surely will need to know them and use them in your next Angular project! 
 
-The code for this chapter can be found under a  seprate folder under the [github repository](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/master/code/chapter4) associated with this project.
+The code for this chapter can be found under a separate folder under the [github repository](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/master/code/chapter4) associated with this project.
 
 As a *heads up* for this chapter, it is good to mention that we are going to learn a LOT in this chapter. and as the name suggests, they are all going to be implemented inside and using a controller. in the next chapter we are going to dedicate our time to revisit all that we learn here to see which of them are suited to be implemented via a **Service** or a **Directive** so they become **Reusable components**.
 
@@ -10,7 +11,9 @@ We are going to start with a single page application with an `index.html` and `m
 
 ## More advance iteration with ng-repeat and pipe filters
 
-In the previous chapter we barely introduced ng-repeat, while one of the most commonly used angular directives. Let's inspect it more and see how it behaves with objects instead of arrays. 
+In the previous chapter we barely introduced `ng-repeat`, while one of the most commonly used angular directives. Let's inspect it more and see how it behaves with objects instead of arrays, and how to mix it up with some filters. 
+
+### ng-repeat with objects
 
 You now know how to iterate a simple array. Two more things to learn: 
 
@@ -90,13 +93,81 @@ As you see, we used an if statement to check the index of the bar being printed,
 You should know clearly why `$parent.detail.bar` is what we compared it's length with `$index` (nested loops! each creating their own scopes!) , if you don't, jump right back to the section about `ng-repeat` in chapter 3!
 
 
+### Filters
+
+## Style manipulation with Angular
+
+Angular provides convenient ways to manipulate the DOM attributes or Style. Some of these ways will be described in this section. the key difference between Angular's way and vanilla Javascript's way is that using Angular, as you might expect, we can control element's style and behavior using `$scope` properties, which gives us a better and easier way of control.   
+
+### Using ng-show, ng-hide and ng-if
+Two of the most basic of these UI controls are two directives named: ng-show and ng-hide. as the names suggest, they both hide or show an element based on the expression given to it. Look at the following example: 
+
+```html
+<div class="row">
+     <div class="col col-sm-6 col-sm-offset-3">
+        <button class="btn btn-success btn-block" ng-show="true">
+            Click me for some process
+        </button>
+     </div>
+</div>
+```
+
+As you see, the button is there. now change the `ng-show` value to `false`. As you might expect, the button goes away. Now browse the DOM elements with your browser. As you find the button node, you'll see that it has been rendered as: 
+
+```html
+<button class="btn btn-success btn-block ng-hide" ng-show="true">
+      Click me for some process
+</button>
+```
+
+The `ng-hide` class automatically adds the `display: none` property to the node element. There are some important notes to keep in mind about `display: none` here: 
+
+ - This property will hide all of the child elements
+ - ng-hide **will not cause the DOM elements to be not rendered**, it just hides them. 
+
+The `ng-hide` works exactly in the same manner, but as the name suggests, the Boolean value *is the other way around* and when it is equal to `false`, the element will not be displayed. 
+
+The ng-if directive works almost the same as ng-show, but there is one key difference, if the expression provided to `ng-if` is equal to `false`, the element will actually be **removed** from the DOM, and if later evaluates to `true` again, it will be **recreated** once again. 
+
+We mentioned : 
+
+> the key difference between Angular's way and vanilla Javascript's way is that using Angular, as you might expect, we can control element's style and behavior using `$scope` properties, which gives us a better and easier way of control.   
+
+But so far, even though we learned how ng-show, `ng-hide` and `ng-if` work, we only used static `true / false` values for testing. let's try this in a more realistic way and use `$scope` properties to control the button: 
+
+Suppose that the button will perform an http request as you click it and you wish for it to display a loading icon during this period and then fade away.
+
+We add to state variables to our scope, indicating weather the button or the icon should be displayed or not, and a function to change them.
+
+```javascript
+$scope.btnDisplay = true;
+$scope.iconDisplay = false;
+
+$scope.doProcess = function () {
+  $scope.iconDisplay = true;
+  $timeout(function () { $scope.btnDisplay = false }, 3000);
+}
+```  
+
+And then just assign these values to the HTML markup that we had: 
+
+```html
+<button ng-click="doProcess()" ng-if="btnDisplay" class="btn btn-success btn-block">
+            <span 
+	        ng-show="iconDisplay" 
+	        class="glyphicon glyphicon-cloud-download">
+	        </span> 
+	        {{ iconDisplay ? 'Waiting for process' : 'Click me for some process'}}
+</button>
+```
+
+### Using ng-class 
+
 ## Ups and down of form management with angular
 
 ## Using $http and $watch 
 
-## Style manipulation with angular
-
-## Controller Events and communication 
+## Controller events and communication 
 
 ## The great $rootScope 
 

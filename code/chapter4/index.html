@@ -1,10 +1,11 @@
 <head>
   <title>Learning AngularJS is a lazy manner</title>
-  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+  <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
 
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
   <script type="text/javascript" src="./main.js"></script>
 </head>
+
 <body ng-app="myApp">
   <div ng-controller='mainCtrl'>
     <div class="container">
@@ -15,13 +16,21 @@
       <h3> Array Iteration </h3>
       <ul class="list-group">
         <li class="list-group-item" ng-repeat="(name, detail) in actors">
-          {{ name }} [{{detail.lastName}}] is {{ detail.age }} years old!
-          I like catching a beer in
+          {{ name }} [{{detail.lastName}}] is {{ detail.age }} years old! I like catching a beer in
           <span ng-repeat="bar in detail.bars">
-             {{ bar }} {{ ($index === ($parent.detail.bars.length-1)) ? '' : 'or' }} 
+             {{ bar }} {{ ($index === ($parent.detail.bars.length-1)) ? '' : 'or' }}
            </span>
         </li>
       </ul>
+      <hr />
+      <h3> Style Manipulation </h3>
+      <div class="row">
+        <div class="col col-sm-6 col-sm-offset-3">
+          <button ng-click="doProcess()" ng-if="btnDisplay" class="btn btn-success btn-block">
+            <span ng-show="iconDisplay" class="glyphicon glyphicon-cloud-download"></span> {{ iconDisplay ? 'waiting for process' : 'Click me for some process'}}
+          </button>
+        </div>
+      </div>
     </div>
 
   </div>
