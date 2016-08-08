@@ -167,7 +167,7 @@ You can now test it with :
 As you might have noticed, we have two types of filters, those who operate on single values (pipe) and those who filter a collection. Creating a custom filter that operates on a collection has the same API and routine as above, but it takes additional input arguments beside `inp`. As a good exercise, you can go ahead and read some examples of this type of filter and work on creating the following the filters : 
 
  - One that filters an object over it key names.
- - One that takes an array and returns all of its elements in `uppercase` format. 
+ - One that takes an array and returns all of its elements in `uppercase` format.
 
 ----------
 
@@ -239,6 +239,72 @@ And then just assign these values to the HTML markup that we had:
 ```
 
 ### Using ng-class 
+
+The `ng-class` directive is one of my own favorite directives! in allows you to dynamically assign a class to an element, according to a boolean expression defined from your controller. 
+
+Assume that you want to assign a different color to your button while it is processing, and show a red color when if it has failed for some reasons. We'll use two classes from twitter bootstrap named `btn-warnign` and `bnt-danger`. 
+
+`ngClass` can be applied in many ways, one of them is using an ***object*** with the following format: 
+
+```html
+<div ng-class="{aClassToBeAdded: conditionForThisClass, secondClass: secondCondition}"></div>
+```
+
+An important note on this object is that by default it does not require you to wrapp the condition and class name in quotations, but if the class name has dashes, it **Must** be.  
+
+```html
+<div ng-class="{'a-dash-class-name': conditionForThisClass, secondClass: secondCondition}"></div>
+```
+
+The condition can be a model associated with `$scope`, 
+
+```javascript
+$scope.conditionForThisClass = true 
+```
+
+an expression, or negation of an expression (don't miss the `!` before second expression) : 
+
+```html 
+<div ng-class="{'a-dash-class-name': someModel.name == 'aName' , secondClass: !secondCondition}"></div>
+```
+
+or a function: 
+
+```html 
+<div ng-class="{'a-dash-class-name': someFunction()}"></div>
+```
+
+Ok, with all of this in mind let's add what we described, changing the color of the button while it is processing. Like many other changes in our code, this will also be jsy a one line small modification: 
+
+```html
+
+<button ng-class="{'btn-warning' : iconDisplay, 'btn-info': !iconDisplay}" ng-click="doProcess()" ng-if="btnDisplay" class="btn btn-block">
+	<span ng-show="iconDisplay" class="glyphicon glyphicon-cloud-download"></span> 
+	{{ iconDisplay ? 'waiting for process' : 'Click me for some process'}}
+</button>
+```
+
+and Thats it! we just remove the `btn-success` default class, and added two other conditional classes using `ng-class`. 
+
+Aside from ***Object*** there are more ways to use ng-class. another one that might be useful is: 
+
+Using an model that evaluates to an ***Array***. as an example: 
+
+```javascript
+$scope.someClasses = ["btn-danger", "btn-xs"] ;
+```
+
+and 
+
+```html
+<button class="btn" ng-class"someClasses"> </div> 
+```
+
+Of course, in this example, as you change the `someClasses`, to button classes change with it. 
+
+You can read more about ngClass [here](https://docs.angularjs.org/api/ng/directive/ngClass).
+
+
 
 
 ----------

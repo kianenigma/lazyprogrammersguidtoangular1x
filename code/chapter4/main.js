@@ -36,6 +36,8 @@ myApp.controller('mainCtrl', function ($scope, $timeout) {
     }
   }
 
+  $scope.classes = ["btn-xs btn-danger"]
+
   $scope.sayHi = function () {
     alert('hello there');
   }
