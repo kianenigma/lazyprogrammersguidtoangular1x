@@ -23,13 +23,26 @@ myApp.controller('mainCtrl', function ($scope, $timeout) {
       lastName: "Stinson",
       age: 30,
       bars: ["The Poney Bar"]
+    },
+    "Robin": {
+      lastName: "Scherbatsky",
+      age: 26,
+      bars: ["Blind Tiger", "Torst", "Good Beer"]
+    },
+    "Lily": {
+      lastName: "Aldrin",
+      age: 27,
+      bars: ["Blind Tiger", "Torst"]
     }
   }
 
   $scope.sayHi = function () {
     alert('hello there');
   }
-
-
-
 });
+
+myApp.filter('strRev', function () {
+  return function (inp) {
+    return inp.split('').reverse().join('')
+  }
+})

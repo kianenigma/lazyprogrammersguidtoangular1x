@@ -13,12 +13,13 @@
         <h1 align="center"> {{ Title }} </h1>
       </div>
       <hr />
-      <h3> Array Iteration </h3>
+      <h3> Looping and filters </h3>
       <ul class="list-group">
         <li class="list-group-item" ng-repeat="(name, detail) in actors">
           {{ name }} [{{detail.lastName}}] is {{ detail.age }} years old! I like catching a beer in
-          <span ng-repeat="bar in detail.bars">
-             {{ bar }} {{ ($index === ($parent.detail.bars.length-1)) ? '' : 'or' }}
+          <input type="text" ng-model="beerFilter" />
+          <span ng-repeat="bar in detail.bars | filter : beerFilter">
+             {{ bar | strRev }} {{ ($index === ($parent.detail.bars.length-1)) ? '' : 'or' }}
            </span>
         </li>
       </ul>

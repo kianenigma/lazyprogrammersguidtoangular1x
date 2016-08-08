@@ -21,6 +21,7 @@ You now know how to iterate a simple array. Two more things to learn:
  2. Iterating over arrays of objects
 
 We'll change our list of actor to the following: 
+
 ```javascript 
 $scope.actors = {
     "Ted": { lastName: "Mosbey", age: 27 },
@@ -88,12 +89,88 @@ There is a problem here! We really don't want the last `,` there. Let's use some
       {{ bar }} {{ ($index === ( $parent.detail.bars.length-1 ) ) ? '' : ',' }} 
 </span>
 ```
+
 As you see, we used an if statement to check the index of the bar being printed, with the length of all of the bars, and when we reach the last one, we omit the `,`
 
 You should know clearly why `$parent.detail.bar` is what we compared it's length with `$index` (nested loops! each creating their own scopes!) , if you don't, jump right back to the section about `ng-repeat` in chapter 3!
 
 
 ### Filters
+
+Filters provide a way to modify any model binding in your html. By the Term model binding I mean any place that you place one your $scope properties inside HTML. It could be:
+
+ - Template binding `{{ someModel }}`
+ - Loops `<div ng-repeat="item in someModel">` 
+
+Or any other place. The filters work similar to Unix pipe style. think of your model as the input and with each `|`operator it will be piped into a filter and the results come out. with this way, multiple pipes can be combined and the output of one of them could be added to the other one. 
+
+Like many other situations, Angular provides us with a set of built in filters, but with can extend them to any usage and build our own filter. you can read the full list of filters here[enter link description here](https://docs.angularjs.org/guide/filter). 
+
+Let's begin testing with some of the built in filters. one of these filters are called `uppercase` and you probably guess from the name what it is going to do! Apply it to the list of beers from the previous section with: 
+
+```html
+<span ng-repeat="bar in detail.bars">
+  {{ bar | uppercase }} {{ ($index === ($parent.detail.bars.length-1)) ? '' : 'or' }}
+</span>
+```
+
+Notice the `|` pipe after `{{ bar }}`. Aside from simple filters like `uppercase` that works on a single object, there are some more interesting filters that work on collection, arrays, and can be applied to loops. 
+
+One of the best filters for collections is called... well, it's called `filter`! It works only on arrays and takes an argument as input and returns only those elements in the array that contain the value given. 
+
+Modify the following for an actor's list of favorite beer.
+
+```html
+<li class="list-group-item" ng-repeat="(name, detail) in actors">
+     {{ name }} [{{detail.lastName}}] is {{ detail.age }} years old! I like catching a beer in
+     <input type="text" ng-model="beerFilter" />
+     <span ng-repeat="bar in detail.bars | filter : beerFilter">
+             {{ bar | uppercase }} {{ ($index === ($parent.detail.bars.length-1)) ? '' : 'or' }}
+     </span>
+</li>
+```
+
+Change the value inside the `input` tag you see that the array of beers will actually get filtered according to that value. As mentioned before, the fact that we never declared `$scope.beerFilter` is not a problem. It will be equal to undefined at the beginning and will have a value as we modify the `input` tag. 
+
+The `orderBy` filter works over an array of objects by taking one key name as the filter and sorting the array according to that key. For example: `<div ng-repeat="item in array | orderBy 'keyName'"> ... </div>` will sort an array with the format 
+
+```javascript 
+$scope.array = [
+	{name: "item1", key:3},
+	{name: "item2", key:2},
+	{name: "item3", key:1}
+[
+```
+
+according to `key` property.
+
+Let's finish this section with creating a custom filter. Custom filters can be created using the `.filter()` method on a module. it must return o function that takes the input value as argument and returns the new formatted values as output.
+
+The following filter simply takes an string input and returns the same value in reverse. 
+
+```javascript
+myApp.filter('strRev', function () {
+  return function (inp) {
+    return inp.split('').reverse().join('')
+  }
+})
+``` 
+
+You can now test it with : 
+
+```html
+<span ng-repeat="bar in detail.bars | filter : beerFilter">
+      {{ bar | strRev }} {{ ($index === ($parent.detail.bars.length-1)) ? '' : 'or' }}
+</span>
+```
+
+As you might have noticed, we have two types of filters, those who operate on single values (pipe) and those who filter a collection. Creating a custom filter that operates on a collection has the same API and routine as above, but it takes additional input arguments beside `inp`. As a good exercise, you can go ahead and read some examples of this type of filter and work on creating the following the filters : 
+
+ - One that filters an object over it key names.
+ - One that takes an array and returns all of its elements in `uppercase` format. 
+
+----------
+
 
 ## Style manipulation with Angular
 
@@ -163,11 +240,27 @@ And then just assign these values to the HTML markup that we had:
 
 ### Using ng-class 
 
+
+----------
+
+
 ## Ups and down of form management with angular
+
+
+----------
+
 
 ## Using $http and $watch 
 
+
+----------
+
+
 ## Controller events and communication 
+
+
+----------
+
 
 ## The great $rootScope 
 
