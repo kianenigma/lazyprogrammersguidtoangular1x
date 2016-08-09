@@ -1,5 +1,6 @@
 
 # Controllers, templates and more!
+
 In the previous chapter, although we learned some very good fundamental details of Angular (specially on controllers and `$scope`) , but the code that we worked on was mostly like a *Hello World* for Angular. 
 In this chapter we will learn more technical details of Angular. by technical I mean that they are going to be details that you surely will need to know them and use them in your next Angular project! 
 
@@ -11,7 +12,7 @@ We are going to start with a single page application with an `index.html` and `m
 
 ## More advance iteration with ng-repeat and pipe filters
 
-In the previous chapter we barely introduced `ng-repeat`, while one of the most commonly used angular directives. Let's inspect it more and see how it behaves with objects instead of arrays, and how to mix it up with some filters. 
+In the previous chapter we barely introduced `ng-repeat`, while one of the most commonly used Angular directives. Let's inspect it more and see how it behaves with objects instead of arrays, and how to mix it up with some filters. 
 
 ### ng-repeat with objects
 
@@ -305,13 +306,150 @@ Of course, in this example, as you change the `someClasses`, to button classes c
 You can read more about ngClass [here](https://docs.angularjs.org/api/ng/directive/ngClass).
 
 
-
-
 ----------
 
 
-## Ups and down of form management with angular
+## Ups and downs of < form > management with Angular
 
+Angular provide some helper classes that help you work more easily with a `<form>` tag. 
+
+To examine these classes first hand we use the template below (in order to get this to work,  all elements must have a `name=` and all inputs must have `ngModel`) :  
+
+```html
+<form name="submitform" novalidate>
+    <div class="form-group">
+       <label> Email</label>
+       <input ng-model="formData.email" class="form-control" name="email" type="email" required>
+    </div>
+
+    <div class="form-group">
+       <label> Name </label>
+       <input ng-model="formData.name" class="form-control" name="name" type="text" required />
+    </div>
+
+    <div class="form-group">
+       <label> Password </label>
+       <input ng-model="formData.password" class="form-control" 
+	       name="password" type="password" required 
+	       />
+    </div>
+    <div class="form-group">
+	  <button class="btn btn-success" ng-click="submit()"> Submit </button>
+    </div>
+ </form>
+```
+
+Notice how we put `novalidate` attribute on the `form` tag and `required` on each of the inputs.
+
+You can see that before taking any type of action, the form is rendered like: 
+
+```html
+<form name="submitform" class="classng-pristine ng-invalid ..."> ... </form>
+```
+
+Notice how Angular added the classes. This means that Angular will detect automatically that a form exists and starts watching it for changes. 
+
+You should convice yourself that these classes are logical with respect to the attributes that we placed on our form. for example since all inputs had `required`, if you leave one of them empty, we see : `ng-invalid-required`. if you type a name inside `email`, since it had a `type='email`', you will see: `ng-invalid-email`.  
+
+You can also find similar class names on each `<input>` inside the form. such as `ng-dirty`, `ng-touched`, indicating the field's state. 
+
+These information can also be used inside the controller, there rule, accourding to which Angular watches forms is: 
+
+A property equal to the form's `name=''` attribute will be added to the **scope**, in which the form exists. This new property holds information about whether the form is valid, has it been submitted, have the fields been touched so far or not and so on. To experiment this, try passing a variable named `submitForm` back to controller and log it: 
+
+```html
+<button class="btn btn-success" ng-click="submit(submitForm)"> Submit </button>
+```
+
+```javascript
+$scope.submit = function(form) {
+	console.log(form); 
+}
+```
+
+You can see how similar information is also stored inside this property ($scope.submitForm, in this case). There are many more details about form validation and you can read more about them [here](https://docs.angularjs.org/guide/forms). Instead of going through every single detail which you probably won't need in a decade, we spend time explaining a common usage pattern for Angular form management. 
+
+
+If you inspect the form object that we logged closely, you'll see that errors associated with classes that were added to `<form>` are stored in: 
+
+```javascript 
+$scope.submit = function(form) {
+	// form.$error
+}
+```  
+
+and errors associated with each input, for example `email` is stored inside
+
+```javascript 
+$scope.submit = function(form) {
+	// form.email.$error
+}
+``` 
+
+and so on. Let's use these to add a validation for our email field. we'll create all af the error texts required, but hide all of them and only show one, depending on the state of the form. for example when the value of `submitForm.email.$error.required` is `true`, we should show a text telling that is can not be empty.
+
+Change the email section as following:
+
+```html
+<div class="form-group">
+   <label> Email</label>
+   
+   <!-- Notice the ng-show condition -->
+   <span class="label label-danger" ng-show="submitform.email.$error.required">
+     Required!
+   </span>
+   <!-- Notice the ng-show condition -->
+   <span class="label label-danger" ng-show="submitform.$error.email">
+     Invalid email!
+   </span>
+
+   <input ng-model="formData.email" class="form-control" name="email" type="email" required>
+</div>
+```
+
+Of course there more to it than this, HTML provides more form validation attributes, min/max length , min/max value and so on. All of them could be used and Angular will provide the corresponding error values and classes. Aside from using these attributes, we can use them with a `ng-` prefix and Angular's magical data binding will be available! 
+
+Change the password section to the following to see this: 
+
+```html
+<div class="form-group">
+  <label> Password </label>
+  <span class="label label-danger" 
+        ng-show="submitform.password.$error.minlength">
+        That's too short!
+   </span>
+  <input ng-minlength="minpwd" ng-model="formData.password" class="form-control" name="password" type="password" required />
+</div>
+```
+
+Notice how we set `ng-minlength="minpwd"`, so: 
+
+```javascript
+$scope.minpwd = 3 ; 
+```
+
+must be declared. of course you could also write something like: `ng-minlength="3"`, we just wanted to show the data binding stuff and .. well you get the point! 
+
+Two final notes, 
+
+User don't usually like facing a pile of error messages when they haven't even started with filling a form! A good way to prevent this is to add the `submitform.filedname.$touched` condition to display the error messages. This will display the message only when the user types something and leaves the filed (the ***focus*** leaves the filed (notice the passed tense of the name, $touch **ed**). 
+
+Something like this works for our `email` field: 
+
+```html
+<span 
+  class="label label-danger" 
+  ng-show="submitform.email.$error.required && submitform.email.$touched">
+  Required!
+</span>
+<span 
+  class="label label-danger" 
+  ng-show="submitform.$error.email && submitform.email.$touched">
+  Invalid email!
+</span>
+```
+
+May times, these simple validation might not suffice, as with HTML that had `pattern`, a simple way is to provide `ng-pattern` with a ***[regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)*** for a more sophisticated validation. 
 
 ----------
 

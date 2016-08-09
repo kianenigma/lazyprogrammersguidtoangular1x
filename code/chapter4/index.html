@@ -37,30 +37,39 @@
 
       <div class="row">
         <div class="col col-sm-3 col-sm-offset-3">
-          <button ng-class="classes" class="dynamicBtn btn btn-block">
-            Change Me
+          <button ng-class="classes" class="btn btn-block">
+            classes
           </button>
         </div>
-        <div class="col col-sm-3">
-          <p>
-            <input type="checkbox" ng-model="cool" /> Info
-          </p>
-          <p>
-            <input type="checkbox" ng-model="red" /> Danger
-          </p>
-          <p>
-            <input type="checkbox" ng-model="melow" /> Warning
-          </p>
-        </div>
       </div>
-      <style>
-        button.dynamicBtn {
-          transition: all .3s ease;
-        }
-      </style>
+
+      <hr />
+
+      <h3> Forms Forms Forms! </h3>
+
+      <form name="submitform" novalidate>
+        <div class="form-group">
+          <label> Email</label>
+          <span class="label label-danger" ng-show="submitform.email.$error.required && submitform.email.$touched">Required!</span>
+          <span class="label label-danger" ng-show="submitform.$error.email && submitform.email.$touched">Invalid email!</span>
+          <input ng-model="formData.email" class="form-control" name="email" type="email" required>
+        </div>
+
+        <div class="form-group">
+          <label> Name </label>
+          <input ng-model="formData.name" class="form-control" name="name" type="text" required />
+        </div>
+
+        <div class="form-group">
+          <label> Password </label>
+          <span class="label label-danger" ng-show="submitform.password.$error.minlength">That's too short!</span>
+          <input ng-minlength="minpwd" ng-model="formData.password" class="form-control" name="password" type="password" required />
+        </div>
+        <div class="form-group">
+          <button class="btn btn-success" ng-click="submit(submitform)"> Submit </button>
+        </div>
+      </form>
+
     </div>
-
-
-
   </div>
 </body>

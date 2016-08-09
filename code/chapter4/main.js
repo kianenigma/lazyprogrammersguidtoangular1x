@@ -4,15 +4,6 @@ var myApp = angular.module('myApp', []);
 myApp.controller('mainCtrl', function ($scope, $timeout) {
   $scope.Title = 'Chapter 4 starts now!';
 
-  // STYLE Manipulation
-  $scope.btnDisplay = true;
-  $scope.iconDisplay = false;
-
-  $scope.doProcess = function () {
-    $scope.iconDisplay = true;
-    $timeout(function () { $scope.btnDisplay = false }, 3000);
-  }
-
   $scope.actors = {
     "Ted": {
       lastName: "Mosbey",
@@ -35,12 +26,33 @@ myApp.controller('mainCtrl', function ($scope, $timeout) {
       bars: ["Blind Tiger", "Torst"]
     }
   }
-
-  $scope.classes = ["btn-xs btn-danger"]
-
   $scope.sayHi = function () {
     alert('hello there');
   }
+
+  // STYLE Manipulation
+  $scope.btnDisplay = true;
+  $scope.iconDisplay = false;
+
+  $scope.doProcess = function () {
+    $scope.iconDisplay = true;
+    $timeout(function () { $scope.btnDisplay = false }, 3000);
+  }
+  $scope.classes = ["btn-xs btn-danger"]
+    //
+
+
+
+
+
+
+  // FORMS
+  $scope.submit = function (form) {
+    console.log(form);
+    console.log(form.email.$error);
+  }
+
+  $scope.minpwd = 3;
 });
 
 myApp.filter('strRev', function () {
