@@ -1,36 +1,36 @@
 
 # Controllers, templates and more!
 
-In the previous chapter, although we learned some very good fundamental details of Angular (specially on controllers and `$scope`) , but the code that we worked on was mostly like a *Hello World* for Angular. 
-In this chapter we will learn more technical details of Angular. by technical I mean that they are going to be details that you surely will need to know them and use them in your next Angular project! 
+In the previous chapter, although we learned some very good fundamental details of Angular (specially on controllers and `$scope`) , but the code that we worked on was mostly like a *Hello World* for Angular.
+In this chapter we will learn more technical details of Angular. by technical I mean that they are going to be details that you surely will need to know them and use them in your next Angular project!
 
 The code for this chapter can be found under a separate folder under the [github repository](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/master/code/chapter4) associated with this project.
 
 As a *heads up* for this chapter, it is good to mention that we are going to learn a LOT in this chapter. and as the name suggests, they are all going to be implemented inside and using a controller. in the next chapter we are going to dedicate our time to revisit all that we learn here to see which of them are suited to be implemented via a **Service** or a **Directive** so they become **Reusable components**.
 
-We are going to start with a single page application with an `index.html` and `main.js` file linked like the previous chapter. I also included twitter bootstrap to make the pages that we create a little bit brighter! if you are not familiar with it, it's just library that you can use a set of css classes it provides to have a better looking HTML. 
+We are going to start with a single page application with an `index.html` and `main.js` file linked like the previous chapter. I also included twitter bootstrap to make the pages that we create a little bit brighter! if you are not familiar with it, it's just library that you can use a set of css classes it provides to have a better looking HTML.
 
 ## More advance iteration with ng-repeat and pipe filters
 
-In the previous chapter we barely introduced `ng-repeat`, while one of the most commonly used Angular directives. Let's inspect it more and see how it behaves with objects instead of arrays, and how to mix it up with some filters. 
+In the previous chapter we barely introduced `ng-repeat`, while one of the most commonly used Angular directives. Let's inspect it more and see how it behaves with objects instead of arrays, and how to mix it up with some filters.
 
 ### ng-repeat with objects
 
-You now know how to iterate a simple array. Two more things to learn: 
+You now know how to iterate a simple array. Two more things to learn:
 
  1. Iterating over objects
  2. Iterating over arrays of objects
 
-We'll change our list of actor to the following: 
+We'll change our list of actor to the following:
 
-```javascript 
+```javascript
 $scope.actors = {
     "Ted": { lastName: "Mosbey", age: 27 },
     "Barney": { lastName: "Stinson", age: 30 }
   }
 ```
 
-If you iterate over this object with the same way as we did before, you'll find something like this: 
+If you iterate over this object with the same way as we did before, you'll find something like this:
 
 ```html
 	<li class="list-group-item">
@@ -44,17 +44,17 @@ If you iterate over this object with the same way as we did before, you'll find 
 
 We have no access to the `key` of the object and the values are displayed as plaing object.
 
-Two point will solve this: 
+Two point will solve this:
 
-**First**, you can use `ng-repeat="for (key, value) in someObject"` to have access to both the keys and both the values. 
+**First**, you can use `ng-repeat="for (key, value) in someObject"` to have access to both the keys and both the values.
 
-**Second**, you should know that Angular's template syntax actually supports a large subset of javascript operation, like : `{{ a + b }}`, `{{ someFunction(someProp) }}`, `{{ someString + ' , I am concatenated! }}'`, so you can use the **dot operation** to access the properties the object associated with a key. Change the html template: 
+**Second**, you should know that Angular's template syntax actually supports a large subset of javascript operation, like : `{{ a + b }}`, `{{ someFunction(someProp) }}`, `{{ someString + ' , I am concatenated! }}'`, so you can use the **dot operation** to access the properties the object associated with a key. Change the html template:
 
 ```html
 <li class="list-group-item" ng-repeat="(name, detail) in actors">
 	{{ name }} [{{detail.lastName}}] is {{ detail.age }} years old!
 </li>
-``` 
+```
 
 Having this in mind you can even figure out how you can have nested loops. change to `actors` property to:
 
@@ -73,7 +73,7 @@ $scope.actors = {
   }
 ```
 
-And your HTML to: 
+And your HTML to:
 
 ```html
 <li class="list-group-item" ng-repeat="(name, detail) in actors">
@@ -87,7 +87,7 @@ There is a problem here! We really don't want the last `,` there. Let's use some
 
 ```html
 <span ng-repeat="bar in detail.bars">
-      {{ bar }} {{ ($index === ( $parent.detail.bars.length-1 ) ) ? '' : ',' }} 
+      {{ bar }} {{ ($index === ( $parent.detail.bars.length-1 ) ) ? '' : ',' }}
 </span>
 ```
 
@@ -101,13 +101,13 @@ You should know clearly why `$parent.detail.bar` is what we compared it's length
 Filters provide a way to modify any model binding in your html. By the Term model binding I mean any place that you place one your $scope properties inside HTML. It could be:
 
  - Template binding `{{ someModel }}`
- - Loops `<div ng-repeat="item in someModel">` 
+ - Loops `<div ng-repeat="item in someModel">`
 
-Or any other place. The filters work similar to Unix pipe style. think of your model as the input and with each `|`operator it will be piped into a filter and the results come out. with this way, multiple pipes can be combined and the output of one of them could be added to the other one. 
+Or any other place. The filters work similar to Unix pipe style. think of your model as the input and with each `|`operator it will be piped into a filter and the results come out. with this way, multiple pipes can be combined and the output of one of them could be added to the other one.
 
-Like many other situations, Angular provides us with a set of built in filters, but with can extend them to any usage and build our own filter. you can read the full list of filters here[enter link description here](https://docs.angularjs.org/guide/filter). 
+Like many other situations, Angular provides us with a set of built in filters, but with can extend them to any usage and build our own filter. you can read the full list of filters here[enter link description here](https://docs.angularjs.org/guide/filter).
 
-Let's begin testing with some of the built in filters. one of these filters are called `uppercase` and you probably guess from the name what it is going to do! Apply it to the list of beers from the previous section with: 
+Let's begin testing with some of the built in filters. one of these filters are called `uppercase` and you probably guess from the name what it is going to do! Apply it to the list of beers from the previous section with:
 
 ```html
 <span ng-repeat="bar in detail.bars">
@@ -115,9 +115,9 @@ Let's begin testing with some of the built in filters. one of these filters are 
 </span>
 ```
 
-Notice the `|` pipe after `{{ bar }}`. Aside from simple filters like `uppercase` that works on a single object, there are some more interesting filters that work on collection, arrays, and can be applied to loops. 
+Notice the `|` pipe after `{{ bar }}`. Aside from simple filters like `uppercase` that works on a single object, there are some more interesting filters that work on collection, arrays, and can be applied to loops.
 
-One of the best filters for collections is called... well, it's called `filter`! It works only on arrays and takes an argument as input and returns only those elements in the array that contain the value given. 
+One of the best filters for collections is called... well, it's called `filter`! It works only on arrays and takes an argument as input and returns only those elements in the array that contain the value given.
 
 Modify the following for an actor's list of favorite beer.
 
@@ -131,11 +131,11 @@ Modify the following for an actor's list of favorite beer.
 </li>
 ```
 
-Change the value inside the `input` tag you see that the array of beers will actually get filtered according to that value. As mentioned before, the fact that we never declared `$scope.beerFilter` is not a problem. It will be equal to undefined at the beginning and will have a value as we modify the `input` tag. 
+Change the value inside the `input` tag you see that the array of beers will actually get filtered according to that value. As mentioned before, the fact that we never declared `$scope.beerFilter` is not a problem. It will be equal to undefined at the beginning and will have a value as we modify the `input` tag.
 
-The `orderBy` filter works over an array of objects by taking one key name as the filter and sorting the array according to that key. For example: `<div ng-repeat="item in array | orderBy 'keyName'"> ... </div>` will sort an array with the format 
+The `orderBy` filter works over an array of objects by taking one key name as the filter and sorting the array according to that key. For example: `<div ng-repeat="item in array | orderBy 'keyName'"> ... </div>` will sort an array with the format
 
-```javascript 
+```javascript
 $scope.array = [
 	{name: "item1", key:3},
 	{name: "item2", key:2},
@@ -147,7 +147,7 @@ according to `key` property.
 
 Let's finish this section with creating a custom filter. Custom filters can be created using the `.filter()` method on a module. it must return o function that takes the input value as argument and returns the new formatted values as output.
 
-The following filter simply takes an string input and returns the same value in reverse. 
+The following filter simply takes an string input and returns the same value in reverse.
 
 ```javascript
 myApp.filter('strRev', function () {
@@ -155,9 +155,9 @@ myApp.filter('strRev', function () {
     return inp.split('').reverse().join('')
   }
 })
-``` 
+```
 
-You can now test it with : 
+You can now test it with :
 
 ```html
 <span ng-repeat="bar in detail.bars | filter : beerFilter">
@@ -165,7 +165,7 @@ You can now test it with :
 </span>
 ```
 
-As you might have noticed, we have two types of filters, those who operate on single values (pipe) and those who filter a collection. Creating a custom filter that operates on a collection has the same API and routine as above, but it takes additional input arguments beside `inp`. As a good exercise, you can go ahead and read some examples of this type of filter and work on creating the following the filters : 
+As you might have noticed, we have two types of filters, those who operate on single values (pipe) and those who filter a collection. Creating a custom filter that operates on a collection has the same API and routine as above, but it takes additional input arguments beside `inp`. As a good exercise, you can go ahead and read some examples of this type of filter and work on creating the following the filters :
 
  - One that filters an object over it key names.
  - One that takes an array and returns all of its elements in `uppercase` format.
@@ -175,10 +175,10 @@ As you might have noticed, we have two types of filters, those who operate on si
 
 ## Style manipulation with Angular
 
-Angular provides convenient ways to manipulate the DOM attributes or Style. Some of these ways will be described in this section. the key difference between Angular's way and vanilla Javascript's way is that using Angular, as you might expect, we can control element's style and behavior using `$scope` properties, which gives us a better and easier way of control.   
+Angular provides convenient ways to manipulate the DOM attributes or Style. Some of these ways will be described in this section. the key difference between Angular's way and vanilla Javascript's way is that using Angular, as you might expect, we can control element's style and behavior using `$scope` properties, which gives us a better and easier way of control.
 
 ### Using ng-show, ng-hide and ng-if
-Two of the most basic of these UI controls are two directives named: ng-show and ng-hide. as the names suggest, they both hide or show an element based on the expression given to it. Look at the following example: 
+Two of the most basic of these UI controls are two directives named: ng-show and ng-hide. as the names suggest, they both hide or show an element based on the expression given to it. Look at the following example:
 
 ```html
 <div class="row">
@@ -190,7 +190,7 @@ Two of the most basic of these UI controls are two directives named: ng-show and
 </div>
 ```
 
-As you see, the button is there. now change the `ng-show` value to `false`. As you might expect, the button goes away. Now browse the DOM elements with your browser. As you find the button node, you'll see that it has been rendered as: 
+As you see, the button is there. now change the `ng-show` value to `false`. As you might expect, the button goes away. Now browse the DOM elements with your browser. As you find the button node, you'll see that it has been rendered as:
 
 ```html
 <button class="btn btn-success btn-block ng-hide" ng-show="true">
@@ -198,20 +198,20 @@ As you see, the button is there. now change the `ng-show` value to `false`. As y
 </button>
 ```
 
-The `ng-hide` class automatically adds the `display: none` property to the node element. There are some important notes to keep in mind about `display: none` here: 
+The `ng-hide` class automatically adds the `display: none` property to the node element. There are some important notes to keep in mind about `display: none` here:
 
  - This property will hide all of the child elements
- - ng-hide **will not cause the DOM elements to be not rendered**, it just hides them. 
+ - ng-hide **will not cause the DOM elements to be not rendered**, it just hides them.
 
-The `ng-hide` works exactly in the same manner, but as the name suggests, the Boolean value *is the other way around* and when it is equal to `false`, the element will not be displayed. 
+The `ng-hide` works exactly in the same manner, but as the name suggests, the Boolean value *is the other way around* and when it is equal to `false`, the element will not be displayed.
 
-The ng-if directive works almost the same as ng-show, but there is one key difference, if the expression provided to `ng-if` is equal to `false`, the element will actually be **removed** from the DOM, and if later evaluates to `true` again, it will be **recreated** once again. 
+The ng-if directive works almost the same as ng-show, but there is one key difference, if the expression provided to `ng-if` is equal to `false`, the element will actually be **removed** from the DOM, and if later evaluates to `true` again, it will be **recreated** once again.
 
-We mentioned : 
+We mentioned :
 
-> the key difference between Angular's way and vanilla Javascript's way is that using Angular, as you might expect, we can control element's style and behavior using `$scope` properties, which gives us a better and easier way of control.   
+> the key difference between Angular's way and vanilla Javascript's way is that using Angular, as you might expect, we can control element's style and behavior using `$scope` properties, which gives us a better and easier way of control.
 
-But so far, even though we learned how ng-show, `ng-hide` and `ng-if` work, we only used static `true / false` values for testing. let's try this in a more realistic way and use `$scope` properties to control the button: 
+But so far, even though we learned how ng-show, `ng-hide` and `ng-if` work, we only used static `true / false` values for testing. let's try this in a more realistic way and use `$scope` properties to control the button:
 
 Suppose that the button will perform an http request as you click it and you wish for it to display a loading icon during this period and then fade away.
 
@@ -225,85 +225,87 @@ $scope.doProcess = function () {
   $scope.iconDisplay = true;
   $timeout(function () { $scope.btnDisplay = false }, 3000);
 }
-```  
+```
 
-And then just assign these values to the HTML markup that we had: 
+And then just assign these values to the HTML markup that we had:
 
 ```html
 <button ng-click="doProcess()" ng-if="btnDisplay" class="btn btn-success btn-block">
-            <span 
-	        ng-show="iconDisplay" 
+            <span
+	        ng-show="iconDisplay"
 	        class="glyphicon glyphicon-cloud-download">
-	        </span> 
+	        </span>
 	        {{ iconDisplay ? 'Waiting for process' : 'Click me for some process'}}
 </button>
 ```
 
-### Using ng-class 
+### Using ng-class
 
-The `ng-class` directive is one of my own favorite directives! in allows you to dynamically assign a class to an element, according to a boolean expression defined from your controller. 
+The `ng-class` directive is one of my own favorite directives! in allows you to dynamically assign a class to an element, according to a boolean expression defined from your controller.
 
-Assume that you want to assign a different color to your button while it is processing, and show a red color when if it has failed for some reasons. We'll use two classes from twitter bootstrap named `btn-warnign` and `bnt-danger`. 
+Assume that you want to assign a different color to your button while it is processing, and show a red color when if it has failed for some reasons. We'll use two classes from twitter bootstrap named `btn-warnign` and `bnt-danger`.
 
-`ngClass` can be applied in many ways, one of them is using an ***object*** with the following format: 
+`ngClass` can be applied in many ways, one of them is using an ***object*** with the following format:
 
 ```html
 <div ng-class="{aClassToBeAdded: conditionForThisClass, secondClass: secondCondition}"></div>
 ```
 
-An important note on this object is that by default it does not require you to wrapp the condition and class name in quotations, but if the class name has dashes, it **Must** be.  
+An important note on this object is that by default it does not require you to wrapp the condition and class name in quotations, but if the class name has dashes, it **Must** be.
 
 ```html
 <div ng-class="{'a-dash-class-name': conditionForThisClass, secondClass: secondCondition}"></div>
 ```
 
-The condition can be a model associated with `$scope`, 
+The condition can be a model associated with `$scope`,
 
 ```javascript
-$scope.conditionForThisClass = true 
+$scope.conditionForThisClass = true
 ```
 
-an expression, or negation of an expression (don't miss the `!` before second expression) : 
+an expression, or negation of an expression (don't miss the `!` before second expression) :
 
-```html 
+```html
 <div ng-class="{'a-dash-class-name': someModel.name == 'aName' , secondClass: !secondCondition}"></div>
 ```
 
-or a function: 
+or a function:
 
-```html 
+```html
 <div ng-class="{'a-dash-class-name': someFunction()}"></div>
 ```
 
-Ok, with all of this in mind let's add what we described, changing the color of the button while it is processing. Like many other changes in our code, this will also be jsy a one line small modification: 
+Ok, with all of this in mind let's add what we described, changing the color of the button while it is processing. Like many other changes in our code, this will also be jsy a one line small modification:
 
 ```html
 
 <button ng-class="{'btn-warning' : iconDisplay, 'btn-info': !iconDisplay}" ng-click="doProcess()" ng-if="btnDisplay" class="btn btn-block">
-	<span ng-show="iconDisplay" class="glyphicon glyphicon-cloud-download"></span> 
+	<span ng-show="iconDisplay" class="glyphicon glyphicon-cloud-download"></span>
 	{{ iconDisplay ? 'waiting for process' : 'Click me for some process'}}
 </button>
 ```
 
-and Thats it! we just remove the `btn-success` default class, and added two other conditional classes using `ng-class`. 
+and Thats it! we just remove the `btn-success` default class, and added two other conditional classes using `ng-class`.
 
-Aside from ***Object*** there are more ways to use ng-class. another one that might be useful is: 
+Aside from ***Object*** there are more ways to use ng-class. another one that might be useful is:
 
-Using an model that evaluates to an ***Array***. as an example: 
+Using an model that evaluates to an ***Array***. as an example:
 
 ```javascript
 $scope.someClasses = ["btn-danger", "btn-xs"] ;
 ```
 
-and 
+and
 
 ```html
-<button class="btn" ng-class"someClasses"> </div> 
+<button class="btn" ng-class"someClasses"> </div>
 ```
 
-Of course, in this example, as you change the `someClasses`, to button classes change with it. 
+Of course, in this example, as you change the `someClasses`, to button classes change with it.
 
 You can read more about ngClass [here](https://docs.angularjs.org/api/ng/directive/ngClass).
+
+
 
 
 ----------
@@ -311,9 +313,9 @@ You can read more about ngClass [here](https://docs.angularjs.org/api/ng/directi
 
 ## Ups and downs of < form > management with Angular
 
-Angular provide some helper classes that help you work more easily with a `<form>` tag. 
+Angular provide some helper classes that help you work more easily with a `<form>` tag.
 
-To examine these classes first hand we use the template below (in order to get this to work,  all elements must have a `name=` and all inputs must have `ngModel`) :  
+To examine these classes first hand we use the template below (in order to get this to work,  all elements must have a `name=` and all inputs must have `ngModel`) :
 
 ```html
 <form name="submitform" novalidate>
@@ -329,8 +331,8 @@ To examine these classes first hand we use the template below (in order to get t
 
     <div class="form-group">
        <label> Password </label>
-       <input ng-model="formData.password" class="form-control" 
-	       name="password" type="password" required 
+       <input ng-model="formData.password" class="form-control"
+	       name="password" type="password" required
 	       />
     </div>
     <div class="form-group">
@@ -341,21 +343,21 @@ To examine these classes first hand we use the template below (in order to get t
 
 Notice how we put `novalidate` attribute on the `form` tag and `required` on each of the inputs.
 
-You can see that before taking any type of action, the form is rendered like: 
+You can see that before taking any type of action, the form is rendered like:
 
 ```html
 <form name="submitform" class="classng-pristine ng-invalid ..."> ... </form>
 ```
 
-Notice how Angular added the classes. This means that Angular will detect automatically that a form exists and starts watching it for changes. 
+Notice how Angular added the classes. This means that Angular will detect automatically that a form exists and starts watching it for changes.
 
-You should convice yourself that these classes are logical with respect to the attributes that we placed on our form. for example since all inputs had `required`, if you leave one of them empty, we see : `ng-invalid-required`. if you type a name inside `email`, since it had a `type='email`', you will see: `ng-invalid-email`.  
+You should convice yourself that these classes are logical with respect to the attributes that we placed on our form. for example since all inputs had `required`, if you leave one of them empty, we see : `ng-invalid-required`. if you type a name inside `email`, since it had a `type='email`', you will see: `ng-invalid-email`.
 
-You can also find similar class names on each `<input>` inside the form. such as `ng-dirty`, `ng-touched`, indicating the field's state. 
+You can also find similar class names on each `<input>` inside the form. such as `ng-dirty`, `ng-touched`, indicating the field's state.
 
-These information can also be used inside the controller, there rule, accourding to which Angular watches forms is: 
+These information can also be used inside the controller, there rule, accourding to which Angular watches forms is:
 
-A property equal to the form's `name=''` attribute will be added to the **scope**, in which the form exists. This new property holds information about whether the form is valid, has it been submitted, have the fields been touched so far or not and so on. To experiment this, try passing a variable named `submitForm` back to controller and log it: 
+A property equal to the form's `name=''` attribute will be added to the **scope**, in which the form exists. This new property holds information about whether the form is valid, has it been submitted, have the fields been touched so far or not and so on. To experiment this, try passing a variable named `submitForm` back to controller and log it:
 
 ```html
 <button class="btn btn-success" ng-click="submit(submitForm)"> Submit </button>
@@ -363,28 +365,28 @@ A property equal to the form's `name=''` attribute will be added to the **scope*
 
 ```javascript
 $scope.submit = function(form) {
-	console.log(form); 
+	console.log(form);
 }
 ```
 
-You can see how similar information is also stored inside this property ($scope.submitForm, in this case). There are many more details about form validation and you can read more about them [here](https://docs.angularjs.org/guide/forms). Instead of going through every single detail which you probably won't need in a decade, we spend time explaining a common usage pattern for Angular form management. 
+You can see how similar information is also stored inside this property ($scope.submitForm, in this case). There are many more details about form validation and you can read more about them [here](https://docs.angularjs.org/guide/forms). Instead of going through every single detail which you probably won't need in a decade, we spend time explaining a common usage pattern for Angular form management.
 
 
-If you inspect the form object that we logged closely, you'll see that errors associated with classes that were added to `<form>` are stored in: 
+If you inspect the form object that we logged closely, you'll see that errors associated with classes that were added to `<form>` are stored in:
 
-```javascript 
+```javascript
 $scope.submit = function(form) {
 	// form.$error
 }
-```  
+```
 
 and errors associated with each input, for example `email` is stored inside
 
-```javascript 
+```javascript
 $scope.submit = function(form) {
 	// form.email.$error
 }
-``` 
+```
 
 and so on. Let's use these to add a validation for our email field. we'll create all af the error texts required, but hide all of them and only show one, depending on the state of the form. for example when the value of `submitForm.email.$error.required` is `true`, we should show a text telling that is can not be empty.
 
@@ -393,7 +395,7 @@ Change the email section as following:
 ```html
 <div class="form-group">
    <label> Email</label>
-   
+
    <!-- Notice the ng-show condition -->
    <span class="label label-danger" ng-show="submitform.email.$error.required">
      Required!
@@ -407,14 +409,14 @@ Change the email section as following:
 </div>
 ```
 
-Of course there more to it than this, HTML provides more form validation attributes, min/max length , min/max value and so on. All of them could be used and Angular will provide the corresponding error values and classes. Aside from using these attributes, we can use them with a `ng-` prefix and Angular's magical data binding will be available! 
+Of course there more to it than this, HTML provides more form validation attributes, min/max length , min/max value and so on. All of them could be used and Angular will provide the corresponding error values and classes. Aside from using these attributes, we can use them with a `ng-` prefix and Angular's magical data binding will be available!
 
-Change the password section to the following to see this: 
+Change the password section to the following to see this:
 
 ```html
 <div class="form-group">
   <label> Password </label>
-  <span class="label label-danger" 
+  <span class="label label-danger"
         ng-show="submitform.password.$error.minlength">
         That's too short!
    </span>
@@ -422,50 +424,48 @@ Change the password section to the following to see this:
 </div>
 ```
 
-Notice how we set `ng-minlength="minpwd"`, so: 
+Notice how we set `ng-minlength="minpwd"`, so:
 
 ```javascript
-$scope.minpwd = 3 ; 
+$scope.minpwd = 3 ;
 ```
 
-must be declared. of course you could also write something like: `ng-minlength="3"`, we just wanted to show the data binding stuff and .. well you get the point! 
+must be declared. of course you could also write something like: `ng-minlength="3"`, we just wanted to show the data binding stuff and .. well you get the point!
 
-Two final notes, 
+Two final notes,
 
-User don't usually like facing a pile of error messages when they haven't even started with filling a form! A good way to prevent this is to add the `submitform.filedname.$touched` condition to display the error messages. This will display the message only when the user types something and leaves the filed (the ***focus*** leaves the filed (notice the passed tense of the name, $touch **ed**). 
+User don't usually like facing a pile of error messages when they haven't even started with filling a form! A good way to prevent this is to add the `submitform.filedname.$touched` condition to display the error messages. This will display the message only when the user types something and leaves the filed (the ***focus*** leaves the filed (notice the passed tense of the name, $touch **ed**).
 
-Something like this works for our `email` field: 
+Something like this works for our `email` field:
 
 ```html
-<span 
-  class="label label-danger" 
+<span
+  class="label label-danger"
   ng-show="submitform.email.$error.required && submitform.email.$touched">
   Required!
 </span>
-<span 
-  class="label label-danger" 
+<span
+  class="label label-danger"
   ng-show="submitform.$error.email && submitform.email.$touched">
   Invalid email!
 </span>
 ```
 
-May times, these simple validation might not suffice, as with HTML that had `pattern`, a simple way is to provide `ng-pattern` with a ***[regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)*** for a more sophisticated validation. 
+Many times, these simple validation might not suffice, as with HTML that had `pattern`, a simple way is to provide `ng-pattern` with a ***[regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)*** for a more sophisticated validation.
 
 ----------
 
 
-## Using $http and $watch 
-
-
-----------
-
-
-## Controller events and communication 
+## Using $http and $watch
 
 
 ----------
 
 
-## The great $rootScope 
+## Controller events and communication
 
 
+----------
+
+
+## The great $rootScope

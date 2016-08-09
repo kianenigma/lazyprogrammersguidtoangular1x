@@ -26,6 +26,9 @@ myApp.controller('mainCtrl', function ($scope, $timeout) {
       bars: ["Blind Tiger", "Torst"]
     }
   }
+
+  $scope.classes = ["btn-xs btn-danger"]
+
   $scope.sayHi = function () {
     alert('hello there');
   }
