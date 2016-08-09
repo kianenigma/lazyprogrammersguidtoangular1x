@@ -458,6 +458,130 @@ Many times, these simple validation might not suffice, as with HTML that had `pa
 
 ## Using $http and $watch
 
+There are many providers that you can inject to your controller and use. The most obvious one here is `$scope`. Aside from that, a number of other providers that you probably will inevitably use them. we mention all of them here and discuss to of them in detail. 
+
+1. $http: provider for making **Ajax** calls. Pretty useful!
+2. $watch: a method used for subscribing to state change event on scope properties, providers etc. 
+3. $rootScope: a parent for all scopes, which we'll discuss at the end of this chapter.
+4. $state and other route providers: a set of providers usually providing information about the current route of the application, route parameters etc. We will discuss this in a separate chapter. 
+5. user defined providers: You'll learn soon that building isolated group of functionalities inside a `.factory` or `.service` is one of the most common patterns in angular.
+
+So, let's dive into the first two providers that we wanted to discuss.
+
+### Using $http
+
+As the name suggests, this service helps us make http requests to remote or local servers. The overall syntax of this service could be summarized as: 
+
+```javascript
+$http({
+	mathod: "GET", 
+	url: "/some/path",
+	data: {someDataKey : 12}, 
+	headers: {'additional-header': 'hello $http'},
+	params : {'a': 13} 
+}).then( successCallback, errorCallback); 
+
+```
+
+Before we get into more detail, let's discuss the code above. If you have a simple knowledge of http request, none of the keys defined above and passed to `$http` should be ambiguous for you. Just for double checking, it's safe to say that the request above will be translated to: 
+
+a GET Request to the same domain - since the path we provided started with `/`
+
+with a query string of : `/some/path?a=13`
+
+and an additional header added to the default HTTP headers.
+
+and a JSON payload equal to {someDataKey : 12}
+
+Good, moving forward. The next thing that catches out eyes is the `then()` fucntion, which indicated that `$http.get()` returns a **Promise**. Promises are a very important concept in both angular and general javascript (and will be natively supported in ES2016). if you are familiar with promises, you can skip this section, if not hold on tight because what we are about to learn is very important. 
+
+#### de-tour on Promises 
+
+Javascript is a single threaded language, therefor it has it's own unique way of handling asynchronous operation. When we have only one thread, it means that the main program’s flow can never - should never - **wait** for an operation that takes time. it should move pass it and come back to it later, in an **Event based** manner. There are two famous ways two implement this. ***Promises*** and ***Callback functions***. 
+
+The Callback way usually works like this: we pass a function, to the function that might take a long time and say to it: 
+> Hey, long time function! please invoke this function that i'm giving it to you now when you are finished and btw pass the result of your operation to it as argument, if you want. 
+
+```javascript
+
+var someSlowDataFetching = function(args, callback) {
+	operation.start() 
+	// my process will take time
+	// some more time 
+	// even more
+	// seriously, it's gonna take a while
+	
+	
+	// and when I am finally finished: 
+	if ( operation.isOK ) {
+		callback(null, operation.data) ;
+	} else {
+		callback(someErr, null) ;
+	}
+}
+
+someSlowDataFetching(args, function(err, data) {})
+
+```
+
+You should read and examine this example carefully and completely understand how javascript handler parallelism with callback function. 
+
+To save time we will not discuss here how promises are implemented, instead we are just going to focus on *how to use them*. We'll begin by defining it
+
+A promise is ... well, its a **Promise** that assures you of receiving *Some* response about the task which is going to take some time. A promise can either *resolve* or *reject* 
+
+- **resolve** means that the async task was completed, regardless of the result, the result could even be e failure, but the task was completed with no errors. 
+- **reject** means that execution of the task was not competed because of some errors. 
+
+Async tasks using Promises don't take in a function to invoke it later, instead, they return a promise, which has a `.then()` method, which will be invoked later when the task is completed.  
+
+```
+function someSlowPromiseFn(args) {
+	operation.start() 
+	// my process will take time
+	// some more time 
+	// even more
+	// seriously, it's gonna take a while
+	
+	// and when I am finally finished: 
+	if ( operation.isOK ) {
+		promise.resolve(operation.data); 
+	} else {
+		promise.reject(operation.data); 
+	}
+}
+
+
+someSlowPromiseFn(args)
+	.then(
+		function onResolve() {...},
+		function onReject()  {...}
+		); 
+```
+
+The name of the functions passed to `then()` were meant to be a hint, to imply that: 
+
+First argument of `then()` will be called when the promise resolves.
+
+Second argument of `then()` will be called when the promise rejects.
+
+As we reach the end of our de-tour on promises, the main purpose of this detour has satisfied and now you exactly know what this means: 
+
+```javascript
+$http({....}).then(
+	function() {},
+	function() {}
+	) ;
+
+```
+
+#### Continuing with $http
+
+
+### Using $watch
+
+ 
+
 
 ----------
 
