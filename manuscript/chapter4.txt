@@ -453,10 +453,13 @@ Something like this works for our `email` field:
 
 Many times, these simple validation might not suffice, as with HTML that had `pattern`, a simple way is to provide `ng-pattern` with a ***[regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)*** for a more sophisticated validation.
 
+After validating a form, thing always wnd up with making an AJAX call which can be done using $http, which is what we are going to learn in the next seciton. 
+
 ----------
 
 
 ## Using $http and $watch
+
 
 There are many providers that you can inject to your controller and use. The most obvious one here is `$scope`. Aside from that, a number of other providers that you probably will inevitably use them. we mention all of them here and discuss to of them in detail. 
 
@@ -590,7 +593,7 @@ $http({
 
 ```
 
-Now let's try and make this more realistic by calling a real JSON API. we'll use github's public API for this reason. If you reffer to the [documentation](https://developer.github.com/v3/repos/) you'll see that you can fetch the list of repositories by making a `GET` request to: 
+Now let's try and make this more realistic by calling a real JSON API. we'll use github's public API for this reason. If you refer to the [documentation](https://developer.github.com/v3/repos/) you'll see that you can fetch the list of repositories by making a `GET` request to: 
 
 ```json
 https://api.github.com/users/{username}/repos
@@ -622,30 +625,30 @@ myApp.controller("mainCtrl", function($scope, ... , $http ) {
 
 Now change the username to an invalid one `https://api.github.com/users/invalidUserrrrrblahbalh/repos` and see how the error callback is being invoked. 
 
-As you migh've mentioned, both the success and error callbacks have the same schema and the following keys are the ones you will probably need: 
+As you might've mentioned, both the success and error callbacks have the same schema and the following keys are the ones you will probably need: 
 
 - `response.data` : data associated with the response
 - `response.statusCode` : status code of the response. Note that when the success callback is being invoked, we are sure that status code has a value in 200/300 range `2**/3**` and the 400/500 status code ranges are associated with errors, `404 not found` and `500 internal server error` for example. 
-- `response.config.headers` : http heares of the response. it is common to use them specially when using [json web tokens](https://jwt.io/) - aka. JWT - as authentication method. 
+- `response.config.headers` : http headers of the response. it is common to use them specially when using [json web tokens](https://jwt.io/) - aka. JWT - as authentication method. 
 
 As final notes on $http: 
 
 - you'll learn in a seprate chapter about a concept named `http interceptor`. It is VERY common to feel the need to add a specific data or header to *ALL* of your http requests, such as web token authentication header. http interceptors help you do this.
-- There is actually another way of waitning for an http response, name `success` and `error`. The syntax is like the following: 
+- There is actually another way of watching for an http response, name `success` and `error`. The syntax is like the following: 
 
 ```javascript
 $http({
 	method : "GET", 
 	...
 })
-	.suceess(function(data, status, config) {}) // called when request returns fine
+	.success(function(data, status, config) {}) // called when request returns fine
 	.error(function(data, status, config) {}) // called on error
 	.finally(function() {}) ;  // called either way!
 
 ```
 Although this was my personal favorite syntax (and dark deep secret!), there are many reasons not to use it. You can read about [them](http://www.codelord.net/2015/05/25/dont-use-$https-success/) [here](https://www.peterbe.com/plog/promises-with-$http). 
 
-- the following syntatic sugars are provided for specific http verbs: 
+- the following syntactic sugars are provided for specific http verbs: 
 
 ```javascript
 $http.get('/someUrl', config).then(successCallback, errorCallback);
@@ -655,13 +658,13 @@ and more for /DELETE /PUT and so on.
 ```
 You can read the full list [here](https://docs.angularjs.org/api/ng/service/$http).
 
-We'll extend this example of Github in the next section to make somthing more intresting out of it. 
+We'll extend this example of Github in the next section to make something more interesting out of it. 
 
 ### Using $watch
 
 The `$watch` service helps us add `eventListeners` to model changes, as the name suggests. The overall syntax is like this: 
 
-```javscript
+```javascript
 $scope.$watch("stingEqualToPropertyNameInScope", function(newValue, oldValue) {
 	
 })
@@ -690,7 +693,7 @@ now change the username value and see the logs for change.
 
 There are two very common situations when it comes to $watch that you have to pay attention to: 
 
-1. By default, `$scope.watch()` performs a shallow equality test. by shallow we mean that changes like `[1,2] => [1]` , `1 => 2` , `"hello" => "mellow"` are detected, but changes to deep properties like `{ foo : { bar : 1 } } => { foo : {bar : 2}}` are **NOT**. in order to fix this you can set the third argument og the `$watch` to `true`, so that it perform deep search: 
+1. By default, `$scope.watch()` performs a shallow equality test. by shallow we mean that changes like `[1,2] => [1]` , `1 => 2` , `"hello" => "mellow"` are detected, but changes to deep properties like `{ foo : { bar : 1 } } => { foo : {bar : 2}}` are **NOT**. in order to fix this you can set the third argument of the `$watch` to `true`, so that it perform deep search: 
 
 ```javascript
 $scope.$watch("username", function(o, n) {
@@ -698,7 +701,7 @@ $scope.$watch("username", function(o, n) {
 }, true); 
 ```
 
-2. It is extreamly! common (actually *common* is not a good word here, it's a famous  pattern) to use a `service` for fetching json data from a remote API and store it there. We usually assign a portion of data stored inside a service and display to the user. So it would be pretty good if we could just listen to changes in data returned by a service too. Turns out that you can't do that .. directly. but you easily can do it if you wrap it inside a function. Follow the code below with the comments inside to get a cleat idea: 
+2. It is extremely! common (actually *common* is not a good word here, it's a famous  pattern) to use a `service` for fetching json data from a remote API and store it there. We usually assign a portion of data stored inside a service and display to the user. So it would be pretty good if we could just listen to changes in data returned by a service too. Turns out that you can't do that .. directly. but you easily can do it if you wrap it inside a function. Follow the code below with the comments inside to get a cleat idea: 
 
 ```javascript
 
@@ -727,7 +730,7 @@ myApp.controller("mainCtrl", function($scope, dataService) { // remember injecti
 
 We can extend our last example to make something cool. 
 
-Add the fllowing markup to your html: 
+Add the following markup to your html: 
 
 ```html
 <div class="row">
@@ -751,7 +754,7 @@ Add the fllowing markup to your html:
 </div>
 ```
 
-You can easily guess what we want to do. seach a username and display a list of repositories!
+You can easily guess what we want to do. search a username and display a list of repositories!
 
 Let's first explain how. 
 
@@ -762,11 +765,11 @@ Let's first explain how.
 - Show the error message if the request fails for any reason. 
 - render the list of repositories. 
 
-The tirvial approach to this would be to simply just do : 
+The trivial approach to this would be to simply just do : 
 
 ```javascript 
 // assuming that $scope.username is the name 
-$scope.$watch("username", funciton(n, o) {
+$scope.$watch("username", function(n, o) {
 	// make the http call
 })
 ```
@@ -784,11 +787,11 @@ If you go to Angular's documentation over [forms](https://docs.angularjs.org/gui
     	placeholder="enter username" style="margin : 20px" 
 />
 ```
-write a `$watch` statemant for `$scope.username`, log the values and change the debounce value. See how the behaviour differes! 
+write a `$watch` statement for `$scope.username`, log the values and change the debounce value. See how the behavior differs! 
 
 Now, the main deal! 
 
-add the follwoing javscript code to your controller: 
+add the following javascript code to your controller: 
 
 ```javascript
 $scope.repos = [];
@@ -816,7 +819,7 @@ $scope.$watch("username", function (n, o) {
 })
 ```
 
-Note thta `reqStatus` is a variable we use to show one of the `label`s indication the status. storing the list of repositories (`response.data`) inside `$scope.repos` is trivial and same as what we did before when we discussed iteration. Also we wrapped the request inside the `if ()` so that it wont get fired when the input is empty. 
+Note that `reqStatus` is a variable we use to show one of the `label`s indication the status. storing the list of repositories (`response.data`) inside `$scope.repos` is trivial and same as what we did before when we discussed iteration. Also we wrapped the request inside the `if ()` so that it wont get fired when the input is empty. 
 
 In the final draft of our HTML, we just added the `ng-show` directives to show one of the labels, and added the `ng-repeat` to `ul`
 
