@@ -70,6 +70,25 @@
         </div>
       </form>
 
+      <hr />
+      <h3> $HTTP and $WATHC </h3>
+
+      <div class="row">
+        <div class="col col-sm-6 col-sm-offset-3 form-group">
+          <input ng-model="username" ng-model-options="{ debounce: 500 }" class="form-control" type="text" placeholder="enter username" style="margin : 20px" />
+          <label ng-show="reqStatus == 0" class="label label-success"> Result is here</label>
+          <label ng-show="reqStatus == 1" class="label label-warning"> Searching </label>
+          <label ng-show="reqStatus == 2" class="label label-danger"> No result found!</label>
+        </div>
+      </div>
+      <div class="row">
+        <ul class="list-group">
+          <li ng-repeat="repo in repos" class="list-group-item">
+            <strong> {{ repo.name }} </strong> || {{ repo.description }}
+          </li>
+        </ul>
+      </div>
+
     </div>
   </div>
 </body>

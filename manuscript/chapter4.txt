@@ -495,7 +495,7 @@ and a JSON payload equal to {someDataKey : 12}
 
 Good, moving forward. The next thing that catches out eyes is the `then()` fucntion, which indicated that `$http.get()` returns a **Promise**. Promises are a very important concept in both angular and general javascript (and will be natively supported in ES2016). if you are familiar with promises, you can skip this section, if not hold on tight because what we are about to learn is very important. 
 
-#### de-tour on Promises 
+#### de-tour on Promises and Callbacks 
 
 Javascript is a single threaded language, therefor it has it's own unique way of handling asynchronous operation. When we have only one thread, it means that the main program’s flow can never - should never - **wait** for an operation that takes time. it should move pass it and come back to it later, in an **Event based** manner. There are two famous ways two implement this. ***Promises*** and ***Callback functions***. 
 
@@ -561,9 +561,9 @@ someSlowPromiseFn(args)
 
 The name of the functions passed to `then()` were meant to be a hint, to imply that: 
 
-First argument of `then()` will be called when the promise resolves.
+***First argument*** of `then()` will be called when the promise resolves.
 
-Second argument of `then()` will be called when the promise rejects.
+***Second argument*** of `then()` will be called when the promise rejects.
 
 As we reach the end of our de-tour on promises, the main purpose of this detour has satisfied and now you exactly know what this means: 
 
@@ -577,10 +577,273 @@ $http({....}).then(
 
 #### Continuing with $http
 
+To refresh your mind on what we had: 
+
+```javascript
+$http({
+	mathod: "GET", 
+	url: "/some/path",
+	data: {someDataKey : 12}, 
+	headers: {'additional-header': 'hello $http'},
+	params : {'a': 13} 
+}).then( successCallback, errorCallback); 
+
+```
+
+Now let's try and make this more realistic by calling a real JSON API. we'll use github's public API for this reason. If you reffer to the [documentation](https://developer.github.com/v3/repos/) you'll see that you can fetch the list of repositories by making a `GET` request to: 
+
+```json
+https://api.github.com/users/{username}/repos
+```
+
+You can test this with: 
+
+```bash
+curl -i https://api.github.com/users/kianenigma/repos
+```
+
+in your command line. let's make this call in angular and ispect the result. 
+
+```javascript
+myApp.controller("mainCtrl", function($scope, ... , $http ) { 
+	// remember to inject $http service
+	
+	 $http({
+      method: 'GET',
+      url: 'https://api.github.com/users/kianenigma/repos',
+    })
+    .then(function (response) {
+      console.log(response);
+    }, function (err) {
+      console.log("ERROR ", err);
+    })
+})
+```
+
+Now change the username to an invalid one `https://api.github.com/users/invalidUserrrrrblahbalh/repos` and see how the error callback is being invoked. 
+
+As you migh've mentioned, both the success and error callbacks have the same schema and the following keys are the ones you will probably need: 
+
+- `response.data` : data associated with the response
+- `response.statusCode` : status code of the response. Note that when the success callback is being invoked, we are sure that status code has a value in 200/300 range `2**/3**` and the 400/500 status code ranges are associated with errors, `404 not found` and `500 internal server error` for example. 
+- `response.config.headers` : http heares of the response. it is common to use them specially when using [json web tokens](https://jwt.io/) - aka. JWT - as authentication method. 
+
+As final notes on $http: 
+
+- you'll learn in a seprate chapter about a concept named `http interceptor`. It is VERY common to feel the need to add a specific data or header to *ALL* of your http requests, such as web token authentication header. http interceptors help you do this.
+- There is actually another way of waitning for an http response, name `success` and `error`. The syntax is like the following: 
+
+```javascript
+$http({
+	method : "GET", 
+	...
+})
+	.suceess(function(data, status, config) {}) // called when request returns fine
+	.error(function(data, status, config) {}) // called on error
+	.finally(function() {}) ;  // called either way!
+
+```
+Although this was my personal favorite syntax (and dark deep secret!), there are many reasons not to use it. You can read about [them](http://www.codelord.net/2015/05/25/dont-use-$https-success/) [here](https://www.peterbe.com/plog/promises-with-$http). 
+
+- the following syntatic sugars are provided for specific http verbs: 
+
+```javascript
+$http.get('/someUrl', config).then(successCallback, errorCallback);
+$http.post('/someUrl', data, config).then(successCallback, errorCallback);
+
+and more for /DELETE /PUT and so on. 
+```
+You can read the full list [here](https://docs.angularjs.org/api/ng/service/$http).
+
+We'll extend this example of Github in the next section to make somthing more intresting out of it. 
 
 ### Using $watch
 
- 
+The `$watch` service helps us add `eventListeners` to model changes, as the name suggests. The overall syntax is like this: 
+
+```javscript
+$scope.$watch("stingEqualToPropertyNameInScope", function(newValue, oldValue) {
+	
+})
+
+```
+
+here, by `stingEqualToPropertyNameInScope ` we mean the name of a property assigned to scope. 
+
+As an example, add a `username` property to `$scope` and bind it to the an input tag :
+
+```html
+<input ng-model="username" />
+```
+
+and 
+
+```javascript
+$scope.username = "initialUserName"; 
+
+$scope.$watch("username", function(o, n) {
+	console.log(o,n); 
+})
+```
+
+now change the username value and see the logs for change. 
+
+There are two very common situations when it comes to $watch that you have to pay attention to: 
+
+1. By default, `$scope.watch()` performs a shallow equality test. by shallow we mean that changes like `[1,2] => [1]` , `1 => 2` , `"hello" => "mellow"` are detected, but changes to deep properties like `{ foo : { bar : 1 } } => { foo : {bar : 2}}` are **NOT**. in order to fix this you can set the third argument og the `$watch` to `true`, so that it perform deep search: 
+
+```javascript
+$scope.$watch("username", function(o, n) {
+	console.log(o,n); 
+}, true); 
+```
+
+2. It is extreamly! common (actually *common* is not a good word here, it's a famous  pattern) to use a `service` for fetching json data from a remote API and store it there. We usually assign a portion of data stored inside a service and display to the user. So it would be pretty good if we could just listen to changes in data returned by a service too. Turns out that you can't do that .. directly. but you easily can do it if you wrap it inside a function. Follow the code below with the comments inside to get a cleat idea: 
+
+```javascript
+
+// remember factories and their syntax ?
+myApp.factory("dataService", function() {
+	var getSomeData = function () { return someData }
+	
+	return {
+		getSomeData: getSomeData
+	}
+})
+
+myApp.controller("mainCtrl", function($scope, dataService) { // remember injection?
+	$scope.data = dataService.getSomeData() ; 
+	
+	// now the dataService might be connected and synced with a remote API
+	// so it can change it's value internally ... 
+	// TaaDaa! :
+	$scope.$watch(function() {return dataService.getSomeData() }, 
+		function(n,o) {} , true 
+	)
+	
+})
+```
+
+
+We can extend our last example to make something cool. 
+
+Add the fllowing markup to your html: 
+
+```html
+<div class="row">
+  <div class="col col-sm-6 col-sm-offset-3 form-group">
+    <input 
+    	ng-model-options="{ debounce: 500 }"
+    	class="form-control" 
+    	type="text" 
+    	placeholder="enter username" style="margin : 20px" 
+    />
+    <label class="label label-success"> Result is here</label>
+    <label class="label label-warning"> Searching </label>
+    <label class="label label-danger"> No result found!</label>
+  </div>
+</div>
+<div class="row">
+  <ul class="list-group">
+     <li class="list-group-item">
+     </li>
+  </ul>
+</div>
+```
+
+You can easily guess what we want to do. seach a username and display a list of repositories!
+
+Let's first explain how. 
+
+- First, add a `$scope.username` property and bind it to input tag.
+- $watch form changes and make the $http call that we performed in the previous chapter to get the list of repositories. 
+- Show the loading span while the request is being performed. 
+- Show the success message if request comes back .. well, obviously, successfully. 
+- Show the error message if the request fails for any reason. 
+- render the list of repositories. 
+
+The tirvial approach to this would be to simply just do : 
+
+```javascript 
+// assuming that $scope.username is the name 
+$scope.$watch("username", funciton(n, o) {
+	// make the http call
+})
+```
+
+This is ... not good. because we did not wanted to make 10 http calls during the time when  i type my own  github username : `kianenigma`
+
+If you go to Angular's documentation over [forms](https://docs.angularjs.org/guide/forms), you'll see that we can use a `debounce` property. When for example we set it to 250, it means that the model in $scope will only update, when the input in UI stays fix for 250ms, hence the $watch will be invoked only then. Change the input tag to: 
+
+```html
+<input 
+		ng-model="username"
+    	ng-model-options="{ debounce: 500 }"
+    	class="form-control" 
+    	type="text" 
+    	placeholder="enter username" style="margin : 20px" 
+/>
+```
+write a `$watch` statemant for `$scope.username`, log the values and change the debounce value. See how the behaviour differes! 
+
+Now, the main deal! 
+
+add the follwoing javscript code to your controller: 
+
+```javascript
+$scope.repos = [];
+$scope.reqStatus = 0;
+// 0 = success
+// 1 = req sent
+// 2 = error
+$scope.$watch("username", function (n, o) {
+  if (n) {
+    $scope.reqStatus = 1;
+    $http({
+        method: 'GET',
+        url: 'https://api.github.com/users/' + n + '/repos',
+      })
+      .then(function (response) {
+        $scope.reqStatus = 0;
+        $scope.repos = response.data;
+        console.log(response);
+      }, function (err) {
+        $scope.reqStatus = 2;
+        $scope.repos = [];
+        console.log("ERROR: ", err);
+      })
+  }
+})
+```
+
+Note thta `reqStatus` is a variable we use to show one of the `label`s indication the status. storing the list of repositories (`response.data`) inside `$scope.repos` is trivial and same as what we did before when we discussed iteration. Also we wrapped the request inside the `if ()` so that it wont get fired when the input is empty. 
+
+In the final draft of our HTML, we just added the `ng-show` directives to show one of the labels, and added the `ng-repeat` to `ul`
+
+```html
+<div class="row">
+  <div class="col col-sm-6 col-sm-offset-3 form-group">
+    <input 
+    	ng-model-options="{ debounce: 500 }"
+    	class="form-control" 
+    	type="text" 
+    	placeholder="enter username" style="margin : 20px" 
+    />
+    <label ng-show="reqStatus == 0" class="label label-success"> Result is here</label>
+    <label ng-show="reqStatus == 1" class="label label-warning"> Searching </label>
+    <label ng-show="reqStatus == 2" class="label label-danger"> No result found!</label>
+  </div>
+</div>
+<div class="row">
+  <ul class="list-group">
+     <li ng-repeat="repo in repos" class="list-group-item">
+     	<strong> {{ repo.name }} </strong> : {{ repo.description }} 
+     </li>
+  </ul>
+</div>
+```
+
+This example turned out to be better than what i had expected! Not on;y that we used our main topics, `$http` and `$watch`, we also used some `forms` and `ngClasses`. Perfect! 
 
 
 ----------
