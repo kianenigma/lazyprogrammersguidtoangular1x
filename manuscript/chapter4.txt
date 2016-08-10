@@ -453,7 +453,7 @@ Something like this works for our `email` field:
 
 Many times, these simple validation might not suffice, as with HTML that had `pattern`, a simple way is to provide `ng-pattern` with a ***[regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)*** for a more sophisticated validation.
 
-After validating a form, thing always wnd up with making an AJAX call which can be done using $http, which is what we are going to learn in the next seciton. 
+After validating a form, thing always end up with making an AJAX call which can be done using $http, which is what we are going to learn in the next seciton. 
 
 ----------
 
@@ -500,9 +500,10 @@ Good, moving forward. The next thing that catches out eyes is the `then()` fucnt
 
 #### de-tour on Promises and Callbacks 
 
-Javascript is a single threaded language, therefor it has it's own unique way of handling asynchronous operation. When we have only one thread, it means that the main program’s flow can never - should never - **wait** for an operation that takes time. it should move pass it and come back to it later, in an **Event based** manner. There are two famous ways two implement this. ***Promises*** and ***Callback functions***. 
+Javascript is a single threaded language, therefor it has it's own unique way of handling asynchronous operation. When we have only one thread, it means that the main program's flow can never - should never - **wait** for an operation that takes time. it should move pass it and come back to it later, in an **Event based** manner. There are two famous ways two implement this. ***Promises*** and ***Callback functions***. 
 
-The Callback way usually works like this: we pass a function, to the function that might take a long time and say to it: 
+The Callback way usually works like this: we pass a **function**, to the **function that might take a long** time and say to it : 
+
 > Hey, long time function! please invoke this function that i'm giving it to you now when you are finished and btw pass the result of your operation to it as argument, if you want. 
 
 ```javascript
@@ -529,7 +530,7 @@ someSlowDataFetching(args, function(err, data) {})
 
 You should read and examine this example carefully and completely understand how javascript handler parallelism with callback function. 
 
-To save time we will not discuss here how promises are implemented, instead we are just going to focus on *how to use them*. We'll begin by defining it
+To save time we will not discuss here how promises are implemented, instead we are just going to focus on *how to use them*. We'll begin by defining them.
 
 A promise is ... well, its a **Promise** that assures you of receiving *Some* response about the task which is going to take some time. A promise can either *resolve* or *reject* 
 
@@ -567,6 +568,8 @@ The name of the functions passed to `then()` were meant to be a hint, to imply t
 ***First argument*** of `then()` will be called when the promise resolves.
 
 ***Second argument*** of `then()` will be called when the promise rejects.
+
+Angular implements Prommises with a (hell of a) library called `q`, which you can read about it [here](https://docs.angularjs.org/api/ng/service/$q). [This link](http://andyshora.com/promises-angularjs-explained-as-cartoon.html) also helps you understant promises better. 
 
 As we reach the end of our de-tour on promises, the main purpose of this detour has satisfied and now you exactly know what this means: 
 
