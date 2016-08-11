@@ -1013,15 +1013,126 @@ Fixing this requires us to get fimiliar with a new scope called `#rootScope`, wh
 
 - Add a `RepoService` with public functions for fetching a list of repositories, and storing it locally. as a challenge **only allow this service to make http calls and store a perminate list of repositories**. controllers will only allow to call this service (either synchronously or asynchronously) to get the list. try different approches to implement this. This is important because using controllers for data managment is like a **Tabu** in Angular (because of many consequnces) and you should get familiar with this pattern of Service/Ctrl for data managment.
 
-The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/d33be1c2e076bb31717360b47a62806829c65329).
+The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/086e482ece709f4d0c9ff9a357b45c5909c08c65).
 
 ----------
 
 
 ## The great $rootScope
 
+Until now, you have learned fairly enough about how controllers are nested and each have a parent and so forth, so i'm not gonna repeat anything here and get to the main point directly. 
+
+Even if you do not do ANYTHING inside your app, just by creating a module, a `$scope` (aka `$rootScope`) will be cretaed for it when you assign to an HTML tag with `nf-app`.  You don't beleive me? go and open your editor.make sure that the mainCtrl and module are not on the same tag (`ng-controller` directive is **inside** `ng-app`) and watch the classes of the tag containing ng-app. I Know! there is a `ng-scope` class there! (as an example, `<body class='ng-scope'> .. `). There was no controller on this tag so it must be something that angular creates! And indeed it is a top level $scope with no parent itself (sad, isn't it?) called: `$rootScope`
+
+This mighty scope has some intresting properties.
+
+- as mentioned, it has to parent
+- since it's a scope, it can be treated as a scope! it can be injected into controllers, directives and services, data and functions assigned to it can be used or triggered from the HTML etc. 
+- since it is at the highest level, an event broadcastet downwards from $rootScope reaches everyone 
+- due to same reason, data binded to this scope is accessible **everywhere** 
+
+The last propery above might turn on a light on your head: 
+
+So, this scope is everywhere, no need for scope communication, no data duplication, easy as a oiece of cake! let's build the entire app inside this scope. **Or use it whenever we face a problem we can't sove**.
+
+I have a serious argument to make with every reader at this very moment. The light that a mentioned above. remeber it? **Turn IT OFF**. don't get me wrong, i'm not saying don't use rootScope! i'm saying it is not a **plan B** for any problem. I've seen many many many .. many applicaiton that used rootScope excessively and it never leads to anything good. 
+
+So what should we use rootScope for? as the name suggests, ***it should be used for data of functionallity that is really spread throughout the _entire_ app by nature***. Global data like date and time, events that are global like handling a keyboard press event, and so on. I personally will forgive you if you use rootScope for these purposes! 
+
+There are many more situation that the idea of using rootScope pop into our mind, and to be honest it's nor mine or enyone's decision to clearly say that diong it is good or not. The developer facing the challenge shoudl decide. the main rule to follow, aside frim the generality criteria mentioned above, it that it should not harm the main architechture of your application. 
+
+As mentioned above `$rootScope` can be injected from anywhere.Testing this feature is left for the reader to do in this chapter, since writing some: 
+
+```javascript 
+$rootScope.test = "Hello World"
+// and that saying *Yaaaaay* after printing it somewhere!
+```
+
+is now fairly below our level! 
+
+so you sould go on do the importing
+
+```javascript
+myApp.controller("anyCtrl", function($scope, $rootScope) {
+	console.log($rootScope) ; 
+	// i highly suggest inspecting this scope at least once by logging it!
+	// or use an Angular specific debug extention inside chrome or firefox 
+}); 
+
+myApp.service("anyService", funciton($rootScope) {});
+
+myApp.directive("anyDirective", funciton($rootScope) {});
+```
+
+and assing values to them from different places and check how they change. But, there is one thing to note here. You probably want to dispaly the values inside rootScope inside the HTML (otherwise it would be not fun and somehow pointless). We mentioned that accessing the parent controller is possible via `$parent` property. For example: 
+
+```html
+<span> 
+	{{ ownPorperty }} // equal to $socpe.ownPropery
+	{{ $parent.prop }} // equal to $scop.$parent.prop
+</sapn>
+```
+
+So this means that we sould call `$parent` a specific number of times in HTML (depending on inside which controller we are now) like `$parent.$parent.$parent... `? That soudl silly. It isn't like this. Good news: rootScope is accessible everywhere by caliing the `$root`. so inside your HTML just write : 
+
+```html
+<span> 
+	{{ $root.prop }} // equal to $rootScope.prop
+</sapn>
+```
+
 ### Using $rootScope for $bradcasting events
 
-#### Sibglings
+There is ane famouse use case for rootScope. recall from the last section that sending a message between siblings, and from service to cntroller has no straight ways. 
 
-#### Service to Controller events
+Before getting into using rootScope for solving this I want to give a bad news. *You already know the answer to both of these questions*! at least some cases of it in a general manner. Let's first review some other solutions. 
+
+For managing sibling controllers, a straight forward way is to wrap them inside a third top level manager controller (**if it makes sense** to have this extra controller!). If `firstCtrl` and `seconfCtrl` are sibling and they want to send events or messages to one another, you could easily do this with: 
+
+```html
+<div ng-controller="managerCtrl">
+	<div ng-controller="firstCtrl"> ... </div>
+	<div ng-controller="secondCtrl"> ... </div>
+</div>
+```
+
+and use the `managerCtrl` as a transport way to share state between two child controller.
+
+And for the controller/service problem, yes you don't have a direct way of sending an **event** from a service to controller, but remeber that you can listen to change in any value returned by the service from your controller (which in many cases is like an event) with `$watch`. remeber somthing like this? 
+
+```javascript
+$scope.$watch(
+function() {return aService.getvalue() }, 
+funciton(n, o) {
+	... 
+})
+```
+
+And passing an event from the controller to the service? Well you have a reference to your service inside your controller/directive (by injecting it), just use a function that the service expose as an event! Is that bad? No! we just had to think a little more out of the box, right?
+
+Now, *back to implementing these with $rootScope*. Yet again, we'er not gonna re-write any code since it's 100% equal to what we had with `$socpe`, it's just called `$rootScope` this time. 
+
+To pass an event between a service and a controller, both parties could listen on rootScope and also broadcast on rootScope. note that when a scope broadcasts a message, it reaches that scope too. 
+
+```javascript
+// inside any scope. controller, directive etc
+// just import the rootScope 
+
+//send something 
+$rootScope.$broadcast("title", null) ;
+
+// wait for something 
+$rootScope.$on("anotherTitle", function(evt, data){}) ; 
+
+// same goes for services and providers. 
+
+```
+
+Using this technique for messages between sibling scopes should be clear at this point. both the sender and receiver send and listen on `$rootScope`. Simple as that. 
+
+There are two small conciderations about this technique. First, it might vialate my personal rule of ***"restricaiton of using rootScope for non-general purposes"*** a little. So if there is a better way, give that a try too. Secondly, a message sent through rootScope, will reach everyother scope who listens on rootScope, and *every ther scope is allowd to listen on rootScope*. You don't have the ***Upwards*** or ***Downwards*** option for sending, so make sure the names of messages are clear and elegant enough, to cause no confusion. 
+
+### Further reading and challenges and the code: 
+
+The code until the end of this section can be viewed [here]().
+

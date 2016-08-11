@@ -86,8 +86,10 @@ myApp.controller('mainCtrl', function ($scope, $timeout, $http) {
 
 });
 
-myApp.controller('repoListCtrl', function ($scope) {
+myApp.controller('repoListCtrl', function ($scope, $rootScope) {
   $scope.repos = [];
+
+  $rootScope.data = "root is here:|"
 
   $scope.$on('repo_update', function (evt, args) {
     console.log(args);
