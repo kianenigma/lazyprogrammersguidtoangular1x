@@ -170,6 +170,8 @@ As you might have noticed, we have two types of filters, those who operate on si
  - One that filters an object over it key names.
  - One that takes an array and returns all of its elements in `uppercase` format.
 
+The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/b04d943aff51d7337d6aeaa848263308d5b48b10).
+
 ----------
 
 
@@ -304,6 +306,8 @@ and
 Of course, in this example, as you change the `someClasses`, to button classes change with it.
 
 You can read more about ngClass [here](https://docs.angularjs.org/api/ng/directive/ngClass).
+
+The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/fc2829148df144349bb0f996239500a83fb270b9).
 
 
 
@@ -454,6 +458,8 @@ Something like this works for our `email` field:
 Many times, these simple validation might not suffice, as with HTML that had `pattern`, a simple way is to provide `ng-pattern` with a ***[regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)*** for a more sophisticated validation.
 
 After validating a form, thing always end up with making an AJAX call which can be done using $http, which is what we are going to learn in the next seciton. 
+
+The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/8e38a27429f9521c53da60fa599853b1ca1cb922).
 
 ----------
 
@@ -851,14 +857,132 @@ In the final draft of our HTML, we just added the `ng-show` directives to show o
 
 This example turned out to be better than what i had expected! Not on;y that we used our main topics, `$http` and `$watch`, we also used some `forms` and `ngClasses`. Perfect! 
 
+The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/d33be1c2e076bb31717360b47a62806829c65329).
+
 
 ----------
 
 
 ## Controller events and communication
 
+There are many situations where you want two or more controllers to communnicate with each other. Like Sending a change event, propagate user updates, etc. It's always a good pattern to break even one page of your application whith different responsibilities into different controllers. This will help you have a much cleaner and maintainable code, but you have to take the burdon of controller communication. 
+
+Before we start, let's recap a fact about `$scope` and `controller`. You probably have understood it till now and have a clear vision of what they are, but it's a very commmon misatke for newcommers to Angular to think that controllers and scopes are the same thing. Yes Yes, a controller will create a scope with it but this does not imply a one to one realtion! As you remember, we mentioned that directives can have a `$scope`, you can also identify all scopes inside your HTML by searching for `class="ng-scope"`. So aside from remebering that a `$scope` and a controller are not the same thing, and not related strictly, keep the fllowing simple definitions in mind: 
+
+- Controller is one of maian blocks of an angular application (and technically nothing more that a simple javascript object).
+- Scope is an object that can be used for data binding between javascript code and HTML. and turns out that each controller, after it's initialization, will be given a $scope to work with!
+
+Moving forward. The reason that we emphesized on the difference of controllers and scopes was that all of the funcitons and API's for events in Angular are actually the properties of scopes, not controllers, and therefore could be used with scopes created by directives and so on. Perhaps a better title of this section was *Scope events and communication*. But, since it's much more common to use it with controllers I decided to go with *Controller events and communication*. 
+
+One last reminder is that scopes inside a module can have **a parent** (one direct parent and many *ancestors*), **one or more children** and **one or more siblings**. 
+
+Angular provides a simple API for communication and it's quite similar to any other Publish/Subscribe based system:
+
+```
+// will listen to an event with title 'someEventName'
+$scope.on("someEventName", function(evnet, args){
+	// do something with args
+}); 
+
+// will send an event downwards - to childrens - with title 'someEventName' and a data 
+var eventParam = { anyKey : 'can have any value' }
+// var eventParam = 1 
+// var eventParam = 'hello mellow' 
+var eventParam = { anyKey : 'can have any value' }
+$scope.$broadcast("someEventName", evnetParam); 
+
+// same as $broadcast but it will go upwards (the parent and ancestors)
+$scope.emit("someEventName", eventParam); 
+```
+
+Inside `$on('...', function (evt, data) {})` the callback function takes two arguments, `evt, data` in this case (as you know, names are not important here!). The first argument is an object with information about the event itself, and the second is the data that we send with the event (ssecond argument to `$broadcast` and `$emit`)
+
+Without futher detail, let's try and implement this with our last example. Here is what we are going to do: Move the list of repositoreis from the last section to a new controller inside `mainCtrl`. the main controller will watch for user input changes, make the http call and then it wil notify the `repoListCtrl` for changes. 
+
+```javascript
+myApp.controller('repoListCtrl' , function($scope){
+	$scope.repos = []; 
+	
+	$scope.$on('repo_update', function(evt, args) {
+		if ( args.status ) {
+			$scope.repos = args.repos; 
+		}
+		else {
+			$scope.repos = [] ; 
+		}
+	})
+})
+
+
+myApp.controller("mainCtrl", function($scope) {
+  $scope.$watch("username", function (n, o) {
+    if (n) {
+      $scope.reqStatus = 1;
+      $http({
+        method: 'GET',
+        url: 'https://api.github.com/users/' + n + '/repos',
+      })
+      .then(function (response) {
+        $scope.reqStatus = 0;
+        $scope.$broadcast("repo_update", {
+          status: true, 
+          repos: response.data
+        })
+      }, function (err) {
+        $scope.reqStatus = 2;
+        $scope.$broadcast("repo_update", {
+          status: true, 
+          repos: null 
+        })
+      })
+      
+    } // end of if 
+  }) // end of $watch 
+
+}) 
+```
+
+and add this controller inside HTML: 
+
+```html 
+<div ng-controller="repoListCtrl" class="row">
+  <ul class="list-group">
+    .. 
+    <!-- nothing needs to change here, since the name of repos property is still the same! -->
+  </ul>
+</div>
+```
+
+And hopefulye, now eveything works just as before! A few things to notice: 
+
+- we used $broadcast to send an event from a parent to a child
+- the names of event - obviously - have to be the same. a good pattern is to use a provides ( a `.service()` or `.constant()` to share these types of CONSTANT strings inside an app. 
+
+
+### Unsubscribing 
+
+
+
+
+As you might play around a little you might find two main flaws here. there is no way af sending an event between: 
+
+- sibling scopes
+- from a service to scope or vica versa
+
+Fixing this requires us to get fimiliar with a new scope called `#rootScope`, which we'll get to it in the next section.
+
+
+### Further reading and challenges: 
+
+- Add a `RepoService` with public functions for fetching a list of repositories, and storing it locally. as a challenge **only allow this service to make http calls and store a perminate list of repositories**. controllers will only allow to call this service (either synchronously or asynchronously) to get the list. try different approches to implement this. This is important because using controllers for data managment is like a **Tabu** in Angular (because of many consequnces) and you should get familiar with this pattern of Service/Ctrl for data managment.
 
 ----------
 
 
 ## The great $rootScope
+
+### Using $rootScope for $bradcasting events
+
+#### Sibglings
+
+#### Service to Controller events

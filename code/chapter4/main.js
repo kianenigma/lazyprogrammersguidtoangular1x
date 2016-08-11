@@ -61,25 +61,44 @@ myApp.controller('mainCtrl', function ($scope, $timeout, $http) {
   // 1 = req sent
   // 2 = error
   $scope.$watch("username", function (n, o) {
-    if (n) {
-      $scope.reqStatus = 1;
-      $http({
-          method: 'GET',
-          url: 'https://api.github.com/users/' + n + '/repos',
-        })
-        .then(function (response) {
-          $scope.reqStatus = 0;
-          $scope.repos = response.data;
-          console.log(response);
-        }, function (err) {
-          $scope.reqStatus = 2;
-          $scope.repos = [];
-          console.log("ERROR: ", err);
-        })
-    }
-  })
+      if (n) {
+        $scope.reqStatus = 1;
+        $http({
+            method: 'GET',
+            url: 'https://api.github.com/users/' + n + '/repos',
+          })
+          .then(function (response) {
+            $scope.reqStatus = 0;
+            $scope.$broadcast("repo_update", {
+              status: true,
+              repos: response.data
+            })
+          }, function (err) {
+            $scope.reqStatus = 2;
+            $scope.$broadcast("repo_update", {
+              status: true,
+              repos: null
+            })
+          })
+
+      } // end of if
+    }) // end of $watch
 
 });
+
+myApp.controller('repoListCtrl', function ($scope) {
+  $scope.repos = [];
+
+  $scope.$on('repo_update', function (evt, args) {
+    console.log(args);
+    if (args.status) {
+      $scope.repos = args.repos;
+    } else {
+      $scope.repos = [];
+    }
+  })
+})
+
 
 myApp.filter('strRev', function () {
   return function (inp) {

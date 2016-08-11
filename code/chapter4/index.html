@@ -81,7 +81,7 @@
           <label ng-show="reqStatus == 2" class="label label-danger"> No result found!</label>
         </div>
       </div>
-      <div class="row">
+      <div ng-controller="repoListCtrl" class="row">
         <ul class="list-group">
           <li ng-repeat="repo in repos" class="list-group-item">
             <strong> {{ repo.name }} </strong> || {{ repo.description }}
