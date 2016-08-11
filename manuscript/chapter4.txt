@@ -165,6 +165,8 @@ You can now test it with :
 </span>
 ```
 
+### Further reading and challenges and the code:  
+
 As you might have noticed, we have two types of filters, those who operate on single values (pipe) and those who filter a collection. Creating a custom filter that operates on a collection has the same API and routine as above, but it takes additional input arguments beside `inp`. As a good exercise, you can go ahead and read some examples of this type of filter and work on creating the following the filters :
 
  - One that filters an object over it key names.
@@ -304,6 +306,9 @@ and
 ```
 
 Of course, in this example, as you change the `someClasses`, to button classes change with it.
+
+
+### Further reading and challenges and the code: 
 
 You can read more about ngClass [here](https://docs.angularjs.org/api/ng/directive/ngClass).
 
@@ -458,6 +463,17 @@ Something like this works for our `email` field:
 Many times, these simple validation might not suffice, as with HTML that had `pattern`, a simple way is to provide `ng-pattern` with a ***[regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)*** for a more sophisticated validation.
 
 After validating a form, thing always end up with making an AJAX call which can be done using $http, which is what we are going to learn in the next seciton. 
+
+### Further reading and challenges and the code: 
+
+There are a few simple types of `<input>` tags that we didn't cover here
+
+- checkbox
+- radio
+- date/time
+- number
+
+Truth be told, all of them are fairly simple to use with Angular and `ngModel` directive and with very similar attributes to the satndard HTML. We spared some time here by not explaining each of them seperatly, but this doesn't mean you don't have to hack with them! Go on and add some of them to your view, bind them and check their values to see how they behave. 
 
 The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/8e38a27429f9521c53da60fa599853b1ca1cb922).
 
@@ -710,7 +726,7 @@ $scope.$watch("username", function(o, n) {
 }, true); 
 ```
 
-2. It is extremely! common (actually *common* is not a good word here, it's a famous  pattern) to use a `service` for fetching json data from a remote API and store it there. We usually assign a portion of data stored inside a service and display to the user. So it would be pretty good if we could just listen to changes in data returned by a service too. Turns out that you can't do that .. directly. but you easily can do it if you wrap it inside a function. Follow the code below with the comments inside to get a cleat idea: 
+2. It is extremely! common (actually *common* is not a good word here, it's a *famous*, *must use* - one beast of a - pattern!) to use a `service` for fetching json data from a remote API and store it there. We usually assign a portion of data stored inside a service to `$scope` and display just that portion to the user. So it would be pretty good if we could just listen to changes in data returned by a service too. Turns out that you can't do that .. *directly*. but you easily can do it if you wrap it inside a function. Follow the code below with the comments inside to get a clear idea: 
 
 ```javascript
 
@@ -857,6 +873,8 @@ In the final draft of our HTML, we just added the `ng-show` directives to show o
 
 This example turned out to be better than what i had expected! Not on;y that we used our main topics, `$http` and `$watch`, we also used some `forms` and `ngClasses`. Perfect! 
 
+### Further reading and challenges and the code
+
 The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/d33be1c2e076bb31717360b47a62806829c65329).
 
 
@@ -961,10 +979,29 @@ And hopefulye, now eveything works just as before! A few things to notice:
 
 ### Unsubscribing 
 
+One small thing is left behid here. what we subscribe to an event, but any time in the future, chnage our mind and what un unsubscribe? You could achive this by wrapping the content of you event handler inside an if statement, but we both know thats too messy! 
 
+```javascript
+$scope.$on('..' ,function() { 
+	if () {
+	
+	}
+})
+```
 
+The correct way to do this is to store the value returend by `$on()`. This value is an unsunscribe function that we can call it any time later to unsubscribe from the event and any further events will be ignored.
 
-As you might play around a little you might find two main flaws here. there is no way af sending an event between: 
+```javascript
+var unsubscibe = $scope.$on('..', function() { ... }) ;
+
+// later on 
+// probably inside a callback or something
+unsubscribe();  
+```
+
+Easy as that!
+
+As you play around a little with the code and events, you might find two main *flaws* here. there is no way af sending an event between: 
 
 - sibling scopes
 - from a service to scope or vica versa
@@ -972,9 +1009,11 @@ As you might play around a little you might find two main flaws here. there is n
 Fixing this requires us to get fimiliar with a new scope called `#rootScope`, which we'll get to it in the next section.
 
 
-### Further reading and challenges: 
+### Further reading and challenges and the code: 
 
 - Add a `RepoService` with public functions for fetching a list of repositories, and storing it locally. as a challenge **only allow this service to make http calls and store a perminate list of repositories**. controllers will only allow to call this service (either synchronously or asynchronously) to get the list. try different approches to implement this. This is important because using controllers for data managment is like a **Tabu** in Angular (because of many consequnces) and you should get familiar with this pattern of Service/Ctrl for data managment.
+
+The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/d33be1c2e076bb31717360b47a62806829c65329).
 
 ----------
 
