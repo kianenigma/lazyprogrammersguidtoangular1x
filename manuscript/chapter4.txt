@@ -42,7 +42,7 @@ If you iterate over this object with the same way as we did before, you'll find 
 	...
 ```
 
-We have no access to the `key` of the object and the values are displayed as plaing object.
+We have no access to the `key` of the object and the values are displayed as plain object.
 
 Two point will solve this:
 
@@ -255,7 +255,7 @@ Assume that you want to assign a different color to your button while it is proc
 <div ng-class="{aClassToBeAdded: conditionForThisClass, secondClass: secondCondition}"></div>
 ```
 
-An important note on this object is that by default it does not require you to wrapp the condition and class name in quotations, but if the class name has dashes, it **Must** be.
+An important note on this object is that by default it does not require you to wrap the condition and class name in quotations, but if the class name has dashes, it **Must** be.
 
 ```html
 <div ng-class="{'a-dash-class-name': conditionForThisClass, secondClass: secondCondition}"></div>
@@ -279,7 +279,7 @@ or a function:
 <div ng-class="{'a-dash-class-name': someFunction()}"></div>
 ```
 
-Ok, with all of this in mind let's add what we described, changing the color of the button while it is processing. Like many other changes in our code, this will also be jsy a one line small modification:
+Ok, with all of this in mind let's add what we described, changing the color of the button while it is processing. Like many other changes in our code, this will also be just a one line small modification:
 
 ```html
 
@@ -360,11 +360,11 @@ You can see that before taking any type of action, the form is rendered like:
 
 Notice how Angular added the classes. This means that Angular will detect automatically that a form exists and starts watching it for changes.
 
-You should convice yourself that these classes are logical with respect to the attributes that we placed on our form. for example since all inputs had `required`, if you leave one of them empty, we see : `ng-invalid-required`. if you type a name inside `email`, since it had a `type='email`', you will see: `ng-invalid-email`.
+You should convince yourself that these classes are logical with respect to the attributes that we placed on our form. for example since all inputs had `required`, if you leave one of them empty, we see : `ng-invalid-required`. if you type a name inside `email`, since it had a `type='email`', you will see: `ng-invalid-email`.
 
 You can also find similar class names on each `<input>` inside the form. such as `ng-dirty`, `ng-touched`, indicating the field's state.
 
-These information can also be used inside the controller, there rule, accourding to which Angular watches forms is:
+These information can also be used inside the controller, there rule, according to which Angular watches forms is:
 
 A property equal to the form's `name=''` attribute will be added to the **scope**, in which the form exists. This new property holds information about whether the form is valid, has it been submitted, have the fields been touched so far or not and so on. To experiment this, try passing a variable named `submitForm` back to controller and log it:
 
@@ -397,7 +397,7 @@ $scope.submit = function(form) {
 }
 ```
 
-and so on. Let's use these to add a validation for our email field. we'll create all af the error texts required, but hide all of them and only show one, depending on the state of the form. for example when the value of `submitForm.email.$error.required` is `true`, we should show a text telling that is can not be empty.
+and so on. Let's use these to add a validation for our email field. we'll create all of the error texts required, but hide all of them and only show one, depending on the state of the form. for example when the value of `submitForm.email.$error.required` is `true`, we should show a text telling that is can not be empty.
 
 Change the email section as following:
 
@@ -462,7 +462,7 @@ Something like this works for our `email` field:
 
 Many times, these simple validation might not suffice, as with HTML that had `pattern`, a simple way is to provide `ng-pattern` with a ***[regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)*** for a more sophisticated validation.
 
-After validating a form, thing always end up with making an AJAX call which can be done using $http, which is what we are going to learn in the next seciton. 
+After validating a form, thing always end up with making an AJAX call which can be done using $http, which is what we are going to learn in the next section. 
 
 ### Further reading and challenges and the code: 
 
@@ -473,7 +473,7 @@ There are a few simple types of `<input>` tags that we didn't cover here
 - date/time
 - number
 
-Truth be told, all of them are fairly simple to use with Angular and `ngModel` directive and with very similar attributes to the satndard HTML. We spared some time here by not explaining each of them seperatly, but this doesn't mean you don't have to hack with them! Go on and add some of them to your view, bind them and check their values to see how they behave. 
+Truth be told, all of them are fairly simple to use with Angular and `ngModel` directive and with very similar attributes to the standard HTML. We spared some time here by not explaining each of them separately, but this doesn't mean you don't have to hack with them! Go on and add some of them to your view, bind them and check their values to see how they behave. 
 
 The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/8e38a27429f9521c53da60fa599853b1ca1cb922).
 
@@ -499,7 +499,7 @@ As the name suggests, this service helps us make http requests to remote or loca
 
 ```javascript
 $http({
-	mathod: "GET", 
+	method: "GET", 
 	url: "/some/path",
 	data: {someDataKey : 12}, 
 	headers: {'additional-header': 'hello $http'},
@@ -518,7 +518,7 @@ and an additional header added to the default HTTP headers.
 
 and a JSON payload equal to {someDataKey : 12}
 
-Good, moving forward. The next thing that catches out eyes is the `then()` fucntion, which indicated that `$http.get()` returns a **Promise**. Promises are a very important concept in both angular and general javascript (and will be natively supported in ES2016). if you are familiar with promises, you can skip this section, if not hold on tight because what we are about to learn is very important. 
+Good, moving forward. The next thing that catches out eyes is the `then()` function, which indicated that `$http.get()` returns a **Promise**. Promises are a very important concept in both angular and general javascript (and will be natively supported in ES2016). if you are familiar with promises, you can skip this section, if not hold on tight because what we are about to learn is very important. 
 
 #### de-tour on Promises and Callbacks 
 
@@ -591,7 +591,7 @@ The name of the functions passed to `then()` were meant to be a hint, to imply t
 
 ***Second argument*** of `then()` will be called when the promise rejects.
 
-Angular implements Prommises with a (hell of a) library called `q`, which you can read about it [here](https://docs.angularjs.org/api/ng/service/$q). [This link](http://andyshora.com/promises-angularjs-explained-as-cartoon.html) also helps you understant promises better. 
+Angular implements Promises with a (hell of a) library called `q`, which you can read about it [here](https://docs.angularjs.org/api/ng/service/$q). [This link](http://andyshora.com/promises-angularjs-explained-as-cartoon.html) also helps you understand promises better. 
 
 As we reach the end of our de-tour on promises, the main purpose of this detour has satisfied and now you exactly know what this means: 
 
@@ -609,7 +609,7 @@ To refresh your mind on what we had:
 
 ```javascript
 $http({
-	mathod: "GET", 
+	method: "GET", 
 	url: "/some/path",
 	data: {someDataKey : 12}, 
 	headers: {'additional-header': 'hello $http'},
@@ -630,7 +630,7 @@ You can test this with:
 curl -i https://api.github.com/users/kianenigma/repos
 ```
 
-in your command line. let's make this call in angular and ispect the result. 
+in your command line. let's make this call in angular and inspect the result. 
 
 ```javascript
 myApp.controller("mainCtrl", function($scope, ... , $http ) { 
@@ -658,7 +658,7 @@ As you might've mentioned, both the success and error callbacks have the same sc
 
 As final notes on $http: 
 
-- you'll learn in a seprate chapter about a concept named `http interceptor`. It is VERY common to feel the need to add a specific data or header to *ALL* of your http requests, such as web token authentication header. http interceptors help you do this.
+- you'll learn in a separate chapter about a concept named `http interceptor`. It is VERY common to feel the need to add a specific data or header to *ALL* of your http requests, such as web token authentication header. http interceptors help you do this.
 - There is actually another way of watching for an http response, name `success` and `error`. The syntax is like the following: 
 
 ```javascript
@@ -883,14 +883,14 @@ The code until the end of this section can be viewed [here](https://github.com/K
 
 ## Controller events and communication
 
-There are many situations where you want two or more controllers to communnicate with each other. Like Sending a change event, propagate user updates, etc. It's always a good pattern to break even one page of your application whith different responsibilities into different controllers. This will help you have a much cleaner and maintainable code, but you have to take the burdon of controller communication. 
+There are many situations where you want two or more controllers to communicate with each other. Like Sending a change event, propagate user updates, etc. It's always a good pattern to break even one page of your application with different responsibilities into different controllers. This will help you have a much cleaner and maintainable code, but you have to take the burden of controller communication. 
 
-Before we start, let's recap a fact about `$scope` and `controller`. You probably have understood it till now and have a clear vision of what they are, but it's a very commmon misatke for newcommers to Angular to think that controllers and scopes are the same thing. Yes Yes, a controller will create a scope with it but this does not imply a one to one realtion! As you remember, we mentioned that directives can have a `$scope`, you can also identify all scopes inside your HTML by searching for `class="ng-scope"`. So aside from remebering that a `$scope` and a controller are not the same thing, and not related strictly, keep the fllowing simple definitions in mind: 
+Before we start, let's recap a fact about `$scope` and `controller`. You probably have understood it till now and have a clear vision of what they are, but it's a very common mistake for newcomers to Angular to think that controllers and scopes are the same thing. Yes Yes, a controller will create a scope with it but this does not imply a one to one relation! As you remember, we mentioned that directives can have a `$scope`, you can also identify all scopes inside your HTML by searching for `class="ng-scope"`. So aside from remembering that a `$scope` and a controller are not the same thing, and not related strictly, keep the following simple definitions in mind: 
 
-- Controller is one of maian blocks of an angular application (and technically nothing more that a simple javascript object).
+- Controller is one of main blocks of an angular application (and technically nothing more that a simple javascript object).
 - Scope is an object that can be used for data binding between javascript code and HTML. and turns out that each controller, after it's initialization, will be given a $scope to work with!
 
-Moving forward. The reason that we emphesized on the difference of controllers and scopes was that all of the funcitons and API's for events in Angular are actually the properties of scopes, not controllers, and therefore could be used with scopes created by directives and so on. Perhaps a better title of this section was *Scope events and communication*. But, since it's much more common to use it with controllers I decided to go with *Controller events and communication*. 
+Moving forward. The reason that we emphasized on the difference of controllers and scopes was that all of the functions and API's for events in Angular are actually the properties of scopes, not controllers, and therefore could be used with scopes created by directives and so on. Perhaps a better title of this section was *Scope events and communication*. But, since it's much more common to use it with controllers I decided to go with *Controller events and communication*. 
 
 One last reminder is that scopes inside a module can have **a parent** (one direct parent and many *ancestors*), **one or more children** and **one or more siblings**. 
 
@@ -902,7 +902,7 @@ $scope.on("someEventName", function(evnet, args){
 	// do something with args
 }); 
 
-// will send an event downwards - to childrens - with title 'someEventName' and a data 
+// will send an event downwards - to children - with title 'someEventName' and a data 
 var eventParam = { anyKey : 'can have any value' }
 // var eventParam = 1 
 // var eventParam = 'hello mellow' 
@@ -913,9 +913,9 @@ $scope.$broadcast("someEventName", evnetParam);
 $scope.emit("someEventName", eventParam); 
 ```
 
-Inside `$on('...', function (evt, data) {})` the callback function takes two arguments, `evt, data` in this case (as you know, names are not important here!). The first argument is an object with information about the event itself, and the second is the data that we send with the event (ssecond argument to `$broadcast` and `$emit`)
+Inside `$on('...', function (evt, data) {})` the callback function takes two arguments, `evt, data` in this case (as you know, names are not important here!). The first argument is an object with information about the event itself, and the second is the data that we send with the event (second argument to `$broadcast` and `$emit`)
 
-Without futher detail, let's try and implement this with our last example. Here is what we are going to do: Move the list of repositoreis from the last section to a new controller inside `mainCtrl`. the main controller will watch for user input changes, make the http call and then it wil notify the `repoListCtrl` for changes. 
+Without further detail, let's try and implement this with our last example. Here is what we are going to do: Move the list of repositories from the last section to a new controller inside `mainCtrl`. the main controller will watch for user input changes, make the http call and then it will notify the `repoListCtrl` for changes. 
 
 ```javascript
 myApp.controller('repoListCtrl' , function($scope){
@@ -971,7 +971,7 @@ and add this controller inside HTML:
 </div>
 ```
 
-And hopefulye, now eveything works just as before! A few things to notice: 
+And hopefully, now everything works just as before! A few things to notice: 
 
 - we used $broadcast to send an event from a parent to a child
 - the names of event - obviously - have to be the same. a good pattern is to use a provides ( a `.service()` or `.constant()` to share these types of CONSTANT strings inside an app. 
@@ -979,7 +979,7 @@ And hopefulye, now eveything works just as before! A few things to notice:
 
 ### Unsubscribing 
 
-One small thing is left behid here. what we subscribe to an event, but any time in the future, chnage our mind and what un unsubscribe? You could achive this by wrapping the content of you event handler inside an if statement, but we both know thats too messy! 
+One small thing is left behind here. what we subscribe to an event, but any time in the future, change our mind and what un unsubscribe? You could achieve this by wrapping the content of you event handler inside an if statement, but we both know thats too messy! 
 
 ```javascript
 $scope.$on('..' ,function() { 
@@ -989,10 +989,10 @@ $scope.$on('..' ,function() {
 })
 ```
 
-The correct way to do this is to store the value returend by `$on()`. This value is an unsunscribe function that we can call it any time later to unsubscribe from the event and any further events will be ignored.
+The correct way to do this is to store the value returned by `$on()`. This value is an unsubscribe function that we can call it any time later to unsubscribe from the event and any further events will be ignored.
 
 ```javascript
-var unsubscibe = $scope.$on('..', function() { ... }) ;
+var unsubscribe = $scope.$on('..', function() { ... }) ;
 
 // later on 
 // probably inside a callback or something
@@ -1001,17 +1001,17 @@ unsubscribe();
 
 Easy as that!
 
-As you play around a little with the code and events, you might find two main *flaws* here. there is no way af sending an event between: 
+As you play around a little with the code and events, you might find two main *flaws* here. there is no way to send an event between: 
 
 - sibling scopes
-- from a service to scope or vica versa
+- from a service to scope or *vica versa*
 
-Fixing this requires us to get fimiliar with a new scope called `#rootScope`, which we'll get to it in the next section.
+Fixing this requires us to get familiar with a new scope called `#rootScope`, which we'll get to it in the next section.
 
 
 ### Further reading and challenges and the code: 
 
-- Add a `RepoService` with public functions for fetching a list of repositories, and storing it locally. as a challenge **only allow this service to make http calls and store a perminate list of repositories**. controllers will only allow to call this service (either synchronously or asynchronously) to get the list. try different approches to implement this. This is important because using controllers for data managment is like a **Tabu** in Angular (because of many consequnces) and you should get familiar with this pattern of Service/Ctrl for data managment.
+- Add a `RepoService` with public functions for fetching a list of repositories, and storing it locally. as a challenge **only allow this service to make http calls and store a permanent list of repositories**. controllers will only allow to call this service (either synchronously or asynchronously) to get the list. try different approaches to implement this. This is important because using controllers for data management is like a **Tabu** in Angular (because of many consequences) and you should get familiar with this pattern of Service/Ctrl for data management.
 
 The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/086e482ece709f4d0c9ff9a357b45c5909c08c65).
 
@@ -1022,24 +1022,24 @@ The code until the end of this section can be viewed [here](https://github.com/K
 
 Until now, you have learned fairly enough about how controllers are nested and each have a parent and so forth, so i'm not gonna repeat anything here and get to the main point directly. 
 
-Even if you do not do ANYTHING inside your app, just by creating a module, a `$scope` (aka `$rootScope`) will be cretaed for it when you assign to an HTML tag with `nf-app`.  You don't beleive me? go and open your editor.make sure that the mainCtrl and module are not on the same tag (`ng-controller` directive is **inside** `ng-app`) and watch the classes of the tag containing ng-app. I Know! there is a `ng-scope` class there! (as an example, `<body class='ng-scope'> .. `). There was no controller on this tag so it must be something that angular creates! And indeed it is a top level $scope with no parent itself (sad, isn't it?) called: `$rootScope`
+Even if you do not do ANYTHING inside your app, just by creating a module, a `$scope` (aka `$rootScope`) will be created for it when you assign to an HTML tag with `ng-app`.  You don't believe me? go and open your editor.make sure that the mainCtrl (`ng-controller`) and myApp (`ng-app`) are not on the same tag (`ng-controller` directive is **inside** `ng-app`) and watch the **classes of the tag containing ng-app**. I Know! there is a `ng-scope` class there! (as an example, `<body ng-app=‘…’ class='ng-scope'> .. `). There was no controller on this tag so it must be something that Angular created! And indeed it is! A top level $scope with no parent itself (sad, isn't it?) called: `$rootScope`.
 
-This mighty scope has some intresting properties.
+This mighty scope has some interesting properties.
 
 - as mentioned, it has to parent
 - since it's a scope, it can be treated as a scope! it can be injected into controllers, directives and services, data and functions assigned to it can be used or triggered from the HTML etc. 
-- since it is at the highest level, an event broadcastet downwards from $rootScope reaches everyone 
-- due to same reason, data binded to this scope is accessible **everywhere** 
+- since it is at the highest level, an event broadcasted downwards from $rootScope reaches everyone 
+- due to same reason, data binded ([bound or binded](http://grammarist.com/usage/binded-bound/)?) to this scope is accessible **everywhere** 
 
-The last propery above might turn on a light on your head: 
+The last properly above might turn on a light on your head: 
 
-So, this scope is everywhere, no need for scope communication, no data duplication, easy as a oiece of cake! let's build the entire app inside this scope. **Or use it whenever we face a problem we can't sove**.
+So, this scope is everywhere, no need for scope communication, no data duplication, easy as pie! let's build the entire app inside this scope. **Or use it whenever we face a problem we can't solve**.
 
-I have a serious argument to make with every reader at this very moment. The light that a mentioned above. remeber it? **Turn IT OFF**. don't get me wrong, i'm not saying don't use rootScope! i'm saying it is not a **plan B** for any problem. I've seen many many many .. many applicaiton that used rootScope excessively and it never leads to anything good. 
+I have a serious argument to make with every reader at this very moment. The light that a mentioned above about using rootScope whenever we face a problem. remember it? **Turn IT OFF**. don't get me wrong, i'm not saying don't use rootScope! i'm saying it is not a **plan B** for any problem. I've seen many many many .. many application that used rootScope excessively and it never leads to anything good. 
 
-So what should we use rootScope for? as the name suggests, ***it should be used for data of functionallity that is really spread throughout the _entire_ app by nature***. Global data like date and time, events that are global like handling a keyboard press event, and so on. I personally will forgive you if you use rootScope for these purposes! 
+So what should we use rootScope for? as the name suggests, ***it should be used for data of functionality that is really spread throughout the _entire_ app by nature***. Global data like date and time, events that are global like handling a keyboard press event, and so on. I personally will forgive you if you use rootScope for these purposes! 
 
-There are many more situation that the idea of using rootScope pop into our mind, and to be honest it's nor mine or enyone's decision to clearly say that diong it is good or not. The developer facing the challenge shoudl decide. the main rule to follow, aside frim the generality criteria mentioned above, it that it should not harm the main architechture of your application. 
+There are many more situation that the idea of using rootScope pop into our mind, and to be honest it's nor mine or anyone's decision to clearly say that doing it is good or not. The developer facing the challenge should decide and the main rule to follow, aside from the generality criteria mentioned above, is that it should not harm the main architecture of your application. 
 
 As mentioned above `$rootScope` can be injected from anywhere.Testing this feature is left for the reader to do in this chapter, since writing some: 
 
@@ -1050,7 +1050,7 @@ $rootScope.test = "Hello World"
 
 is now fairly below our level! 
 
-so you sould go on do the importing
+so you should go on and do the importing
 
 ```javascript
 myApp.controller("anyCtrl", function($scope, $rootScope) {
@@ -1064,16 +1064,16 @@ myApp.service("anyService", funciton($rootScope) {});
 myApp.directive("anyDirective", funciton($rootScope) {});
 ```
 
-and assing values to them from different places and check how they change. But, there is one thing to note here. You probably want to dispaly the values inside rootScope inside the HTML (otherwise it would be not fun and somehow pointless). We mentioned that accessing the parent controller is possible via `$parent` property. For example: 
+and assign values to them from different places and check how they change. But, there is one thing to note here. You probably want to display the values inside rootScope inside the HTML (otherwise it wouldn’t be fun and somehow pointless). We mentioned that accessing the parent controller is possible via `$parent` property. For example: 
 
 ```html
 <span> 
 	{{ ownPorperty }} // equal to $socpe.ownPropery
 	{{ $parent.prop }} // equal to $scop.$parent.prop
-</sapn>
+</span>
 ```
 
-So this means that we sould call `$parent` a specific number of times in HTML (depending on inside which controller we are now) like `$parent.$parent.$parent... `? That soudl silly. It isn't like this. Good news: rootScope is accessible everywhere by caliing the `$root`. so inside your HTML just write : 
+So this means that we should call `$parent` a specific number of times in HTML (depending on inside which controller we are now) like `$parent.$parent.$parent... `? That sounds silly. Good news: rootScope is accessible everywhere by calling the `$root`. so inside your HTML just write : 
 
 ```html
 <span> 
@@ -1081,13 +1081,13 @@ So this means that we sould call `$parent` a specific number of times in HTML (d
 </sapn>
 ```
 
-### Using $rootScope for $bradcasting events
+### Using $rootScope for $broadcasting events
 
-There is ane famouse use case for rootScope. recall from the last section that sending a message between siblings, and from service to cntroller has no straight ways. 
+Aside from everything said, there is an other famous use case for rootScope. recall from the last section that sending a message between siblings, and from service to controller has no straight ways. 
 
 Before getting into using rootScope for solving this I want to give a bad news. *You already know the answer to both of these questions*! at least some cases of it in a general manner. Let's first review some other solutions. 
 
-For managing sibling controllers, a straight forward way is to wrap them inside a third top level manager controller (**if it makes sense** to have this extra controller!). If `firstCtrl` and `seconfCtrl` are sibling and they want to send events or messages to one another, you could easily do this with: 
+For managing sibling controllers, a straight forward way is to wrap them inside a third top level manager controller (**if it makes sense** to have this extra controller!). If `firstCtrl` and `secondCtrl` are sibling and they want to send events or messages to one another, you could easily do this with: 
 
 ```html
 <div ng-controller="managerCtrl">
@@ -1098,19 +1098,19 @@ For managing sibling controllers, a straight forward way is to wrap them inside 
 
 and use the `managerCtrl` as a transport way to share state between two child controller.
 
-And for the controller/service problem, yes you don't have a direct way of sending an **event** from a service to controller, but remeber that you can listen to change in any value returned by the service from your controller (which in many cases is like an event) with `$watch`. remeber somthing like this? 
+And for the controller/service problem, yes you don't have a direct way of sending an **event** from a service to controller, but remember that you can listen to change in any value returned by the service from your controller (which in many cases is like an event) with `$watch`. remember something like this? 
 
 ```javascript
 $scope.$watch(
 function() {return aService.getvalue() }, 
-funciton(n, o) {
+function(n, o) {
 	... 
 })
 ```
 
 And passing an event from the controller to the service? Well you have a reference to your service inside your controller/directive (by injecting it), just use a function that the service expose as an event! Is that bad? No! we just had to think a little more out of the box, right?
 
-Now, *back to implementing these with $rootScope*. Yet again, we'er not gonna re-write any code since it's 100% equal to what we had with `$socpe`, it's just called `$rootScope` this time. 
+Now, *back to implementing these with $rootScope*. Yet again, we'er not gonna re-write any code since it's 100% equal to what we had with `$scope`, it's just called `$rootScope` this time. 
 
 To pass an event between a service and a controller, both parties could listen on rootScope and also broadcast on rootScope. note that when a scope broadcasts a message, it reaches that scope too. 
 
@@ -1130,7 +1130,7 @@ $rootScope.$on("anotherTitle", function(evt, data){}) ;
 
 Using this technique for messages between sibling scopes should be clear at this point. both the sender and receiver send and listen on `$rootScope`. Simple as that. 
 
-There are two small conciderations about this technique. First, it might vialate my personal rule of ***"restricaiton of using rootScope for non-general purposes"*** a little. So if there is a better way, give that a try too. Secondly, a message sent through rootScope, will reach everyother scope who listens on rootScope, and *every ther scope is allowd to listen on rootScope*. You don't have the ***Upwards*** or ***Downwards*** option for sending, so make sure the names of messages are clear and elegant enough, to cause no confusion. 
+There are two small considerations about this technique. First, it might violate my personal rule of ***"restriction of using rootScope for non-general purposes"*** a little. So if there is a better way, give that a try too. Secondly, a message sent through rootScope, will reach every other scope who listens on rootScope, and *every other scope is allowed to listen on rootScope*. You don't have the ***Upwards*** or ***Downwards*** option for sending, so make sure the names of messages are clear and elegant enough, to cause no confusion. 
 
 ### Further reading and challenges and the code: 
 
