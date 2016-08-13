@@ -12,7 +12,7 @@ We are going to start with a single page application with an `index.html` and `m
 
 ## More advance iteration with ng-repeat and pipe filters
 
-In the previous chapter we barely introduced `ng-repeat`, while one of the most commonly used Angular directives. Let's inspect it more and see how it behaves with objects instead of arrays, and how to mix it up with some filters.
+In the previous chapter we barely introduced `ng-repeat`, while it's one of the most commonly used Angular directives. Let's inspect it more and see how it behaves with objects instead of arrays, and how to mix it up with some filters.
 
 ### ng-repeat with objects
 
@@ -483,15 +483,15 @@ The code until the end of this section can be viewed [here](https://github.com/K
 ## Using $http and $watch
 
 
-There are many providers that you can inject to your controller and use. The most obvious one here is `$scope`. Aside from that, a number of other providers that you probably will inevitably use them. we mention all of them here and discuss to of them in detail. 
+There are many services that you can inject to your controller and use. The most obvious one here is `$scope`. Aside from that, a number of other services that you probably will inevitably use them. we mention all of them here and discuss to of them in detail. 
 
-1. $http: provider for making **Ajax** calls. Pretty useful!
-2. $watch: a method used for subscribing to state change event on scope properties, providers etc. 
+1. $http: service for making **Ajax** calls. Pretty useful!
+2. $watch: a method used for subscribing to state change event on scope properties, services etc. 
 3. $rootScope: a parent for all scopes, which we'll discuss at the end of this chapter.
-4. $state and other route providers: a set of providers usually providing information about the current route of the application, route parameters etc. We will discuss this in a separate chapter. 
-5. user defined providers: You'll learn soon that building isolated group of functionalities inside a `.factory` or `.service` is one of the most common patterns in angular.
+4. $state and other route services: a set of services usually providing information about the current route of the application, route parameters etc. We will discuss this in a separate chapter. 
+5. user defined services: You'll learn soon that building isolated group of functionalities inside a `.factory` or `.service` is one of the most common patterns in angular.
 
-So, let's dive into the first two providers that we wanted to discuss.
+So, let's dive into the first two services that we wanted to discuss.
 
 ### Using $http
 
@@ -1124,7 +1124,7 @@ $rootScope.$broadcast("title", null) ;
 // wait for something 
 $rootScope.$on("anotherTitle", function(evt, data){}) ; 
 
-// same goes for services and providers. 
+// same goes for services. 
 
 ```
 
@@ -1134,5 +1134,5 @@ There are two small considerations about this technique. First, it might violate
 
 ### Further reading and challenges and the code: 
 
-The code until the end of this section can be viewed [here]().
+The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/9de4155a051423134bf9e5bad6a88798ed422fb2).
 

@@ -21,7 +21,7 @@ and - perhaps - the following *minor* components :
 
  1. Filters 
  2. Services
- 3. Providers
+ 3. Providers and Services
  4. Constants
  5. Etc. 
 
@@ -77,7 +77,7 @@ myApp.controller('mainCtrl', function ($scope) {})
  
  **First**, unlike a module, we are **not** calling a construction from the library (`angular.module(..)`) to create something, we are calling a constructor from the module that we created (`myApp.controller(..)`) earlier! this is why it's common to say that *Some Controller* attaches to *Some Module*.
  
- **Secondly**, a module had some dependencies, a controller has that too! the list of arguments passed to the function declaring the controller is actually **Injecting** the dependencies into the controller. for example, here the `$scope` variable is dependency being injected into the controller. These dependencies are either angular internal providers (providers are like re-usable pieces of code, or functions that can be injected and used anywhere else. we'll learn about them in a second!) , which all start with a `$`, or the providers that we write them our self. We'll examine this dependency injection later on this book.
+ **Secondly**, a module had some dependencies, a controller has that too! the list of arguments passed to the function declaring the controller is actually **Injecting** the dependencies into the controller. for example, here the `$scope` variable is dependency being injected into the controller. These dependencies are either angular internal services (services are like re-usable pieces of code, or functions that can be injected and used anywhere else. we'll learn about them in a second!) , which all start with a `$`, or the services that we write them our self. We'll examine this dependency injection later on this book.
 
 So, going back to the controller. Just like linking the module to the HTML with an `ng-app`, we must to the same with controllers with `ng-controller` directive. Just for simplicity, add an internal `<div>` to your `<body>` tag and assign `ng-controller='mainCtrl'` to it. check again for errors.
 
@@ -150,7 +150,7 @@ What we actually did right now, assigning a `$scope` variable to `value="..."` i
 
 What do we mean by two-way? it means that if you change the value from your code, the HTML will update automatically and if a value gets changed by the user from the HTML, the value in `$scope` will be changed automatically. we mentioned the property earlier but we didn't really test it. First let's do some tests.
 
-We mentioned that Angular providers can be injected inside a controller as an argument. One of these providers are `$interval` which is actually just a wrapper around `setInterval()` function and has the same functionality. Inject this provider into the controller and change the value of `$scope.Title` and see what happens: 
+We mentioned that Angular services can be injected inside a controller as an argument. One of these services is `$interval` which is actually just a wrapper around `setInterval()` function and has the same functionality. Inject this service into the controller and change the value of `$scope.Title` and see what happens: 
 
 ```javascript
 myApp.controller('mainCtrl', function($scope, $interval){
@@ -295,7 +295,7 @@ Just like a controller, a directive has a name as the first argument. note that 
  - **restrict**: defines how this directive can be used. `A` stand for a attribute ( like `<div title-editor> ..`) and `E` stands for element (like `<title-editor></title-editor>`
  - **scope**: declares weather the directive creates a new scope of it owns or not. Remember what we said about how `ng-repeat` is creating multiple scopes, each having `actor` and `$index` properties? this is exactly that! We can define here weather our directive has a scope or not, does it inherit from it parent or not etc.
  - **template**: defines the html template that should be rendered inside the directive. you can also use `templateUrl` to link an HTML file to be rendered inside. 
- - **controller**: just like normal declaration of a controller, a directive can also define its own controller. notice that we can inject `$scope` variable (and providers like `$timeout` etc.) in the same way inside this directive's controller too. 
+ - **controller**: just like normal declaration of a controller, a directive can also define its own controller. notice that we can inject `$scope` variable (and services like `$timeout` etc.) in the same way inside this directive's controller too. 
  - **link**: a function that will be invoked as the template is getting rendered, which has access to the directives scope, controller, DOM element and DOM attributes. So it's actually quite good for manipulation the DOM or binding events! 
 
 **Unfortunately**, there is more to these attributes, and more detail that can be learned. **Fortunately** the portion above is what you probably need (might even more that what you need) and we are only going to cover these for now.
@@ -398,13 +398,13 @@ To wrap up our understanding of directives, we are going to complete a simple di
 The code for this section so far could be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/e5fdd4ca9056e11478b5625df2ba01a2e5f458f7/code). 
  
 
-## Providers, handling the data logic properly 
+## Services, handling the data logic properly 
 
-We mentioned till now, providers as objects that can be *injected* into a function, a controller etc. Sometimes these providers are referenced to as *Services*, or *Factories*. The argument about the correct name is not our main purpose here, instead let's revisit the core definition of a **Provider**: **An injectable object**. There are many use cases for these objects. So far you are familiar with something like `$interval` which is a wrapper around `window.setInterval`. When it comes to creating custom providers the following scenario is the most common: 
+We mentioned till now, Services as objects that can be *injected* into a function, a controller etc. Sometimes these Services are referenced to as *Providers*, or *Factories*. The argument about the correct name is not our main purpose here, instead let's revisit the core definition of a **Service**: **An injectable object**. There are many use cases for these objects. So far you are familiar with something like `$interval` which is a wrapper around `window.setInterval`. When it comes to creating custom services the following scenario is the most common: 
 
-So far we have only had one controller, one module, life is good, huh? We all know that this is just temporary. if you attempt to build a complete angular application with only just one controller, I assure you, it is going to be biggest mistake of your life! soon or late you have to expand your application to multiple modules and multiple controllers and one of your first needs is: **Sharing data** between controllers. this is one of the main cases where we need to have a provider which controls and shares the data between two controllers.
+So far we have only had one controller, one module, life is good, huh? We all know that this is just temporary. if you attempt to build a complete angular application with only just one controller, I assure you, it is going to be biggest mistake of your life! soon or late you have to expand your application to multiple modules and multiple controllers and one of your first needs is: **Sharing data** between controllers. this is one of the main cases where we need to have a service which controls and shares the data between two controllers.
 
-Before getting to these points exactly and defining different types of providers (yes, yes, there are many types of providers!) let's create a simple one for now. Add the following to your `mian.js`:
+Before getting to these points exactly and defining different types of providers and services (yes, yes, there are many types of providers!) let's create a simple one for now. Add the following to your `mian.js`:
 
 ```javascript
 myApp.factory("actorService", function() {
@@ -425,9 +425,9 @@ Let's go through the code step by step:
 
 **First,** Like literally everything else in Angular, the first argument of the `factory` method is it's name.
 
-**Second,** Factory is one of many types of providers that we can use. think of it as a function/constructor that can have many methods and properties, but only those that come in the return statement are public and can be used by the object that is injecting this provider.
+**Second,** Factory is one of many types of providers that we can use. think of it as a function/constructor that can have many methods and properties, but only those that come in the return statement are public and can be used by the object that is injecting this factory.
 
-The rest of the code is just for having something to show. You get the point of it! Let's go to the part that we inject this! as you might've mentioned we planned on using this service to provide the `mainCtrl` with the list of actors that it already had. This way if another controller wants this list of  actors, we do not need to re write a single line of code here! We just inject this provider again and ask it for the list of actors.
+The rest of the code is just for having something to show. You get the point of it! Let's go to the part that we inject this! as you might've mentioned we planned on using this service to provide the `mainCtrl` with the list of actors that it already had. This way if another controller wants this list of  actors, we do not need to re write a single line of code here! We just inject this factory again and ask it for the list of actors.
 
 Go to the `mainCtrl` section and modify the code: 
 
@@ -439,7 +439,9 @@ myApp.controller('mainCtrl', function($scope, $interval, actorService) {
 })
 ```
 
-Notice how we injected the actorService (which is equivalent to the name that we declared for it) just like any other provider that angular has.
+Notice how we injected the actorService (which is equivalent to the name that we declared for it) just like any other provider or service that angular has.
+
+Let's continue with explaining different types of providers
 
 ### Constants
 
@@ -468,7 +470,7 @@ myApp.controller("mainCtrl", function($scope, someFn){})
 
 ### Service
 
-Think of services as `values` that are always `object` and can have dependency injection them self. in the previous example, consider what would happen if `someFn` provider wanted to use some other value provider, like `someOtherFn`! A dead lock! Because of this property **service** are the best fit for when we just want to share some data/functionality between different components.
+Think of services as `values` that are always `object` and can have dependency injection them self. in the previous example, consider what would happen if `myApp.value("key", "value")` wanted to use some other value provider, like `someOtherService`! A dead lock! Because of this property **service** are the best fit for when we just want to share some data/functionality between different components.
 
 You can entirely replace the factory above with the following service: 
 
@@ -485,7 +487,7 @@ Notice how we injected the `$timeout` in `actorService`. anything that you attac
 
 ### Factories 
 
-think of factories as Services that inject a `function` instead an `object`. this somehow makes sense with what we already saw from factories. they could have some private APIs.. some public ones.. the code inside them get executed like a constructor and so on. And you probably already know about how in javascript a function as *somehow* like a class (if you don't, please search it on google ASAP. you might hate the entire concept and let go of it the first time. please search again!) , so I'm not going to talk about them again. 
+think of factories as Services that inject a `function` instead an `object`. this somehow makes sense with what we already saw from factories. they could have some private APIs, some public ones, the code inside them get executed like a constructor and so on. And you probably already know about how in javascript a function as *somehow* like a class (if you don't, please search it on google ASAP. you might hate the entire concept and let go of it the first time. please search again!) , so I'm not going to talk about them again. 
 
 Just to refresh your mind on the factory that we already had and to compare it again with the service: 
 ```javascript
@@ -503,22 +505,32 @@ myApp.factory("actorService", function() {
 })
 ```
 
-There are two other types of providers to learn, *Provider* and *Decorator*, which we will cover them in a seperate chapter dedicated to Providers. Since we just declared *Provider* as a type of *Providers* let's go back to the naming argument in the beginning of this section and conclude it. 
-Angulars **Injectable Object/functions** are called providers because: the `provider()`, which we have not yet learned about is the most complex and sophisticated type of an injectable. 
-Sometimes, **Injectable Object/functions** are named as *Factory*, or *Service* because `factory()` and `service()` are the most common.
+There are two other types of providers to learn, *Provider* and *Decorator*, which we will cover them in a seperate chapter. To give you brief view of what they are
+
+- As mentioned above, a `.decorator()` is a wrapper for `.value()`. it can be applied to modify a `.value()`
+- A `.provider()` is like a parent to all other types of providers and services that we learned in this chapter. As the name suggest, a provider can be used to create a new instance of a class. ***It can provide it***.   
+
+
+Since we just declared *Provider* as a type of *Providers*, and of course this sounds a little strange to you now, let's go back to the naming argument in the beginning of this section and conclude it.
+ 
+Angulars **Injectable Object/functions** are called providers because: the `provider()` function can be used to create them and inject them.
+
+Sometimes, these **Injectable Object/functions** are named as *Factory*, or *Service* because `factory()` and `service()` are the most common.
+
+For the rest of this book, we refer to all of `.service()`, `.factory()`, `.constant()`, as a type of ***Service***. By ***Provider*** we only specifically mean `.provider()`.
 
 ### Into the next chapters
 
 Don't take this the wrong way, you have not learned everything yet, but beleive me, what you have learned untill here is probably the only *conceptual* thing that you need to know about Angular 90% of the time. from here in, in the next chapters, we will focus more on technical details, tricks, solutions to well known problems etc.  
 
-## Extra Details 
+### Further reading and challenges
 
-### More ideas to hack around with 
+#### More ideas to hack around with 
 
  - Try writing a custom `ng-click` that has the exact same API as Angular's `ng-click` but it outputs a log of that click event to the console every time a click event occurs. Imagine you need it for debugging or testing purposes. Call it something like `click-log='...'`. Keep in mind that you probably need to use the `&` notation for passing a function to the isolated scope of your directive. So get your hands dirty with jumping into Angular guides on directive!
  - 
 
-### Referencing a module
+#### Referencing a module
 
 In our code, we named the variable containing the module `var myApp = angular.module(.. ` and used it for further reference. there is actually another common way to do this. 
 
@@ -530,7 +542,7 @@ angular.module('myApp').controller( ... ) ;
 angular.module('myApp').directive( ... ) ;
 ```
 
-### Debug Angular in your browser and learn about $scopes
+#### Debug Angular in your browser and learn about $scopes
 
 There are many extensions for Angular in Chrome/Firefox. many of them provide **$scope inspector** which let you examine the value of your $scope variables and their heirachy at runtime. Aside for being useful for development, are very very good for learning. search around in extensions of your web browser and install some of them and try to examine some of your code with it.
 
