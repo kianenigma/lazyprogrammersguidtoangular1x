@@ -5,3 +5,5 @@
 ## Two types of people: self vs $scope
 
 ## $scope.apply
+
+## Using $log 

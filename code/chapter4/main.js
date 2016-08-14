@@ -1,6 +1,29 @@
 var myApp = angular.module('myApp', []);
 
 
+myApp.factory("customInterceptor", function () {
+  return {
+    request: function (config) {
+      console.log('request : ', config);
+      return config
+    },
+    response: function (response) {
+      console.log('response', response);
+      return response
+    },
+    responseError: function (response) {
+      console.log('responseError', response);
+      return response
+    }
+  }
+})
+
+
+myApp.config(function ($httpProvider) {
+  $httpProvider.interceptors.push('customInterceptor');
+})
+
+
 myApp.controller('mainCtrl', function ($scope, $timeout, $http) {
   $scope.Title = 'Chapter 4 starts now!';
 
