@@ -165,7 +165,7 @@ You can now test it with :
 </span>
 ```
 
-### Further reading and challenges and the code:  
+### Further reading, challenges and the code
 
 As you might have noticed, we have two types of filters, those who operate on single values (pipe) and those who filter a collection. Creating a custom filter that operates on a collection has the same API and routine as above, but it takes additional input arguments beside `inp`. As a good exercise, you can go ahead and read some examples of this type of filter and work on creating the following the filters :
 
