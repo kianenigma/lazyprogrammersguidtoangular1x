@@ -171,11 +171,179 @@ myApp.factory("customInterceptor", function(AuthService) {
 
 ### Interceptors for error handling 
 
-### Perform Async operations inside config using $q
+One very usefull application of interceptors is global error handling.
+Consider a larger application, which many many AJAX calls, and each of them could go wrong for different reason. The least that you want to do is to have an error box, a modal informing the user that some error has heppened. 
+
+The Horrible way to do this would be to repeat the same operation on each error callback 
+
+```javascript 
+$http.get(url1).then(
+	function suucess() {}, 
+	function error() {
+		// some sort of error handling
+	}
+)
+
+$http.get(ur2).then(
+	function suucess() {}, 
+	function error() {
+		// again
+		// some sort of error handling
+	}
+)
+
+// you are going to hell! 
+```
+
+If you want to act cleaver, you would create a general error handling service/sirective - or just a function - to avoid code duplication in this scenario. This is a good solution. I am not against it and have used it personally. 
+
+But if you even want to make thing more easier, and more clean, you sould use the `responseError` key inside the interceptor. It's pretty clear how to do this, but just to remind you about it, recall our last plain interceptor. As you migh have inspected, any error such as 404 etc. will be caught inside `responseError`: 
+
+```javascript 
+myApp.factory("customInterceptor", function() {
+	return {
+		responseError: function(response) {
+			// show an error message here, displaying some serve side errors or status code or .. 
+			return response
+		}
+	}
+})
+```
+
+Cool thing here is that, if this level of error handling is enough, you can even ommit handling the error callback of `$http()`. 
+
+We can take this even one step further and change the callback that will be called after interceptors pipeline is over, in other words, even when a request has came back with an error status code, we can give it another try (in any way, think of a simple resend in the simplest case) and if it succeeds, pass it to the success callback. 
+
+To achive this, we should get familiar with a library used by Angular to handle promises, `$q`. Before going to the next section about this library, Let's stop for a second and think about how we are placing our application components (by component I simply mean just a pice of code doing specific task). We mentioned before that the error handling could be used inside the callback of a `$http` call, even in a smart way. But we introduced another ***better*** way. Same story applies to request recovery or retry. We ***COULD*** simply give a request a second chance inside the error callback, whats wrong with that? *nothing in particular*. It is not going to be some evil code that will crash definitly and so forth. But let me say it this way: ***it wouldn't be a clean and beautiful code that you're going to love forever***. Why is that? I have mentioned before that codes with a specific task should be seperated in Angular. we enforced using a service for making http calls, not the controller, like ten time until now. Here, we are seperating the code for the same reason again. 
+
+The controller's duty is to **controll the data on the UI**. So we moved the http calls to a service. could we make a http call inside the controller? ***Yes but it would ugly as hell***.
+
+And now
+
+The http requests's duty is to make a call with appropiate payload, and return it to someone, if the response comes. So we move the logic about *showing error message or retry* (which are irrelavent) away. could we do error handling inside an http callback? ***Absoluatly, but it would be ugly as hell, again!***
+
+We'll discuse these issues about module and component cohesion and coupling later on in a seperate chapter. 
+
+### Perform Async operations using $q
+
+We breifly described `$q` before as a tool for creating promises. he also mentioned how to use a promise (with `.then()`) and saw it in action with `$http`. Now, we're going to see how to create promises, or change their behaviours. 
+
+To recap on the opertion of a promiss, consider a simple mock async operation with `timeOut`. The function simple takes some time to finish. if this function whants to leverage the promise capabilities, it should:
+
+1. create a deferred object and return in at soon as possible (aka. `$q.defer()`). 
+2. It sould then perform its operation, and when desired, call one of the methods of the defered object, `.reject()` or `.resolve()`. 
+
+The returned deferd object, is actually the object that has that `.then()` method, which we saw alot! 
+
+To make this more clear, consider the following snippet: 
+
+```javascript 
+// assume that Angular's $q is available 
+
+var someAsyncFn = function (name) {
+	// create the promise object, aka the deffered object
+	var promise = $q.defer() ;
+	
+	// prepare for async operatio
+	setTimeout(funciton() {
+		if ( canHello ) { // some condition, trivial
+			prmise.resolve('resolve message') ;
+		} else {
+			prmise.reject('reject reason'); 
+		}
+	}, 10000); 
+	
+	// this promise will have a .then method!
+	// note that we return the pormise, 
+	// but to timeOut has not yet executed!
+	return promise
+}
+
+// to call Async
+
+var deferedPromise = someAsyncFn('Ted'); 
+
+deferedPromise.then(
+	function (message) { /* note that the message that we passed to .resolve() will come here! */ }, 
+	function (reason) {}
+)
+
+```
+
+And that's it with promises! although there is more to it than this, but this is enough to get you started at this point. 
+
+Another good news is that now, you almost compleatly know how and why each of the callbacks of the promise after an http call gets invoked. So the `$http` will return a promis, and this promise will get rejected or resolved somewhere along the way.. intresting .. 
+
+Let's reveal another piece of information, and after that, I will to see a lightbulb above your head, indicating that you have suddenly understood how to manipulate the promise callbacks, in other words, how to make pass a request from the `responseError` to `successCallback` (aka first callback) of the http promise. Here is goes: 
+
+A qoute from AngularJS website : 
+
+> request: interceptors get called with a http config object. The function is free to modify the config object or create a new one. ***The function needs to return the config object directly, or a promise containing the config or a new config object***. 
+
+(The bolded rule applies for all four of the `request`, `response`, `reposneErro`, `requestError`); 
+
+You saw that? This means that we must not always return the config object, instead we can return a promise, and if we later call the resolve on that promise? or reject it? you got my point!
+
+A psudo code to show this more realistic could be: 
+
+```javascript 
+myApp.factory("customInterceptor", function($q, AuthService) {
+	// we inject the $q service
+	// and an Imaginary service called AuthServiec
+	// like the other example about authorization header
+	
+	return {
+		responseError: function(response) {
+			// since we know that session expiration is a common 
+			// situation, we check it here
+			
+			if ( response.statusCode == 401 ) { // 401 Unauthorized 
+				// create a deffer object 
+				var promise = $q.defer() ;
+				
+				// this refreshing may take some time!
+				AuthService.tryRefreshingSession( function (err, success) {
+					// reject or resolve the promise.
+					if ( err ) {
+						promise.reject(err) ; 
+					}
+					else {
+						promise.resolve(success) ; 
+					}
+				})	
+				
+				return promise; 
+			}
+			
+			else {
+				// the normal situation 
+				return response; 
+			}
+		}
+	}
+})
+
+```
+
+If this code seems too confusing, you could alsi test this with a much more simpler case! go the interceptor that we added with logging to our github search. Implement the following `responseError`: 
+
+```javascript
+responseError: function (response) {
+      // to test things, we pass the responseError to 
+      // success callbacl by calling resolve
+      console.log('responseError', response);
+      return $q.resolve(response);
+}
+...
+
+```
+
+Place some logs after inside `$http({}).then()` and see for yourself that whene you search a username that does not exist, and status code is 404, which callbacl gets called? since we are resolving all failed requests, the error callback will not be called. 
 
 ### Further reading and challenges and the code
 
 - Create a `timestamp` http interceptor and mease the time it takes to perform each of the requests.
+- A very good example of [promise chain](http://www.bennadel.com/blog/2777-monitoring-http-activity-with-http-interceptors-in-angularjs.htm) by Ben Nadel.
 
 
 ## Routing Config 

@@ -1,7 +1,7 @@
 var myApp = angular.module('myApp', []);
 
 
-myApp.factory("customInterceptor", function () {
+myApp.factory("customInterceptor", function ($q) {
   return {
     request: function (config) {
       console.log('request : ', config);
@@ -13,7 +13,7 @@ myApp.factory("customInterceptor", function () {
     },
     responseError: function (response) {
       console.log('responseError', response);
-      return response
+      return $q.resolve(response);
     }
   }
 })
@@ -86,7 +86,7 @@ myApp.controller('mainCtrl', function ($scope, $timeout, $http) {
   $scope.$watch("username", function (n, o) {
       if (n) {
         $scope.reqStatus = 1;
-        $http({
+        var httpPromise = $http({
             method: 'GET',
             url: 'https://api.github.com/users/' + n + '/repos',
           })
@@ -103,7 +103,6 @@ myApp.controller('mainCtrl', function ($scope, $timeout, $http) {
               repos: null
             })
           })
-
       } // end of if
     }) // end of $watch
 
