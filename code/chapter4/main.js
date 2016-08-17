@@ -1,4 +1,4 @@
-var myApp = angular.module('myApp', []);
+var myApp = angular.module('myApp', ['ngRoute']);
 
 
 myApp.factory("customInterceptor", function ($q) {
@@ -12,6 +12,8 @@ myApp.factory("customInterceptor", function ($q) {
       return response
     },
     responseError: function (response) {
+      // to test things, we pass the responseError to
+      // success callbacl by calling resolve
       console.log('responseError', response);
       return $q.resolve(response);
     }
@@ -19,8 +21,19 @@ myApp.factory("customInterceptor", function ($q) {
 })
 
 
-myApp.config(function ($httpProvider) {
+myApp.config(function ($httpProvider, $routeProvider) {
   $httpProvider.interceptors.push('customInterceptor');
+
+  $routeProvider
+    .when("/", {
+      templateUrl: "/view/home.html",
+    })
+    .when("/github", {
+      templateUrl: "/view/github.html"
+    })
+    .when("/about", {
+      templateUrl: "/view/about.html"
+    })
 })
 
 

@@ -347,13 +347,114 @@ Place some logs after inside `$http({}).then()` and see for yourself that when y
 - Create a `timestamp` http interceptor and measure the time it takes to perform each of the requests.
 - A very good example of [promise chain](http://www.bennadel.com/blog/2777-monitoring-http-activity-with-http-interceptors-in-angularjs.htm) by Ben Nadel.
 
-The code until the end of this section can be viewed [here]().
+The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/e846695b9873d8a071eb632eedcf5b92b83bd786).
 
 
 ## Routing Config 
 
-A very common example of using `configuration` block is to set up some routes. Angular uses client side routing to navigate user through different pages inside an application. It's clear that this routing is different from the original browser routing using anchor tags, and the key difference is ***not involving any refreshing***. This method follows the ***Single page application*** guideline, avoiding multiple page refreshing while the user is navigating and working with the application. 
+Another common example of using `configuration` block is to set up some routes. Angular uses client side routing to navigate user through different pages inside an application. It's clear that this routing is different from the original browser routing using anchor tags, and the key difference is ***not involving any refreshing***. This method follows the ***Single page application*** guideline, avoiding multiple page refreshing while the user is navigating and working with the application. 
 
+The entire concept of Single Page Application (aka. SPA) is more to cover in this book (you can read more about them at the end of this chapter). Just to give you a minimal view of the difference between SPAs and traditional websites, pay attention to the following comparison: 
+
+- In a ***Traditional*** website. in order to complete some task, post a comment for example, you would fill some forms. Then you would hit submit. The page reloads, All of the static content of the website will flushes and has to come back (in some cases, your browser cache helps in this part). You stare at a blank screen for a second or to. Finally you see a message indication that one of your inputs were invalid. After a few tries you post a comment. The pages refreshes again and redirects to a page with list of comments (note that this contains a lot of process on the server too, new database query, new page rendering etc.) and you see the new  list of comments. 
+- In a ***Single Page Application***, You would start filling a form, after hitting submit, you see a mature loading indicating that you should wait.  Client side form validation shows a popup about a form being formed incorrectly. Still no refresh. You refill the form and finally, the form gets sent out and another popup will show that. Since the client side application knows that the request has arrived successfully and the server has responded with a success status, it can add the comment that you've just created to the list of comments that it already has, without needing to bother the server again. 
+
+In the Second scenario, both the server and the client had less to do and worked more efficiently, and definitely a better user experience will be delivered to the user.
+
+So far we have learned some of the techniques required to deliver a better user experience to the user. We know how to validate user inputs and forms, how to show messages and modal etc. The key missing part is displaying multiple pages, without refreshing. This is because naturally we cant fit everything in one page. We could place all of the html required in one file and show/hide portions from it to emulate navigation, but that would be inefficient in terms of static file, and it would lead to one mega HTML file which is not preferable.
+
+Enough with details, let's go the real deal. In order t enbale Angular routing in your application you need to another module to your application, `ngRoute`, you can get it from the offcial github repository, bower, a CDN etc. 
+
+```html
+<script src="path/to/angular.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+<script src="path/to/your/files,js"></script>
+```
+
+Note that this should be included after Angluar and before your javascript files. 
+
+After including the script, you have to incicate that our application module, `myApp`, depends on `ngRoute`, but how? Remeber that empty array that was alwasy there inside the module constructor? That's how!
+
+```javascript
+var myApp = angular.module('myApp', ['ngRoute']) ; 
+```
+
+That's it! each module has a unique name, our module is called `myApp` as an example. By adding the unique to the array, we define moudle dependencies. Of course, you need to have the appropiate javascript file linked inside your main HTML file, if required. 
+
+Next, we must add some routing configurations. As the name suggests, this must happen inside the `.cinfig()` block. We are going to modify the `$routeProvider` to define some routes. 
+
+
+The bare minimum configuration of a route is: 
+
+- A templateUrl
+- A controller
+- Defining the route entry point, aka `ng-view` directive
+
+The first two should be clear to you. for each route, we define which html file shoudl be displayed, and which controller should take control over it. The last thing to define is the `ng-view` directive. This directive indicates the parent tag, inside which the html file indication by `templateUrl` should be shown. For example, if you want to have the entire page change with navigation, you could simple apply `ng-view` to the `<body>` tag. If you wanted to have a fix header and footer inside your application, you could do something like: 
+
+```html
+<body ng-app="myApp">
+	<div class="header"> 
+		header content
+	</div>
+	
+	<div ng-view></div> // Routing will change the content of this
+	
+	<div class="footer">
+		footer content
+	</div> 
+</body>
+```
+
+In fact, let's inplemetn something similar to this! 
+
+Go to the html file that we had before. remove the entire content and put it inside a seperate file inside `view/home.html` (relative to your `index.html`). ***Remove*** the `ng-controller` from it because we will soon define the controller inside the route config. Place this inside your body tag: 
+
+```html
+<div class="nav">
+    <ol class="breadcrumb">
+      <li>
+        <a href=""> Home </a>
+      </li>
+
+      <li>
+        <a href=""> About </a>
+      </li>
+
+      <li>
+        <a href=""> Github </a>
+      </li>
+
+    </ol>
+</div>
+<div class="container" ng-view></div>
+```
+
+Next, go to your `.config()` block inside `main.js` file and and place the following config : 
+
+```javascript
+myApp.config(function ($httpProvider, $routeProvider) {
+  // What we had before 
+  $httpProvider.interceptors.push('customInterceptor');
+
+  $routeProvider
+    .when("/", {
+      templateUrl: "/view/home.html"
+    })
+    .when("/github", {
+      templateUrl: "/view/github.html"
+    })
+    .when("/about", {
+      templateUrl: "/view/about.html"
+    })
+})
+```
+
+As the routing suggests, go and create `github.html` and `about.html` and put some trivial content inside them. 
+
+So far so good. This must be enough for your app to load as ngView! refresh your app. You should now see the new nav bar at the top of the page. Also, the content of `view/home.html` must be rendered below it. But something seems wring inside it! yes. because currently has no cotroller. 
 
 ### Further reading, challenges and the code
+
+- Read more about single page applications here. 
 

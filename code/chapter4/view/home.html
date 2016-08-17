@@ -1,0 +1,81 @@
+<div>
+  <div class="jumbotron">
+    <h1 align="center"> {{ Title }} </h1>
+  </div>
+  <hr />
+  <h3> Looping and filters </h3>
+  <ul class="list-group">
+    <li class="list-group-item" ng-repeat="(name, detail) in actors">
+      {{ name }} [{{detail.lastName}}] is {{ detail.age }} years old! I like catching a beer in
+      <input type="text" ng-model="beerFilter" />
+      <span ng-repeat="bar in detail.bars | filter : beerFilter">
+           {{ bar | strRev }} {{ ($index === ($parent.detail.bars.length-1)) ? '' : 'or' }}
+         </span>
+    </li>
+  </ul>
+  <hr />
+  <h3> Style Manipulation </h3>
+  <div class="row">
+    <div class="col col-sm-6 col-sm-offset-3">
+      <button ng-class="{'btn-warning' : iconDisplay, 'btn-info': !iconDisplay}" ng-click="doProcess()" ng-if="btnDisplay" class="btn btn-block">
+        <span ng-show="iconDisplay" class="glyphicon glyphicon-cloud-download"></span> {{ iconDisplay ? 'waiting for process' : 'Click me for some process'}}
+      </button>
+    </div>
+  </div>
+
+  <h4> Dynamic Button </h4>
+
+  <div class="row">
+    <div class="col col-sm-3 col-sm-offset-3">
+      <button ng-class="classes" class="btn btn-block">
+        classes
+      </button>
+    </div>
+  </div>
+
+  <hr />
+
+  <h3> Forms Forms Forms! </h3>
+
+  <form name="submitform" novalidate>
+    <div class="form-group">
+      <label> Email</label>
+      <span class="label label-danger" ng-show="submitform.email.$error.required && submitform.email.$touched">Required!</span>
+      <span class="label label-danger" ng-show="submitform.$error.email && submitform.email.$touched">Invalid email!</span>
+      <input ng-model="formData.email" class="form-control" name="email" type="email" required>
+    </div>
+
+    <div class="form-group">
+      <label> Name </label>
+      <input ng-model="formData.name" class="form-control" name="name" type="text" required />
+    </div>
+
+    <div class="form-group">
+      <label> Password </label>
+      <span class="label label-danger" ng-show="submitform.password.$error.minlength">That's too short!</span>
+      <input ng-minlength="minpwd" ng-model="formData.password" class="form-control" name="password" type="password" required />
+    </div>
+    <div class="form-group">
+      <button class="btn btn-success" ng-click="submit(submitform)"> Submit </button>
+    </div>
+  </form>
+
+  <hr />
+  <h3> $HTTP and $WATHC  ( just a little thes on rootScope : {{ $root.data }})</h3>
+
+  <div class="row">
+    <div class="col col-sm-6 col-sm-offset-3 form-group">
+      <input ng-model="username" ng-model-options="{ debounce: 500 }" class="form-control" type="text" placeholder="enter username" style="margin : 20px" />
+      <label ng-show="reqStatus == 0" class="label label-success"> Result is here</label>
+      <label ng-show="reqStatus == 1" class="label label-warning"> Searching </label>
+      <label ng-show="reqStatus == 2" class="label label-danger"> No result found!</label>
+    </div>
+  </div>
+  <div ng-controller="repoListCtrl" class="row">
+    <ul class="list-group">
+      <li ng-repeat="repo in repos" class="list-group-item">
+        <strong> {{ repo.name }} </strong> || {{ repo.description }}
+      </li>
+    </ul>
+  </div>
+</div>
