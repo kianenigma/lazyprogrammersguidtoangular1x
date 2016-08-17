@@ -27,9 +27,11 @@ myApp.config(function ($httpProvider, $routeProvider) {
   $routeProvider
     .when("/", {
       templateUrl: "/view/home.html",
+      controller: 'mainCtrl'
     })
-    .when("/github", {
-      templateUrl: "/view/github.html"
+    .when("/github/:username", {
+      templateUrl: "/view/github.html",
+      controller: "githubCtrl"
     })
     .when("/about", {
       templateUrl: "/view/about.html"
@@ -37,8 +39,9 @@ myApp.config(function ($httpProvider, $routeProvider) {
 })
 
 
-myApp.controller('mainCtrl', function ($scope, $timeout, $http) {
+myApp.controller('mainCtrl', function ($scope, $timeout, $http, $route) {
   $scope.Title = 'Chapter 4 starts now!';
+
 
   $scope.actors = {
     "Ted": {
@@ -134,6 +137,14 @@ myApp.controller('repoListCtrl', function ($scope, $rootScope) {
       $scope.repos = [];
     }
   })
+})
+
+myApp.controller('githubCtrl', function ($scope, $location, $route, $routeParams) {
+  console.log($route.current);
+  console.log($routeParams);
+  $scope.homePath = function () {
+    $location.path('/');
+  }
 })
 
 

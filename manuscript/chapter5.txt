@@ -354,6 +354,9 @@ The code until the end of this section can be viewed [here](https://github.com/K
 
 Another common example of using `configuration` block is to set up some routes. Angular uses client side routing to navigate user through different pages inside an application. It's clear that this routing is different from the original browser routing using anchor tags, and the key difference is ***not involving any refreshing***. This method follows the ***Single page application*** guideline, avoiding multiple page refreshing while the user is navigating and working with the application. 
 
+
+### Crash course on Single page applications
+
 The entire concept of Single Page Application (aka. SPA) is more to cover in this book (you can read more about them at the end of this chapter). Just to give you a minimal view of the difference between SPAs and traditional websites, pay attention to the following comparison: 
 
 - In a ***Traditional*** website. in order to complete some task, post a comment for example, you would fill some forms. Then you would hit submit. The page reloads, All of the static content of the website will flushes and has to come back (in some cases, your browser cache helps in this part). You stare at a blank screen for a second or to. Finally you see a message indication that one of your inputs were invalid. After a few tries you post a comment. The pages refreshes again and redirects to a page with list of comments (note that this contains a lot of process on the server too, new database query, new page rendering etc.) and you see the new  list of comments. 
@@ -363,7 +366,9 @@ In the Second scenario, both the server and the client had less to do and worked
 
 So far we have learned some of the techniques required to deliver a better user experience to the user. We know how to validate user inputs and forms, how to show messages and modal etc. The key missing part is displaying multiple pages, without refreshing. This is because naturally we cant fit everything in one page. We could place all of the html required in one file and show/hide portions from it to emulate navigation, but that would be inefficient in terms of static file, and it would lead to one mega HTML file which is not preferable.
 
-Enough with details, let's go the real deal. In order t enbale Angular routing in your application you need to another module to your application, `ngRoute`, you can get it from the offcial github repository, bower, a CDN etc. 
+### Client side routing with ngRoute
+
+Enough with details, let's go the real deal. In order t enable Angular routing in your application you need to another module to your application, `ngRoute`, you can get it from the official github repository, bower, a CDN etc. 
 
 ```html
 <script src="path/to/angular.js"></script>
@@ -373,13 +378,13 @@ Enough with details, let's go the real deal. In order t enbale Angular routing i
 
 Note that this should be included after Angluar and before your javascript files. 
 
-After including the script, you have to incicate that our application module, `myApp`, depends on `ngRoute`, but how? Remeber that empty array that was alwasy there inside the module constructor? That's how!
+After including the script, you have to indicate that our application module, `myApp`, depends on `ngRoute`, but how? Remember that empty array that was always there inside the module constructor? That's how!
 
 ```javascript
 var myApp = angular.module('myApp', ['ngRoute']) ; 
 ```
 
-That's it! each module has a unique name, our module is called `myApp` as an example. By adding the unique to the array, we define moudle dependencies. Of course, you need to have the appropiate javascript file linked inside your main HTML file, if required. 
+That's it! each module has a unique name, our module is called `myApp` as an example. By adding the unique to the array, we define module dependencies. Of course, you need to have the appropriate javascript file linked inside your main HTML file, if required. 
 
 Next, we must add some routing configurations. As the name suggests, this must happen inside the `.cinfig()` block. We are going to modify the `$routeProvider` to define some routes. 
 
@@ -452,9 +457,45 @@ myApp.config(function ($httpProvider, $routeProvider) {
 
 As the routing suggests, go and create `github.html` and `about.html` and put some trivial content inside them. 
 
-So far so good. This must be enough for your app to load as ngView! refresh your app. You should now see the new nav bar at the top of the page. Also, the content of `view/home.html` must be rendered below it. But something seems wring inside it! yes. because currently has no cotroller. 
+So far so good. This must be enough for your app to load as ngView! refresh your app. You should now see the new nav bar at the top of the page. Also, the content of `view/home.html` must be rendered below it. But something seems wring inside it! yes. because currently has no cotroller (Just to help you catch up, you can download the snapshot of the code form [here]()). 
+
+Next, add just a single line to configuration of your `/` path : 
+
+```javascript 
+.when("/", {
+      templateUrl: "/view/home.html",
+      controller: 'mainCtrl'
+})
+```
+now you should be able to see all of the previous demos working. Next add the follwoing values to `href` on links on the navbar. 
+
+```html
+<ol class="breadcrumb">
+    <li>
+      <a ng-href="#/"> Home </a>
+    </li>
+    <li>
+      <a ng-href="#/about"> About </a>
+    </li>
+    <li>
+      <a ng-href="#/github"> Github </a>
+    </li>
+</ol>
+```
+
+Keep in mind that all of this navigation must happen inside the browser! If you don't start the route names with a `#` it will not be treated as client side routing, a full refresh will pappen and that is not what we wanted! There a way to get rid of this `#`, which will be mentioned at the end if this chapter. 
+
+At this point, you should be able to navigate through your app with the links at the top of the page. One last thing to notice is that we did not declare a controller for rest of our route. No worries, they are optional. 
+
+### Controlling the route using $route
+
+
+### Passing route parameters with $routeParams
+
 
 ### Further reading, challenges and the code
 
-- Read more about single page applications here. 
+- Read more about single page applications [here](http://singlepageappbook.com/goal.html). 
+- Removing ***The Hash***
+- Note on href , ng-href , src , ng-src
 
