@@ -20,8 +20,14 @@ myApp.factory("customInterceptor", function ($q) {
   }
 })
 
+myApp.run(function ($rootScope) {
+  $rootScope.$on("$routeChangeSuccess", function (evt) {
+    console.log(evt);
+  })
+})
 
-myApp.config(function ($httpProvider, $routeProvider) {
+
+myApp.config(function ($httpProvider, $routeProvider, $locationProvider) {
   $httpProvider.interceptors.push('customInterceptor');
 
   $routeProvider
@@ -36,6 +42,15 @@ myApp.config(function ($httpProvider, $routeProvider) {
     .when("/about", {
       templateUrl: "/view/about.html"
     })
+
+  .otherwise({
+    redirectTo: '/'
+  })
+
+  // $locationProvider.html5Mode({
+  //   enabled: true,
+  //   requireBase: false
+  // });
 })
 
 
@@ -146,7 +161,6 @@ myApp.controller('githubCtrl', function ($scope, $location, $route, $routeParams
     $location.path('/');
   }
 })
-
 
 myApp.filter('strRev', function () {
   return function (inp) {
