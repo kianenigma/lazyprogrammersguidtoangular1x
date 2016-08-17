@@ -457,7 +457,7 @@ myApp.config(function ($httpProvider, $routeProvider) {
 
 As the routing suggests, go and create `github.html` and `about.html` and put some trivial content inside them. 
 
-So far so good. This must be enough for your app to load as ngView! refresh your app. You should now see the new nav bar at the top of the page. Also, the content of `view/home.html` must be rendered below it. But something seems wring inside it! yes. because currently has no cotroller (Just to help you catch up, you can download the snapshot of the code form [here]()). 
+So far so good. This must be enough for your app to load as ngView! refresh your app. You should now see the new nav bar at the top of the page. Also, the content of `view/home.html` must be rendered below it. But something seems wring inside it! yes. because currently has no cotroller (Just to help you catch up, you can download the snapshot of the code form [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/4c12ca44bbd6f422309ab000f620478bd05f47b0)). 
 
 Next, add just a single line to configuration of your `/` path : 
 
@@ -485,17 +485,210 @@ now you should be able to see all of the previous demos working. Next add the fo
 
 Keep in mind that all of this navigation must happen inside the browser! If you don't start the route names with a `#` it will not be treated as client side routing, a full refresh will pappen and that is not what we wanted! There a way to get rid of this `#`, which will be mentioned at the end if this chapter. 
 
-At this point, you should be able to navigate through your app with the links at the top of the page. One last thing to notice is that we did not declare a controller for rest of our route. No worries, they are optional. 
+At this point, you should be able to navigate through your app with the links at the top of the page. One thing to notice is that we did not declare a controller for rest of our routes. No worries, they are optional.
 
-### Controlling the route using $route
+The last point that might catch your eye is that since we had an http interceptor monitoring and logging the entire requests going in and out, now you can see that a request for the html file corresponding to each html page will be made as we navigate in our application. This helps reducing the total size of the static content transferred to client. 
 
 
-### Passing route parameters with $routeParams
 
+### Controlling the route using $location
+
+Is's likely that you don't want to change your route with an anchor tag. Perhaps you want to navigate the user using a logic implemented inside a controller, a service etc. These are all possible using the $location service. This service is a wrapper around the `window.location` and enables us to operate on the current location. 
+
+You can list all of the functions that `$location` has [here](https://docs.angularjs.org/api/ng/service/$location), but the one that we want to use particularly is `.path()`. this function is a getter/setter function, meaning that if you call it with no parameters, it will return the current path. And if you call it with a parameter, it will set that parameter as the current path.
+
+As an example, assume that you wish to place a custom back button inside the github page. First, we need to add a controller for this page. Also, create a function inside this page to navigate us back to home page. 
+
+```javascript
+myApp.controller('githubCtrl', function($scope, $location) {
+	$scope.homePath = function () {
+		$location.path('/'); 
+	}
+}) 
+```
+
+Note that we do not need to place the `#` here since Angular will take care of it for us. 
+
+Next, inside the github page template: 
+
+```html
+<button class="btn btn-warning" ng-click="homePath()"> Back to Home </button>
+```
+
+And finally, declare this controller for github path. 
+
+```javascript
+.when("/github", {
+      templateUrl: "/view/github.html",
+      controller: "githubCtrl"
+    })
+```
+
+And we're done!
+
+### Passing route parameters with $route
+
+A query parameter is a parameter embedded inside the URL of the page. It generally has the following format: 
+
+```html
+http[s]://domainName.domain/path?par1=val1&par2=val2&par3=vale3
+```
+
+Existence of these parameters are optional. You can check this by entering 
+
+```
+http://127.0.0.1:8080/#/github?a=123123
+```
+
+inside your browser. As you see, the browser will not pay attention to it. If you wish to just read parameters optionally (which is rare to be honest!), You can access them using a service named `$route`, which holds general information about the current route. In order to access to query parameters, log `$route.current.params` (in fact, log `$route.current` too, much useful information can be found there too!). 
+
+```javascript
+myApp.controller('githubCtrl', function ($scope, $location, $route) {
+  console.log($route.current.params);
+  $scope.homePath = function () {
+    $location.path('/');
+  }
+})
+```
+
+now try entering a URL with some params and see the console for logs. 
+
+There is a common case where you want to explicitly define a **path parameter** for one of your routes. Note that **path parameters** are a little more that query parameters. They have the following format:
+
+```
+http://127.0.0.1:8080/#/github/param1/param2
+```
+
+Path parameters could really distinguish routes from one another. In order to declare for the `/github` path add the following to route config: 
+
+```javascript
+.when("/github/:username", {
+      templateUrl: "/view/github.html",
+      controller: "githubCtrl"
+    })
+```
+
+Note that parameters inside a path start with `:`. This means that if we now enter `#/github` inside our browser, this path will not be resolved, but any Url a format like `"/github/:username"` will resolve with this path. 
+
+Enter `"/github/Kianenigma"` inside your browser and see to logs once more. Important thing here is that we can still add some query parameters like `?param=val`. Once again, they're optional.
+
+There is another simpler way for accessing route parameters, a service called `$routeParams`. This is actually just an object containing route and query parameters, if any were available. 
+
+```javascript
+myApp.controller('githubCtrl', function ($scope, $location, $route, $routeParams) {
+  console.log($route.current);
+  console.log($routeParams);
+  ...
+})
+```
+
+You should see that it contains similar values. 
+
+This chapter contains much more information about routing placed under the ***Further reading*** section. This is because i tried to make the main contents minimal and fluent as possible. If you want to learn a handful of other details about routing, don't consider this chapter over and read the last part!
 
 ### Further reading, challenges and the code
 
 - Read more about single page applications [here](http://singlepageappbook.com/goal.html). 
-- Removing ***The Hash***
-- Note on href , ng-href , src , ng-src
+- The The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/53d9301a5404d09010fac3a315530bd203802c60)
+
+#### Removing ***The Hash***. 
+
+The hash thing is annoying you, right? Good news, we can get rid of it! And this turns out to be quite easy! In the simplest case, you can inject the `$locationProvider` and call: `$locationProvider.html5Mode(true);` 
+
+```javascript 
+$locationProvider.html5Mode({
+    enabled: true,
+    requireBase: false
+ });
+```
+
+Remember that your should remote the `#` from all of your `href` attributes!
+
+The story actually doesn't end here. There some more detail about HTML5 routing mode. You can read more about them [here](https://docs.angularjs.org/api/ng/provider/$locationProvider)
+
+But the bad news is that from now on, Your app will no longer refresh in any url other than `/` and will Officially have only one entry point: `/`. Before you could mock this by entering an address like `/#/path` and it worked, but not any more!
+
+This is bad actually, for Two reasons
+
+- It will drive you crazy during development 
+- In production, sub pages inside your page will not have a unique and valid URL, hence they will not be indexed by search engines which is not good. Solving both the entry point problem and being CEO friendly well beyond the scope of this book and require [server side assistant](http://stackoverflow.com/questions/23311806/how-can-i-handle-a-browser-refresh-in-an-angularjs-spa-application). You can easy find out more about them by searching the topics in google. 
+
+#### Listen to route change events 
+
+You can listen to events such as: 
+
+- $routeChangeStart
+- $routeChangeSuccess
+- $routeChangeError
+
+From any scope (with the same `$scope.$on()`), since they are broadcasted from `$rootScope` down. Although you must be careful that the controller must live in order to respond to this event! if we redirect from /home to /about, the following code inside `githubCtrl` **will have no** use!
+
+```javascript
+$scope.$on("$routeChangeSuccess", function (evt) {
+    console.log(evt);
+})
+```
+
+A safer way, if we want to listen to these events globally is to bind them to $rootScope, and where? If we place them inside individual route controllers, they will be created and destroyed (without being unsubscribed, which is horrible!). The best place is inside the `.run()` block: 
+
+```javascript
+myApp.run(function ($rootScope) {
+  $rootScope.$on("$routeChangeSuccess", function (evt) {
+    console.log(evt);
+  })
+})
+```
+
+Here, you have access to all service and create your event listeners. 
+
+A good way to use these events is to create an error page or global error notification. the $routeChangeError will be fired whenever the user enters an invalid route (assuming  that you don't have the `.otherwise()` config), or when a `resolve` fails (describe in the following section). 
+
+#### Using the .otherwise() 
+
+an alternative way for having safer routes is to declare an `.otherwise()` at the end. this block will be used if non of the routes match. The common pattern is to use the `redirectTo` key: 
+
+```javascript
+  $routeProvider
+    .when("/", {
+      templateUrl: "/view/home.html",
+      controller: 'mainCtrl'
+    })
+    .when("/github/:username", {
+      templateUrl: "/view/github.html",
+      controller: "githubCtrl"
+    })
+    .when("/about", {
+      templateUrl: "/view/about.html"
+    })
+
+  .otherwise({
+    redirectTo: '/'
+  })
+```
+
+Go and enter an invalid url like `/blah/blah/blah/fooo/fooo/bazzz` and see where it takes you!
+
+#### Using resolve for preprocessing on a route
+
+#### Note on href, ng-href, src, ng-src
+
+Angular provides an `ng-` version for almost all common html attributes. The important thing is that some of them, well they don't do much! at least when a static value is being placed inside it. 
+
+Go and change one of the `ng-href` attributes to `href`. Now navigate inside the app. No difference, right? The key difference is that with ng-href you can use template syntax inside links, which is very helpful
+
+```html
+<a ng-href="http://yourdomain.com/users/{{userId}}/post/{{postId}}">title</a>
+```
+
+Note that because of this common usage, ng-href is probably one of the only directives that we **must** use `{{}}` inside it. As you might remember, directives like `ng-if`, `ng-model` did not require `{{}}`. 
+
+Similarly, `src` and `ng-src` behave exactly the same. with `ng-src` you can do things like: 
+```html
+<img ng-href="http://media.domain.com/users/{{userId}}/post/{{postId}}.jpg" />
+```
+
+#### More sophisticated routing : UI-Router
+
+[Angular-UI router](https://github.com/angular-ui/ui-router) is another alternative for having routing in your app. it offers more flexibility and more functionality such as nested views, easier parameter management etc. But, keep in mind that if your routing requirements are simple, you can still stick to the official `ngRoute` module. it's simpler, minimal and official. 
+
 
