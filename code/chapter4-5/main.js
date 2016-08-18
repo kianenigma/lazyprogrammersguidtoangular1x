@@ -37,7 +37,16 @@ myApp.config(function ($httpProvider, $routeProvider, $locationProvider) {
     })
     .when("/github/:username", {
       templateUrl: "/view/github.html",
-      controller: "githubCtrl"
+      controller: "githubCtrl",
+      resolve: {
+        repo: function ($q, $timeout) {
+          var defer = $q.defer();
+          $timeout(function () {
+            defer.resolve({ data: 'data' })
+          }, 3000)
+          return defer.promise;
+        }
+      }
     })
     .when("/about", {
       templateUrl: "/view/about.html"
@@ -154,8 +163,9 @@ myApp.controller('repoListCtrl', function ($scope, $rootScope) {
   })
 })
 
-myApp.controller('githubCtrl', function ($scope, $location, $route, $routeParams) {
+myApp.controller('githubCtrl', function ($scope, $location, $route, $routeParams, repo) {
   console.log($route.current);
+  console.log(repo);
   console.log($routeParams);
   $scope.homePath = function () {
     $location.path('/');
