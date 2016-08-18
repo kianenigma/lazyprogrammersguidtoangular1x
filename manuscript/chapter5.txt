@@ -244,21 +244,22 @@ To make this more clear, consider the following snippet:
 
 var someAsyncFn = function (name) {
 	// create the promise object, aka the deferred object
-	var promise = $q.defer() ;
+	var defer = $q.defer() ;
 	
 	// prepare for async operatio
 	setTimeout(funciton() {
 		if ( canHello ) { // some condition, trivial
-			promise.resolve('resolve message') ;
+			defer.resolve('resolve message') ;
 		} else {
-			promise.reject('reject reason'); 
+			defer.reject('reject reason'); 
 		}
 	}, 10000); 
 	
 	// this promise will have a .then method!
 	// note that we return the promise, 
 	// but to timeOut has not yet executed!
-	return promise
+	return defer.
+	promise
 }
 
 // to call Async
@@ -301,20 +302,20 @@ myApp.factory("customInterceptor", function($q, AuthService) {
 			
 			if ( response.statusCode == 401 ) { // 401 Unauthorized 
 				// create a defer object 
-				var promise = $q.defer() ;
+				var defer = $q.defer() ;
 				
 				// this refreshing may take some time!
 				AuthService.tryRefreshingSession( function (err, success) {
 					// reject or resolve the promise.
 					if ( err ) {
-						promise.reject(err) ; 
+						defer.reject(err) ; 
 					}
 					else {
-						promise.resolve(success) ; 
+						defer.resolve(success) ; 
 					}
 				})	
 				
-				return promise; 
+				return defer.promise; 
 			}
 			
 			else {
@@ -669,6 +670,40 @@ an alternative way for having safer routes is to declare an `.otherwise()` at th
 Go and enter an invalid url like `/blah/blah/blah/fooo/fooo/bazzz` and see where it takes you!
 
 #### Using resolve for preprocessing on a route
+
+Similar to http provider stack, where a set of functions were executed before each http request, `resolve` has the same functionality for route changes. You can define a set of functions or promises to be executed/resolved before routing to a specific address. 
+
+The resolve property inside each route will define these prerequisites. Each key inside `resolve` must have a function associated with it. this function can return a value immediately, or it can return a promise. Here we are going to examine it with the promise. In the simplest form, return a promise inside the function and, and never resolve the promise!
+
+```javascript
+  $routeProvider
+    ...
+    .when("/github/:username", {
+      templateUrl: "/view/github.html",
+      controller: "githubCtrl",
+      resolve: {
+	      repo: function ($q, $timeout) {
+            var defer = $q.defer();
+            $timeout(function () {
+              defer.resolve({ data: 'data' })
+            }, 3000)
+            return defer.promise;
+          }
+      }
+    })
+    ...
+```
+
+This will cause the route to `/github` to be loaded with a 3 second delay, because we are resolving a promise inside after 3 seconds. A good practice is to perform authentication or meta data gathering steps inside `resolve`. 
+
+The last cool thing about resolve is that the key name, `repo` is now available inside the `githubCtrl` and the value that we have passed to it as dara will be placed inside it. Check this: 
+
+```javascript
+myApp.controller('githubCtrl', function ($scope, repo){
+  console.log(repo);
+  ..
+}) ; 
+```
 
 #### Note on href, ng-href, src, ng-src
 
