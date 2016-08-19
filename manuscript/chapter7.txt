@@ -7,3 +7,8 @@
 ## $scope.apply
 
 ## Using $log 
+
+## Controller before destroy
+
+## Style guide and best practices
+

@@ -26,6 +26,15 @@ myApp.run(function ($rootScope) {
   })
 })
 
+myApp.factory('githubService', function ($http) {
+  var getRepoListByUser = function (user) {
+    return $http.get('https://api.github.com/users/' + user + '/repos')
+  }
+  return {
+    getRepoListByUser: getRepoListByUser
+  }
+})
+
 
 myApp.config(function ($httpProvider, $routeProvider, $locationProvider) {
   $httpProvider.interceptors.push('customInterceptor');
@@ -63,8 +72,14 @@ myApp.config(function ($httpProvider, $routeProvider, $locationProvider) {
 })
 
 
-myApp.controller('mainCtrl', function ($scope, $timeout, $http, $route) {
+myApp.controller('mainCtrl', function ($scope, $timeout, $http, $route, githubService) {
   $scope.Title = 'Chapter 4 starts now!';
+
+  $scope.someFunc = function (callback) {
+    $timeout(function () {
+      callback()
+    }, 2000)
+  }
 
 
   $scope.actors = {
@@ -126,10 +141,7 @@ myApp.controller('mainCtrl', function ($scope, $timeout, $http, $route) {
   $scope.$watch("username", function (n, o) {
       if (n) {
         $scope.reqStatus = 1;
-        var httpPromise = $http({
-            method: 'GET',
-            url: 'https://api.github.com/users/' + n + '/repos',
-          })
+        githubService.getRepoListByUser(n)
           .then(function (response) {
             $scope.reqStatus = 0;
             $scope.$broadcast("repo_update", {
@@ -169,6 +181,32 @@ myApp.controller('githubCtrl', function ($scope, $location, $route, $routeParams
   console.log($routeParams);
   $scope.homePath = function () {
     $location.path('/');
+  }
+})
+
+myApp.directive('progressBtn', function () {
+  return {
+    scope: {
+      fn: '<fn'
+    },
+    restrict: 'AE',
+    template: `<button class='btn btn-sm' ng-class='classes'> {{ text }} </button>`,
+    link: function (scope, elem, attr, ctrl) {
+      scope.classes = 'btn-success';
+      scope.text = "Click me";
+      elem.bind('click', function () {
+        scope.$apply(function () {
+          scope.classes = 'btn-warning';
+          scope.text = 'Now wait!';
+        });
+        scope.fn(function () {
+          scope.$apply(function () {
+            scope.classes = 'btn-success';
+            scope.text = "Click me";
+          });
+        })
+      })
+    }
   }
 })
 
