@@ -1,10 +1,10 @@
-# Refactoring form a large scale application
+# Refactoring to a large scale application
 
 In the previous chapters we learned a lot about Angular, but there was one main flow. It was mostly about **controllers**! this is not a bad thing at first, but soon or late, when your project scales into a real deal, a real Web app, you're going to face a problem: You'll end up with an some fat *controller-oriented* code and if you are hoping for some clean, testable and maintainable code, you're going to want to change that. Collaboration becomes suddenly hard, scope functions and properties become too coupled and changing anything might cause the app to crash and that's when you are doomed to **refactor** your app, yes I said refactor, not you're doomed to fail.
 
-Refactoring an application is a natural part of its lifecycle. You simmply can't start an application and design it beforehand 100% correct! Soon or late you'll have to refactor because you had some wrong estimations, and that's **completely fine**. Don't' think of it as '***Oh my god! I've been doing it all wrong for the past month and now i have to re write everything from scratch!***'. If you don't face the problems I mentioned above, thats when you have to be worried. 
+Refactoring an application is a natural part of its lifecycle. You simmply can't start an application and design it beforehand 100% correct! Soon or late you'll have to refactor because you have had some wrong estimations, and that's **completely fine**. Don't' think of it as '***Oh my god! I've been doing it all wrong for the past month and now i have to re write everything from scratch!***'. If you don't face the problems I mentioned above, that's when you have to be worried. 
 
-In Angular, this happens mostly because all tutorials on Angular, almost always start with controllers, and the developer learning suddenly finds himself/herself with a tool - *controller* - that almost everything can be implemented using it and says: 
+In Angular, this happens mostly because all tutorials on Angular, almost always start with controllers, and the developer learning suddenly finds himself/herself looking at a tool - ***controller*** - that almost everything can be implemented using it and says: 
 
 > Hey! this controller thing is like magic! I can do everything with it, why bother implementing a service or a directive?
 
@@ -137,7 +137,7 @@ githubService.getRepoListByUser(n, function(data, status) {
 
 ### Helper functions
 
-I don't exactly remember when and how i came up with this word `helpre function`! By helper function I mean **stateless** functions that operate on a data, return a modified version or boolean value indication status etc. The key point is that they are not a part of the main business logic and they are stateless. A great example are validation functions. refactoring functions (preparing a data to be send via http or after being received via http) , Utility functions etc. They are all best candidates for being implemented via a service, both for readability of the code and reusability.    
+I don't exactly remember when and how i came up with this word `helpre function`! By helper function I mean **stateless** functions that operate on a data, return a modified version or boolean value indication status etc. The key point is that they are not a part of the main business logic and they are stateless. Some great examples are validation functions. refactoring functions (preparing a data to be send via http or after being received via http) , Utility functions etc. They are all best candidates for being implemented via a service, both for readability of the code and reusability.    
 
 ## Using Directives for reusable components
 
@@ -205,6 +205,9 @@ Note that:
 
 - unlike last few examples, here chose the callback based function here, it's good to get familiar with both of them! You can try and implement this using a promise as a challenge
 - You can extend this example so that the directive return a value to the parent scope after doing the promise (in different ways!). There are actually many libraries around for such progress button. Go on and create one for yourself and publish it!
+
+
+The code until the end of this section could be found [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/f917c7a3121b9870f61c7d48d553fcd8d922b959). 
 
 ## Using constants for cleaner code
 
@@ -295,4 +298,7 @@ var app = angular.module('app', ['loginModule', 'searchModule']);
 Variables defined for each module are available globally, meaning that it's ok to define `loginModule` in file and use it inside another file to create a controller for it. You also have the choice of using `angular.module('')` with no second parameter as a getter for a module. 
 
 each of these modules can also depend on one another, this is really implementation dependent, but the key point is that you have 100% freedom to organaze your modules, so make the best out of it!
+
+
+
 
