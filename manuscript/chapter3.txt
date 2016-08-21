@@ -54,13 +54,14 @@ The second argument is an empty array indication module dependencies. Which is f
 
 Now, when this module want's to take control of the HTML in the future, it must have an idea of which portion of our HTML. This could be done using the `ng-app` ***directive***. we'll discuss directives later on, for now just think about it as an indicator that links a **module** (Javascript logic ), to a **portion of HTML**. We'll assign this module to our entire `<body>` tag for now.
 
-```html
+{title="Example 12: Creating a class in Ruby", lang=html}
+~~~~~~~
 <body ng-app="myApp">
   <h3>
     Hello Angular!
   </h3>
 </body>
-```
+~~~~~~~
 
 And your first module is now set up!
 
@@ -261,19 +262,25 @@ If the rendered version of the above code was something like:
 ```html
 <ul>
   <li ng-repeat="actor in actors">
-	<!-- This <li> has a $scope like : $scope : {actor : "Marshall" , $index :0 , ... } --> 
+	<!-- This <li> has a $scope like :
+		 $scope : {
+			 actor : "Marshall" , 
+			 $index :0 , ... 
+		 } --> 
     {{ actor }}
   </li>
   <li ng-repeat="actor in actors">
-  <!-- This <li> has a $scope like : $scope : {actor : "Ted" , $index :1 , ... } -->
+  <!-- This <li> has a $scope like :
+		 $scope : {
+			 actor : "Marshall" , 
+			 $index :0 , ... 
+		 } --> 
     {{ actor }}
   </li>
   <li ng-repeat="actor in actors">
-  <!-- This <li> has a $scope like : $scope : {actor : "Barney" , $index :2 , ... } -->
     {{ actor }}
   </li>
   <li ng-repeat="actor in actors">
-  <!-- This <li> has a $scope like : $scope : {actor : "Robin" , $index :3 , ... } -->
     {{ actor }}
   </li>
 </ul>
@@ -316,13 +323,18 @@ Add this to `mian.js`:
 ```javascript
 myApp.directive('titleEditor', function() {
   return {
-    restrict: 'AE', // how this directive can be used. <attribute> and <element> in this case
+    restrict: 'AE', // how this directive can be 
+				    //used. <attribute> and <element> in this case
+				    
     // scope: true, // isolated scope
+    
     template: '<h1> I Am poped inside from a directive! </h1>' +
       ' <p>{{ directiveData }}</p> <p>{{ Title }}</p>',
+      
     // controller: function($scope) {
     //     $scope.directiveData = "I Live inside the directive!";
     //   }, // custom controller for this directive
+    
     link: function(scope, iElem, iAttr, ctrl) {
       console.log(scope, iElem, iAttr, ctrl);
     }
@@ -344,9 +356,9 @@ With all things said, let's start examining the directive. Look the `titleEditor
 
 ```html
 <body ng-app="myApp">
-	<div ng-controller="mainCtrl">
-		<title-editor></title-editor>
-	</div>
+  <div ng-controller="mainCtrl">
+    <title-editor></title-editor>
+  </div>
 </body>
 ```
 
@@ -381,15 +393,18 @@ Speaking of the devil.. I mean controllers and scopes, let's uncomment the contr
 
 ```javascript
 return { 
-	...
-	template: '<h1> I Am poped inside from a directive! </h1>' +
-      ' <p>{{ directiveData }}</p> <p>{{ $parent.Title }}</p>', // Should be the same as defined inside mainCtrl 
+  ...
+  template: '<h1> I Am poped inside from a directive! </h1>' +
+    ' <p>{{ directiveData }}</p> ' + 
+    '<p>{{ $parent.Title }}</p>', // Should be the same as
+	                              // defined inside mainCtrl 
     ...  
-    controller: function($scope) {
-       $scope.directiveData = "I Live inside the directive!";
-       console.log($scope.$parent.Title); // Should be the same as defined inside mainCtrl 
-    }, // custom controller for this directive
-    ...
+  controller: function($scope) {
+     $scope.directiveData = "I Live inside the directive!";
+     console.log($scope.$parent.Title); // Should be the same as
+                                        // defined inside mainCtrl 
+  }, 
+  ...
 }
 ```
 
@@ -408,19 +423,19 @@ What this means is that a property named `parentTitle` will be added to the **Is
 ```javascript
 // inside main.js directive function
 scope: {
-      'parentTitle': '@title'
-    },
-    template: '<h1> I Am poped inside from a directive! </h1>' +
-      ' <p>{{ directiveData }}</p>' +
-      '<p> i am $parent.Title : {{ $parent.Title }} </p>' + // the bad way
-      '<p> i am parentTitle : {{ parentTitle }} </p>' , // the GOOOOOOD way 
-    controller: function($scope) {
-        $scope.directiveData = "I Live inside the directive!";
-        console.log($scope.$parent.Title); // the bad way 
-        console.log($scope.parentTitle); // the GOOOOD way!
-    }, // custom controller for this directive
-    // link and ... 
-}
+  'parentTitle': '@title'
+},
+template: '<h1> I Am poped inside from a directive! </h1>' +
+  ' <p>{{ directiveData }}</p>' +
+  '<p> i am $parent.Title : {{ $parent.Title }} </p>' + // the bad way
+  '<p> i am parentTitle : {{ parentTitle }} </p>' , // the GOOOOOOD way 
+controller: function($scope) {
+  $scope.directiveData = "I Live inside the directive!";
+  console.log($scope.$parent.Title); // the bad way 
+  console.log($scope.parentTitle); // the GOOOOD way!
+}, // custom controller for this directive
+
+// link and ... 
 ```
 
 And inside your html file: 
@@ -446,8 +461,8 @@ So what was the deal with that mysterious `@`? There are basically 3 main ways t
 	```
 	
 	this means that the value that we provided to the `title=""` attribute, `{{Title}}`, will be resolved and then binded to `parentTitle` of the directive's scope. Since DOM attributes are ***strings*** by nature, the values bounded to the scope are also strings by nature. Try something like `<title-editor title="Some String and a template : {{Title}}"></title-editor> ` and explain to yourself how this works. 
-3. `=` binds a **Two way** data to a local property. this might look similar to the last one, but there is crucial difference between `=` and `@`. `@` interprets an expression as ***string*** and then just passes it down to directive's scope. But `=` knows that there is going to be a binding between  **Properties** (AKA. a **Models**) of the two scopes, so it actually does not expect to see something like `{{ Title }}`, instead the **Name** of that  **property**. Long story short, if you want to achieve the same thing with two way data binding, you should to something like: `<title-editor title="Title"></title-editor>` and `scope: {'parentTitle': '=title'}`.
- 3. The `<` works exactly the same as `=` but it has a one way flow of data, **meaning that changes in parent scope will reflect on child scope, but changes on child scope will not reflect on the parent scope.**  
+2. `=`  - binds a **Two way** data to a local property. this might look similar to the last one, but there is crucial difference between `=` and `@`. `@` interprets an expression as ***string*** and then just passes it down to directive's scope. But `=` knows that there is going to be a binding between  **Properties** (AKA. a **Models**) of the two scopes, so it actually does not expect to see something like `{{ Title }}`, instead the **Name** of that  **property**. Long story short, if you want to achieve the same thing with two way data binding, you should to something like: `<title-editor title="Title"></title-editor>` and `scope: {'parentTitle': '=title'}`.
+3. `<` - works exactly the same as `=` but it has a one way flow of data, **meaning that changes in parent scope will reflect on child scope, but changes on child scope will not reflect on the parent scope.**  
 
 There is one last way, which we do not fully cover here, `&` is only for when we want to pass an executable expression to a child scope and is (in my experience) rarely used. for more info on scope binding types, see [this link](https://docs.angularjs.org/api/ng/service/$compile#directive-definition-object).
 
@@ -607,7 +622,6 @@ Don't take this the wrong way, you have not learned *everything* yet, but believ
 ### More ideas to hack around with 
 
  - Try writing a custom `ng-click` that has the exact same API as Angular's `ng-click` but it outputs a log of each click event to the console every time a click event occurs. Imagine you need it for debugging or testing purposes. Call it something like `click-log='...'`. Keep in mind that you probably need to use the `&` notation for passing a function to the isolated scope of your directive. So get your hands dirty with jumping into Angular guides on directive!
- - 
 
 ### Referencing a module{#ref-a-module}
 
