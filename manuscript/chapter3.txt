@@ -617,13 +617,13 @@ For the rest of this book, we refer to all of `.service()`, `.factory()`, `.cons
 
 Don't take this the wrong way, you have not learned *everything* yet, but believe me, what you have learned untill here is probably the only *conceptual* thing that you need to know about Angular 90% of the times. From here on, in the next chapters, we will focus more on technical details, tricks and solutions to well known problems.
 
-## Further reading and challenges{#further-reading-3}
+## Further reading and challenges {#further-reading-3}
 
 ### More ideas to hack around with 
 
  - Try writing a custom `ng-click` that has the exact same API as Angular's `ng-click` but it outputs a log of each click event to the console every time a click event occurs. Imagine you need it for debugging or testing purposes. Call it something like `click-log='...'`. Keep in mind that you probably need to use the `&` notation for passing a function to the isolated scope of your directive. So get your hands dirty with jumping into Angular guides on directive!
 
-### Referencing a module{#ref-a-module}
+### Referencing a module {#ref-a-module}
 
 In our code, we named the variable containing the module `var myApp = angular.module(.. ` and used it for further reference. there is actually another common way to do this. 
 
