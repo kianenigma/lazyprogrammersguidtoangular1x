@@ -1,6 +1,10 @@
 # Appendix and further reading
 
+Congratulations! you are almost done with this book. In this last chapter, we are going to cover some of the missed point that weren't really fit for any of the previous chapter (or I just wanted to spare them for this chapter!)
+
 ## a better way for injecting (minify) 
+
+## Constants and providers
 
 ## Two types of people: self vs $scope
 
@@ -11,4 +15,6 @@
 ## Controller before destroy
 
 ## Style guide and best practices
+
+## Where to go next?
 

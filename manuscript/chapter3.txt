@@ -54,9 +54,11 @@ The second argument is an empty array indication module dependencies. Which is f
 
 Now, when this module want's to take control of the HTML in the future, it must have an idea of which portion of our HTML. This could be done using the `ng-app` ***directive***. we'll discuss directives later on, for now just think about it as an indicator that links a **module** (Javascript logic ), to a **portion of HTML**. We'll assign this module to our entire `<body>` tag for now.
 
-{title="Example 12: Creating a class in Ruby", lang=html}
+{title="A bare bode module", lang=html}
 ~~~~~~~
+# leanpub-start-insert
 <body ng-app="myApp">
+# leanpub-end-insert
   <h3>
     Hello Angular!
   </h3>

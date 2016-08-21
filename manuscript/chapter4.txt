@@ -1134,5 +1134,9 @@ There are two small considerations about this technique. First, it might violate
 
 ### Further reading and challenges and the code: 
 
+#### Note on $parent and scopes inheritance?
+
+
 The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/9de4155a051423134bf9e5bad6a88798ed422fb2).
+
 
