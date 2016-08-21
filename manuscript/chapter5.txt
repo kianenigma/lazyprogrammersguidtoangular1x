@@ -1,16 +1,16 @@
 # Module lifecycle and configuration
 
-So far, all that we have learned was about the world inside a module. All that we have learned about a ***Module*** was this: 
+So far, all that we have learned was about the world inside a module. All that we have learned about a ***Module*** was this:
 
-Call a constructor with a name and it somehow magically enables you too bootstrap an application that can have some controllers and 
+Call a constructor with a name and it somehow magically enables you too bootstrap an application that can have some controllers and
 
-```javascript 
-var someApp = angular.module('someApp', []); 
+```javascript
+var someApp = angular.module('someApp', []);
 ```
 
 But there has to more that that, right? It indeed is, the main functionality (at least from our point of view) of a module is to provide a set of `run` and `configuration` blocks that get applied during the bootstrap process, before the actual app starts!
 
------ 
+-----
 
 ## Module Configuration and Run block
 
@@ -27,32 +27,32 @@ app.controller('name', function($scope, $http, someService) {
 })
 ```
 
-Now let's go back to the definition. 
+Now let's go back to the definition.
 
 - The configuration block is applied ***during the provider registrations and configuration phase***.
-- The run block is applied ***after the injector is created***. 
+- The run block is applied ***after the injector is created***.
 
-This can be translated into this: 
+This can be translated into this:
 
 - The configuration block is applied for configuring providers, not services themselves
-- The run block is applied ***after the injector is created***. 
+- The run block is applied ***after the injector is created***.
 
-And long story, from your point of view, what matters is that: You can’t inject your own services and bootstrap them or configure them inside a configuration block, but run blocks can be used for this purpose. 
+And long story, from your point of view, what matters is that: You can’t inject your own services and bootstrap them or configure them inside a configuration block, but run blocks can be used for this purpose.
 
-So what is the point of having a `configuration` block if service can cont be used inside them? Well, there is a reason for everything! 
+So what is the point of having a `configuration` block if service can cont be used inside them? Well, there is a reason for everything!
 There are a set of very important objects in angular named `Providers`, we mentioned them in the early chapters briefly and said they are like a service, but it is like a parent to all of other service types. It can create objects and return them, but services are a singleTon object that just expose a set a functions or values. To abstract this, Angular itself has
 
 - $http Service
-- $http Provider 
+- $http Provider
 
-And Http provider is actually what creates the `$http` service and passes is out, when it is being injected. 
+And Http provider is actually what creates the `$http` service and passes is out, when it is being injected.
 
-And recall from above, ***Providers*** can be configured inside `configuration`. As an example we will see in this chapter that there is a good probability that you want to modify something inside the `$http`, say you want to add a header to all of the outgoing requests. `$httpProvider` can be used and configured inside configuration block to do this. 
+And recall from above, ***Providers*** can be configured inside `configuration`. As an example we will see in this chapter that there is a good probability that you want to modify something inside the `$http`, say you want to add a header to all of the outgoing requests. `$httpProvider` can be used and configured inside configuration block to do this.
 
 -----
 
-## Modifying HTTP Provider 
-As mentioned above, it is very likely that you wish to add a specific value to all of your http request. `JSON Web Tokes`, for example, are usually sent to server inside a specific header, like any other authentication mechanisms. To achieve this, you can either app them manually: 
+## Modifying HTTP Provider {#ch5-intercept}
+As mentioned above, it is very likely that you wish to add a specific value to all of your http request. `JSON Web Tokes`, for example, are usually sent to server inside a specific header, like any other authentication mechanisms. To achieve this, you can either app them manually:
 
 ```javascript
 $http({
@@ -62,41 +62,41 @@ $http({
 })
 ```
 
-To each request, which is madness! 
+To each request, which is madness!
 
-Another cleaner way might be to write a service to manage http requests. The controllers will ask this service to make the call, and this service will know how to send the request. A general markup for this service could be something like this: 
+Another cleaner way might be to write a service to manage http requests. The controllers will ask this service to make the call, and this service will know how to send the request. A general markup for this service could be something like this:
 
-```javascript 
+```javascript
 app.factory('cutomHttp', function($http) {
 	return : {
 		get: function(url, data) {
 			$http({
 				method: "GET",
 				headers: {'something-for-all': 'data'},
-				data: data, 
+				data: data,
 				url: url
 			})
 				.then(
 					function() {
 						// do something with promise
-					}, 
+					},
 					function() {
-						// do something with promise 
+						// do something with promise
 					}
 				)
 		}
 	}
-	
+
 })
 ```
 
-Although such service, if implemented correctly (the above code is far from being correct, it was meant to just give you a sense) could be something to rely on, I don't personally suggest this because Angular provides a way to achieve this is a much more sophisticated way. 
+Although such service, if implemented correctly (the above code is far from being correct, it was meant to just give you a sense) could be something to rely on, I don't personally suggest this because Angular provides a way to achieve this is a much more sophisticated way.
 
 ### HTTP Interceptors
 
-Angular uses a pipeline for both sending and receiving a http request. This means that each http request, before being sent out, will pass through an array of functions, and same story when being received. each of these functions inside the array (aka *Interceptor*) have access to the data associated with the request, its configuration such as url and headers. you can even use these interceptors as filters, check some conditions and if they are met, change the data being sent with the request, or even change its url! 
+Angular uses a pipeline for both sending and receiving a http request. This means that each http request, before being sent out, will pass through an array of functions, and same story when being received. each of these functions inside the array (aka *Interceptor*) have access to the data associated with the request, its configuration such as url and headers. you can even use these interceptors as filters, check some conditions and if they are met, change the data being sent with the request, or even change its url!
 
-Lets see these interceptors in action. 
+Lets see these interceptors in action.
 
 Add the following `.config()` block to your application, immediately after defining `myApp`:
 
@@ -106,11 +106,11 @@ myApp.config(function ($httpProvider) {
 })
 ```
 
-As mentioned before, `$httpProvider` is the provider responsible for creating `$http` and other related services, and configuring them. 
+As mentioned before, `$httpProvider` is the provider responsible for creating `$http` and other related services, and configuring them.
 
-You can see in your logs that an `interceptors` array does live inside `$httpProvider`. But so far, it is empty. 
+You can see in your logs that an `interceptors` array does live inside `$httpProvider`. But so far, it is empty.
 
-Let's fill this array! Any interceptor added to this array must met the following conditions: 
+Let's fill this array! Any interceptor added to this array must met the following conditions:
 
 - It must be a factory (there are some backdoor ways to mock a service, but let's think about the right way here!)
 - The factory can expose one or more of the following keys as a public API :
@@ -119,7 +119,7 @@ Let's fill this array! Any interceptor added to this array must met the followin
   3. `response`: In contrast to `request` key,  this function gets called right after the response has arrived. The response object can be modified in the function and then returned for further usage.
   4. `responseError`: A response might be caught by the responseError either because of being rejected by previous response interceptors, or because of any server errors, which is equal to having a response statusCode, like 500 or 404.
 
-Let's create an interceptor, in the simplest way possible and see what we can do with it: 
+Let's create an interceptor, in the simplest way possible and see what we can do with it:
 
 ```javascript
 myApp.factory("customInterceptor", function() {
@@ -132,7 +132,7 @@ myApp.factory("customInterceptor", function() {
 			return response
 		},
 		responseError: function(response) {
-			console.log('responseError', response); 
+			console.log('responseError', response);
 			return response
 		}
 	}
@@ -149,20 +149,20 @@ Now go and play around with the github search that we had before. Since we are m
 
 One important key to notice here is that we did not injected `customInterceptor` into the ``.config()` block, ***because we weren't allowed to do so***! Config loops run before all of the services and factories are initialized, as you remember. Instead, we just passed a name to the `$httpProvider.interceptors.push()` so that later on, when an actual instance of `customInterceptor` is created, it can be used.
 
-### Interceptors for authentication 
+### Interceptors for authentication
 
-Using auth interceptor for authentication should be now clear to you. We can't cover this entirely now, because we need an actual REST API with authentication and so on and so on! But at least we can talk about it briefly. 
+Using auth interceptor for authentication should be now clear to you. We can't cover this entirely now, because we need an actual REST API with authentication and so on and so on! But at least we can talk about it briefly.
 
 Assume that you have a `.factory()`, name **AuthService** and this service checks the localStorage of user browser to see if an access token exists or not, and perform token refreshing operation etc.
 
-The simplest form of adding a token to all of your http request be done like this: 
+The simplest form of adding a token to all of your http request be done like this:
 
 ```javascript
 myApp.factory("customInterceptor", function(AuthService) {
 	return {
 		request: function(config) {
 			if ( AuthService.hasToken ) {
-				config.headers.auth = AuthService.getToken() ; 
+				config.headers.auth = AuthService.getToken() ;
 			}
 			return config ;
 		} ,
@@ -171,52 +171,52 @@ myApp.factory("customInterceptor", function(AuthService) {
 })
 ```
 
-### Interceptors for error handling 
+### Interceptors for error handling
 
 One very useful application of interceptors is global error handling.
-Consider a larger application, which many many AJAX calls, and each of them could go wrong for different reason. The least that you want to do is to have an error box, a modal informing the user that some error has happened. 
+Consider a larger application, which many many AJAX calls, and each of them could go wrong for different reason. The least that you want to do is to have an error box, a modal informing the user that some error has happened.
 
-The Horrible way to do this would be to repeat the same operation on each error callback 
+The Horrible way to do this would be to repeat the same operation on each error callback
 
-```javascript 
+```javascript
 $http.get(url1).then(
-	function success() {}, 
+	function success() {},
 	function error() {
 		// some sort of error handling
 	}
 )
 
 $http.get(ur2).then(
-	function success() {}, 
+	function success() {},
 	function error() {
 		// again
 		// some sort of error handling
 	}
 )
 
-// you are going to hell! 
+// you are going to hell!
 ```
 
-If you want to act cleaver, you would create a general error handling service/directive - or just a function - to avoid code duplication in this scenario. This is a good solution. I am not against it and have used it personally. 
+If you want to act cleaver, you would create a general error handling service/directive - or just a function - to avoid code duplication in this scenario. This is a good solution. I am not against it and have used it personally.
 
-But if you even want to make thing more easier, and more clean, you should use the `responseError` key inside the interceptor. It is pretty clear how to do this, but just to remind you about it, recall our last plain interceptor. As you might have inspected, any error such as 404 etc. will be caught inside `responseError`: 
+But if you even want to make thing more easier, and more clean, you should use the `responseError` key inside the interceptor. It is pretty clear how to do this, but just to remind you about it, recall our last plain interceptor. As you might have inspected, any error such as 404 etc. will be caught inside `responseError`:
 
-```javascript 
+```javascript
 myApp.factory("customInterceptor", function() {
 	return {
 		responseError: function(response) {
-			// show an error message here, displaying some serve side errors or status code or .. 
+			// show an error message here, displaying some serve side errors or status code or ..
 			return response
 		}
 	}
 })
 ```
 
-Cool thing here is that, if this level of error handling is enough, you can even omit handling the error callback of `$http()`. 
+Cool thing here is that, if this level of error handling is enough, you can even omit handling the error callback of `$http()`.
 
-We can take this even one step further and change the callback that will be called after interceptors pipeline is over, in other words, even when a request has come back with an error status code, we can give it another try (in any way, think of a simple resend in the simplest case) and if it succeeds, pass it to the success callback. 
+We can take this even one step further and change the callback that will be called after interceptors pipeline is over, in other words, even when a request has come back with an error status code, we can give it another try (in any way, think of a simple resend in the simplest case) and if it succeeds, pass it to the success callback.
 
-To achieve this, we should get familiar with a library used by Angular to handle promises, `$q`. Before going to the next section about this library, Let's stop for a second and think about how we are placing our application components (by component I simply mean just a pice of code doing specific task). We mentioned before that the error handling could be used inside the callback of a `$http` call, even in a smart way. But we introduced another ***better*** way. Same story applies to request recovery or retry. We ***COULD*** simply give a request a second chance inside the error callback, whats wrong with that? *nothing in particular*. It is not going to be some evil code that will crash definitely and so forth. But let me say it this way: ***it wouldn't be a clean and beautiful code that you're going to love forever***. Why is that? I have mentioned before that codes with a specific task should be separated in Angular. We enforced using a service for making http calls, not the controller, like ten time until now. Here, we are separating the code for the same reason again. 
+To achieve this, we should get familiar with a library used by Angular to handle promises, `$q`. Before going to the next section about this library, Let's stop for a second and think about how we are placing our application components (by component I simply mean just a pice of code doing specific task). We mentioned before that the error handling could be used inside the callback of a `$http` call, even in a smart way. But we introduced another ***better*** way. Same story applies to request recovery or retry. We ***COULD*** simply give a request a second chance inside the error callback, whats wrong with that? *nothing in particular*. It is not going to be some evil code that will crash definitely and so forth. But let me say it this way: ***it wouldn't be a clean and beautiful code that you're going to love forever***. Why is that? I have mentioned before that codes with a specific task should be separated in Angular. We enforced using a service for making http calls, not the controller, like ten time until now. Here, we are separating the code for the same reason again.
 
 The controller's duty is to **control the data on the UI**. So we moved the http calls to a service. Could we make a http call inside the controller? ***Yes but it would ugly as hell***.
 
@@ -224,39 +224,39 @@ And now
 
 The http requests's duty is to make a call with appropriate payload, and return it to someone, if the response comes. So we move the logic about *showing error message or retry* (which are irrelevant) away. could we do error handling inside an http callback? ***Absolutely, but it would be ugly as hell, again!***
 
-We'll discuss these issues about module and component cohesion and coupling later on in a separate chapter. 
+We'll discuss these issues about module and component cohesion and coupling later on in a separate chapter.
 
 ### Perform Async operations using $q
 
-We briefly described `$q` before as a tool for creating promises. He also mentioned how to use a promise (with `.then()`) and saw it in action with `$http`. Now, we're going to see how to create promises, or change their behaviors. 
+We briefly described `$q` before as a tool for creating promises. He also mentioned how to use a promise (with `.then()`) and saw it in action with `$http`. Now, we're going to see how to create promises, or change their behaviors.
 
 To recap on the operation of a promises, consider a simple mock async operation with `timeOut`. The function simple takes some time to finish. If this function wants to leverage the promise capabilities, it should:
 
-1. create a deferred object and return in at soon as possible (aka. `$q.defer()`). 
-2. It should then perform its operation, and when desired, call one of the methods of the deferred object, `.reject()` or `.resolve()`. 
+1. create a deferred object and return in at soon as possible (aka. `$q.defer()`).
+2. It should then perform its operation, and when desired, call one of the methods of the deferred object, `.reject()` or `.resolve()`.
 
-The returned deferred object, is actually the object that has that `.then()` method, which we saw a lot! 
+The returned deferred object, is actually the object that has that `.then()` method, which we saw a lot!
 
-To make this more clear, consider the following snippet: 
+To make this more clear, consider the following snippet:
 
-```javascript 
-// assume that Angular's $q is available 
+```javascript
+// assume that Angular's $q is available
 
 var someAsyncFn = function (name) {
 	// create the promise object, aka the deferred object
 	var defer = $q.defer() ;
-	
+
 	// prepare for async operatio
 	setTimeout(funciton() {
 		if ( canHello ) { // some condition, trivial
 			defer.resolve('resolve message') ;
 		} else {
-			defer.reject('reject reason'); 
+			defer.reject('reject reason');
 		}
-	}, 10000); 
-	
+	}, 10000);
+
 	// this promise will have a .then method!
-	// note that we return the promise, 
+	// note that we return the promise,
 	// but to timeOut has not yet executed!
 	return defer.
 	promise
@@ -264,63 +264,63 @@ var someAsyncFn = function (name) {
 
 // to call Async
 
-var deferredPromise = someAsyncFn('Ted'); 
+var deferredPromise = someAsyncFn('Ted');
 
 deferredPromise.then(
-	function (message) { /* note that the message that we passed to .resolve() will come here! */ }, 
+	function (message) { /* note that the message that we passed to .resolve() will come here! */ },
 	function (reason) {}
 )
 
 ```
 
-And that's it with promises! Although there is more to it than this, but this is enough to get you started at this point. 
+And that's it with promises! Although there is more to it than this, but this is enough to get you started at this point.
 
-Another good news is that now, you almost completely know how and why each of the callbacks of the promise after an http call gets invoked. So the `$http` will return a promise, and this promise will get rejected or resolved somewhere along the way.. interesting .. 
+Another good news is that now, you almost completely know how and why each of the callbacks of the promise after an http call gets invoked. So the `$http` will return a promise, and this promise will get rejected or resolved somewhere along the way.. interesting ..
 
-Let's reveal another piece of information, and after that, I will to see a lightbulb above your head, indicating that you have suddenly understood how to manipulate the promise callbacks, in other words, how to make pass a request from the `responseError` to `successCallback` (aka first callback) of the http promise. Here is goes: 
+Let's reveal another piece of information, and after that, I will to see a lightbulb above your head, indicating that you have suddenly understood how to manipulate the promise callbacks, in other words, how to make pass a request from the `responseError` to `successCallback` (aka first callback) of the http promise. Here is goes:
 
-A quote from AngularJS website : 
+A quote from AngularJS website :
 
-> request: interceptors get called with a http config object. The function is free to modify the config object or create a new one. ***The function needs to return the config object directly, or a promise containing the config or a new config object***. 
+> request: interceptors get called with a http config object. The function is free to modify the config object or create a new one. ***The function needs to return the config object directly, or a promise containing the config or a new config object***.
 
-(The bolded rule applies for all four of the `request`, `response`, `responseError`, `requestError`); 
+(The bolded rule applies for all four of the `request`, `response`, `responseError`, `requestError`);
 
 You saw that? This means that we must not always return the config object, instead we can return a promise, and if we later call the resolve on that promise? Or reject it? You got my point!
 
-A pseudo code to show this more realistic could be: 
+A pseudo code to show this more realistic could be:
 
-```javascript 
+```javascript
 myApp.factory("customInterceptor", function($q, AuthService) {
 	// we inject the $q service
 	// and an Imaginary service called AuthService
 	// like the other example about authorization header
-	
+
 	return {
 		responseError: function(response) {
-			// since we know that session expiration is a common 
+			// since we know that session expiration is a common
 			// situation, we check it here
-			
-			if ( response.statusCode == 401 ) { // 401 Unauthorized 
-				// create a defer object 
+
+			if ( response.statusCode == 401 ) { // 401 Unauthorized
+				// create a defer object
 				var defer = $q.defer() ;
-				
+
 				// this refreshing may take some time!
 				AuthService.tryRefreshingSession( function (err, success) {
 					// reject or resolve the promise.
 					if ( err ) {
-						defer.reject(err) ; 
+						defer.reject(err) ;
 					}
 					else {
-						defer.resolve(success) ; 
+						defer.resolve(success) ;
 					}
-				})	
-				
-				return defer.promise; 
+				})
+
+				return defer.promise;
 			}
-			
+
 			else {
-				// the normal situation 
-				return response; 
+				// the normal situation
+				return response;
 			}
 		}
 	}
@@ -328,11 +328,11 @@ myApp.factory("customInterceptor", function($q, AuthService) {
 
 ```
 
-If this code seems too confusing, you could also test this with a much more simpler case! Go the interceptor that we added with logging to our github search. Implement the following `responseError`: 
+If this code seems too confusing, you could also test this with a much more simpler case! Go the interceptor that we added with logging to our github search. Implement the following `responseError`:
 
 ```javascript
 responseError: function (response) {
-      // to test things, we pass the responseError to 
+      // to test things, we pass the responseError to
       // success callback by calling resolve
       console.log('responseError', response);
       return $q.resolve(response);
@@ -341,7 +341,7 @@ responseError: function (response) {
 
 ```
 
-Place some logs after inside `$http({}).then()` and see for yourself that when you search a username that does not exist, and status code is 404, which callback gets called? Since we are resolving all failed requests, the error callback will not be called. 
+Place some logs after inside `$http({}).then()` and see for yourself that when you search a username that does not exist, and status code is 404, which callback gets called? Since we are resolving all failed requests, the error callback will not be called.
 
 ### Further reading, challenges and the code
 
@@ -351,17 +351,17 @@ Place some logs after inside `$http({}).then()` and see for yourself that when y
 The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/e846695b9873d8a071eb632eedcf5b92b83bd786).
 
 
-## Routing Config 
+## Routing Config
 
-Another common example of using `configuration` block is to set up some routes. Angular uses client side routing to navigate user through different pages inside an application. It's clear that this routing is different from the original browser routing using anchor tags, and the key difference is ***not involving any refreshing***. This method follows the ***Single page application*** guideline, avoiding multiple page refreshing while the user is navigating and working with the application. 
+Another common example of using `configuration` block is to set up some routes. Angular uses client side routing to navigate user through different pages inside an application. It's clear that this routing is different from the original browser routing using anchor tags, and the key difference is ***not involving any refreshing***. This method follows the ***Single page application*** guideline, avoiding multiple page refreshing while the user is navigating and working with the application.
 
 
 ### Crash course on Single page applications
 
-The entire concept of Single Page Application (aka. SPA) is more to cover in this book (you can read more about them at the end of this chapter). Just to give you a minimal view of the difference between SPAs and traditional websites, pay attention to the following comparison: 
+The entire concept of Single Page Application (aka. SPA) is more to cover in this book (you can read more about them at the end of this chapter). Just to give you a minimal view of the difference between SPAs and traditional websites, pay attention to the following comparison:
 
-- In a ***Traditional*** website. in order to complete some task, post a comment for example, you would fill some forms. Then you would hit submit. The page reloads, All of the static content of the website will flushes and has to come back (in some cases, your browser cache helps in this part). You stare at a blank screen for a second or to. Finally you see a message indication that one of your inputs were invalid. After a few tries you post a comment. The pages refreshes again and redirects to a page with list of comments (note that this contains a lot of process on the server too, new database query, new page rendering etc.) and you see the new  list of comments. 
-- In a ***Single Page Application***, You would start filling a form, after hitting submit, you see a mature loading indicating that you should wait.  Client side form validation shows a popup about a form being formed incorrectly. Still no refresh. You refill the form and finally, the form gets sent out and another popup will show that. Since the client side application knows that the request has arrived successfully and the server has responded with a success status, it can add the comment that you've just created to the list of comments that it already has, without needing to bother the server again. 
+- In a ***Traditional*** website. in order to complete some task, post a comment for example, you would fill some forms. Then you would hit submit. The page reloads, All of the static content of the website will flushes and has to come back (in some cases, your browser cache helps in this part). You stare at a blank screen for a second or to. Finally you see a message indication that one of your inputs were invalid. After a few tries you post a comment. The pages refreshes again and redirects to a page with list of comments (note that this contains a lot of process on the server too, new database query, new page rendering etc.) and you see the new  list of comments.
+- In a ***Single Page Application***, You would start filling a form, after hitting submit, you see a mature loading indicating that you should wait.  Client side form validation shows a popup about a form being formed incorrectly. Still no refresh. You refill the form and finally, the form gets sent out and another popup will show that. Since the client side application knows that the request has arrived successfully and the server has responded with a success status, it can add the comment that you've just created to the list of comments that it already has, without needing to bother the server again.
 
 In the Second scenario, both the server and the client had less to do and worked more efficiently, and definitely a better user experience will be delivered to the user.
 
@@ -369,7 +369,7 @@ So far we have learned some of the techniques required to deliver a better user 
 
 ### Client side routing with ngRoute
 
-Enough with details, let's go the real deal. In order t enable Angular routing in your application you need to another module to your application, `ngRoute`, you can get it from the official github repository, bower, a CDN etc. 
+Enough with details, let's go the real deal. In order t enable Angular routing in your application you need to another module to your application, `ngRoute`, you can get it from the official github repository, bower, a CDN etc.
 
 ```html
 <script src="path/to/angular.js"></script>
@@ -377,44 +377,44 @@ Enough with details, let's go the real deal. In order t enable Angular routing i
 <script src="path/to/your/files,js"></script>
 ```
 
-Note that this should be included after Angluar and before your javascript files. 
+Note that this should be included after Angluar and before your javascript files.
 
 After including the script, you have to indicate that our application module, `myApp`, depends on `ngRoute`, but how? Remember that empty array that was always there inside the module constructor? That's how!
 
 ```javascript
-var myApp = angular.module('myApp', ['ngRoute']) ; 
+var myApp = angular.module('myApp', ['ngRoute']) ;
 ```
 
-That's it! each module has a unique name, our module is called `myApp` as an example. By adding the unique to the array, we define module dependencies. Of course, you need to have the appropriate javascript file linked inside your main HTML file, if required. 
+That's it! each module has a unique name, our module is called `myApp` as an example. By adding the unique to the array, we define module dependencies. Of course, you need to have the appropriate javascript file linked inside your main HTML file, if required.
 
-Next, we must add some routing configurations. As the name suggests, this must happen inside the `.cinfig()` block. We are going to modify the `$routeProvider` to define some routes. 
+Next, we must add some routing configurations. As the name suggests, this must happen inside the `.cinfig()` block. We are going to modify the `$routeProvider` to define some routes.
 
 
-The bare minimum configuration of a route is: 
+The bare minimum configuration of a route is:
 
 - A templateUrl
 - A controller
 - Defining the route entry point, aka `ng-view` directive
 
-The first two should be clear to you. for each route, we define which html file shoudl be displayed, and which controller should take control over it. The last thing to define is the `ng-view` directive. This directive indicates the parent tag, inside which the html file indication by `templateUrl` should be shown. For example, if you want to have the entire page change with navigation, you could simple apply `ng-view` to the `<body>` tag. If you wanted to have a fix header and footer inside your application, you could do something like: 
+The first two should be clear to you. for each route, we define which html file shoudl be displayed, and which controller should take control over it. The last thing to define is the `ng-view` directive. This directive indicates the parent tag, inside which the html file indication by `templateUrl` should be shown. For example, if you want to have the entire page change with navigation, you could simple apply `ng-view` to the `<body>` tag. If you wanted to have a fix header and footer inside your application, you could do something like:
 
 ```html
 <body ng-app="myApp">
-	<div class="header"> 
+	<div class="header">
 		header content
 	</div>
-	
+
 	<div ng-view></div> // Routing will change the content of this
-	
+
 	<div class="footer">
 		footer content
-	</div> 
+	</div>
 </body>
 ```
 
-In fact, let's inplemetn something similar to this! 
+In fact, let's inplemetn something similar to this!
 
-Go to the html file that we had before. remove the entire content and put it inside a seperate file inside `view/home.html` (relative to your `index.html`). ***Remove*** the `ng-controller` from it because we will soon define the controller inside the route config. Place this inside your body tag: 
+Go to the html file that we had before. remove the entire content and put it inside a seperate file inside `view/home.html` (relative to your `index.html`). ***Remove*** the `ng-controller` from it because we will soon define the controller inside the route config. Place this inside your body tag:
 
 ```html
 <div class="nav">
@@ -436,11 +436,11 @@ Go to the html file that we had before. remove the entire content and put it ins
 <div class="container" ng-view></div>
 ```
 
-Next, go to your `.config()` block inside `main.js` file and and place the following config : 
+Next, go to your `.config()` block inside `main.js` file and and place the following config :
 
 ```javascript
 myApp.config(function ($httpProvider, $routeProvider) {
-  // What we had before 
+  // What we had before
   $httpProvider.interceptors.push('customInterceptor');
 
   $routeProvider
@@ -456,19 +456,19 @@ myApp.config(function ($httpProvider, $routeProvider) {
 })
 ```
 
-As the routing suggests, go and create `github.html` and `about.html` and put some trivial content inside them. 
+As the routing suggests, go and create `github.html` and `about.html` and put some trivial content inside them.
 
-So far so good. This must be enough for your app to load as ngView! refresh your app. You should now see the new nav bar at the top of the page. Also, the content of `view/home.html` must be rendered below it. But something seems wring inside it! yes. because currently has no cotroller (Just to help you catch up, you can download the snapshot of the code form [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/4c12ca44bbd6f422309ab000f620478bd05f47b0)). 
+So far so good. This must be enough for your app to load as ngView! refresh your app. You should now see the new nav bar at the top of the page. Also, the content of `view/home.html` must be rendered below it. But something seems wring inside it! yes. because currently has no cotroller (Just to help you catch up, you can download the snapshot of the code form [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/4c12ca44bbd6f422309ab000f620478bd05f47b0)).
 
-Next, add just a single line to configuration of your `/` path : 
+Next, add just a single line to configuration of your `/` path :
 
-```javascript 
+```javascript
 .when("/", {
       templateUrl: "/view/home.html",
       controller: 'mainCtrl'
 })
 ```
-now you should be able to see all of the previous demos working. Next add the follwoing values to `href` on links on the navbar. 
+now you should be able to see all of the previous demos working. Next add the follwoing values to `href` on links on the navbar.
 
 ```html
 <ol class="breadcrumb">
@@ -484,39 +484,39 @@ now you should be able to see all of the previous demos working. Next add the fo
 </ol>
 ```
 
-Keep in mind that all of this navigation must happen inside the browser! If you don't start the route names with a `#` it will not be treated as client side routing, a full refresh will pappen and that is not what we wanted! There a way to get rid of this `#`, which will be mentioned at the end if this chapter. 
+Keep in mind that all of this navigation must happen inside the browser! If you don't start the route names with a `#` it will not be treated as client side routing, a full refresh will pappen and that is not what we wanted! There a way to get rid of this `#`, which will be mentioned at the end if this chapter.
 
 At this point, you should be able to navigate through your app with the links at the top of the page. One thing to notice is that we did not declare a controller for rest of our routes. No worries, they are optional.
 
-The last point that might catch your eye is that since we had an http interceptor monitoring and logging the entire requests going in and out, now you can see that a request for the html file corresponding to each html page will be made as we navigate in our application. This helps reducing the total size of the static content transferred to client. 
+The last point that might catch your eye is that since we had an http interceptor monitoring and logging the entire requests going in and out, now you can see that a request for the html file corresponding to each html page will be made as we navigate in our application. This helps reducing the total size of the static content transferred to client.
 
 
 
 ### Controlling the route using $location
 
-Is's likely that you don't want to change your route with an anchor tag. Perhaps you want to navigate the user using a logic implemented inside a controller, a service etc. These are all possible using the $location service. This service is a wrapper around the `window.location` and enables us to operate on the current location. 
+Is's likely that you don't want to change your route with an anchor tag. Perhaps you want to navigate the user using a logic implemented inside a controller, a service etc. These are all possible using the $location service. This service is a wrapper around the `window.location` and enables us to operate on the current location.
 
 You can list all of the functions that `$location` has [here](https://docs.angularjs.org/api/ng/service/$location), but the one that we want to use particularly is `.path()`. this function is a getter/setter function, meaning that if you call it with no parameters, it will return the current path. And if you call it with a parameter, it will set that parameter as the current path.
 
-As an example, assume that you wish to place a custom back button inside the github page. First, we need to add a controller for this page. Also, create a function inside this page to navigate us back to home page. 
+As an example, assume that you wish to place a custom back button inside the github page. First, we need to add a controller for this page. Also, create a function inside this page to navigate us back to home page.
 
 ```javascript
 myApp.controller('githubCtrl', function($scope, $location) {
 	$scope.homePath = function () {
-		$location.path('/'); 
+		$location.path('/');
 	}
-}) 
+})
 ```
 
-Note that we do not need to place the `#` here since Angular will take care of it for us. 
+Note that we do not need to place the `#` here since Angular will take care of it for us.
 
-Next, inside the github page template: 
+Next, inside the github page template:
 
 ```html
 <button class="btn btn-warning" ng-click="homePath()"> Back to Home </button>
 ```
 
-And finally, declare this controller for github path. 
+And finally, declare this controller for github path.
 
 ```javascript
 .when("/github", {
@@ -529,19 +529,19 @@ And we're done!
 
 ### Passing route parameters with $route
 
-A query parameter is a parameter embedded inside the URL of the page. It generally has the following format: 
+A query parameter is a parameter embedded inside the URL of the page. It generally has the following format:
 
 ```html
 http[s]://domainName.domain/path?par1=val1&par2=val2&par3=vale3
 ```
 
-Existence of these parameters are optional. You can check this by entering 
+Existence of these parameters are optional. You can check this by entering
 
 ```
 http://127.0.0.1:8080/#/github?a=123123
 ```
 
-inside your browser. As you see, the browser will not pay attention to it. If you wish to just read parameters optionally (which is rare to be honest!), You can access them using a service named `$route`, which holds general information about the current route. In order to access to query parameters, log `$route.current.params` (in fact, log `$route.current` too, much useful information can be found there too!). 
+inside your browser. As you see, the browser will not pay attention to it. If you wish to just read parameters optionally (which is rare to be honest!), You can access them using a service named `$route`, which holds general information about the current route. In order to access to query parameters, log `$route.current.params` (in fact, log `$route.current` too, much useful information can be found there too!).
 
 ```javascript
 myApp.controller('githubCtrl', function ($scope, $location, $route) {
@@ -552,7 +552,7 @@ myApp.controller('githubCtrl', function ($scope, $location, $route) {
 })
 ```
 
-now try entering a URL with some params and see the console for logs. 
+now try entering a URL with some params and see the console for logs.
 
 There is a common case where you want to explicitly define a **path parameter** for one of your routes. Note that **path parameters** are a little more that query parameters. They have the following format:
 
@@ -560,7 +560,7 @@ There is a common case where you want to explicitly define a **path parameter** 
 http://127.0.0.1:8080/#/github/param1/param2
 ```
 
-Path parameters could really distinguish routes from one another. In order to declare for the `/github` path add the following to route config: 
+Path parameters could really distinguish routes from one another. In order to declare for the `/github` path add the following to route config:
 
 ```javascript
 .when("/github/:username", {
@@ -569,11 +569,11 @@ Path parameters could really distinguish routes from one another. In order to de
     })
 ```
 
-Note that parameters inside a path start with `:`. This means that if we now enter `#/github` inside our browser, this path will not be resolved, but any Url a format like `"/github/:username"` will resolve with this path. 
+Note that parameters inside a path start with `:`. This means that if we now enter `#/github` inside our browser, this path will not be resolved, but any Url a format like `"/github/:username"` will resolve with this path.
 
 Enter `"/github/Kianenigma"` inside your browser and see to logs once more. Important thing here is that we can still add some query parameters like `?param=val`. Once again, they're optional.
 
-There is another simpler way for accessing route parameters, a service called `$routeParams`. This is actually just an object containing route and query parameters, if any were available. 
+There is another simpler way for accessing route parameters, a service called `$routeParams`. This is actually just an object containing route and query parameters, if any were available.
 
 ```javascript
 myApp.controller('githubCtrl', function ($scope, $location, $route, $routeParams) {
@@ -583,21 +583,21 @@ myApp.controller('githubCtrl', function ($scope, $location, $route, $routeParams
 })
 ```
 
-You should see that it contains similar values. 
+You should see that it contains similar values.
 
 This chapter contains much more information about routing placed under the ***Further reading*** section. This is because i tried to make the main contents minimal and fluent as possible. If you want to learn a handful of other details about routing, don't consider this chapter over and read the last part!
 
 ### Further reading, challenges and the code
 
-- Read more about single page applications [here](http://singlepageappbook.com/goal.html). 
+- Read more about single page applications [here](http://singlepageappbook.com/goal.html).
 - Challenge: you now have list of repositories, and you know how to navigate to a new page. create a new `repoDetail` route and controller. user should navigate to it after clicking on a repo name inside the list. pass the name of this repo to the controller of this new page, fetch some new datas such as commits, stars and issues of this repo and display them. you can visit [github API](https://developer.github.com/v3/) for more informatin
 - The The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/53d9301a5404d09010fac3a315530bd203802c60)
 
-#### Removing ***The Hash***. 
+#### Removing ***The Hash***.
 
-The hash thing is annoying you, right? Good news, we can get rid of it! And this turns out to be quite easy! In the simplest case, you can inject the `$locationProvider` and call: `$locationProvider.html5Mode(true);` 
+The hash thing is annoying you, right? Good news, we can get rid of it! And this turns out to be quite easy! In the simplest case, you can inject the `$locationProvider` and call: `$locationProvider.html5Mode(true);`
 
-```javascript 
+```javascript
 $locationProvider.html5Mode({
     enabled: true,
     requireBase: false
@@ -612,12 +612,12 @@ But the bad news is that from now on, Your app will no longer refresh in any url
 
 This is bad actually, for Two reasons
 
-- It will drive you crazy during development 
-- In production, sub pages inside your page will not have a unique and valid URL, hence they will not be indexed by search engines which is not good. Solving both the entry point problem and being CEO friendly well beyond the scope of this book and require [server side assistant](http://stackoverflow.com/questions/23311806/how-can-i-handle-a-browser-refresh-in-an-angularjs-spa-application). You can easy find out more about them by searching the topics in google. 
+- It will drive you crazy during development
+- In production, sub pages inside your page will not have a unique and valid URL, hence they will not be indexed by search engines which is not good. Solving both the entry point problem and being CEO friendly well beyond the scope of this book and require [server side assistant](http://stackoverflow.com/questions/23311806/how-can-i-handle-a-browser-refresh-in-an-angularjs-spa-application). You can easy find out more about them by searching the topics in google.
 
-#### Listen to route change events 
+#### Listen to route change events
 
-You can listen to events such as: 
+You can listen to events such as:
 
 - $routeChangeStart
 - $routeChangeSuccess
@@ -631,7 +631,7 @@ $scope.$on("$routeChangeSuccess", function (evt) {
 })
 ```
 
-A safer way, if we want to listen to these events globally is to bind them to $rootScope, and where? If we place them inside individual route controllers, they will be created and destroyed (without being unsubscribed, which is horrible!). The best place is inside the `.run()` block: 
+A safer way, if we want to listen to these events globally is to bind them to $rootScope, and where? If we place them inside individual route controllers, they will be created and destroyed (without being unsubscribed, which is horrible!). The best place is inside the `.run()` block:
 
 ```javascript
 myApp.run(function ($rootScope) {
@@ -641,13 +641,13 @@ myApp.run(function ($rootScope) {
 })
 ```
 
-Here, you have access to all service and create your event listeners. 
+Here, you have access to all service and create your event listeners.
 
-A good way to use these events is to create an error page or global error notification. the $routeChangeError will be fired whenever the user enters an invalid route (assuming  that you don't have the `.otherwise()` config), or when a `resolve` fails (describe in the following section). 
+A good way to use these events is to create an error page or global error notification. the $routeChangeError will be fired whenever the user enters an invalid route (assuming  that you don't have the `.otherwise()` config), or when a `resolve` fails (describe in the following section).
 
-#### Using the .otherwise() 
+#### Using the .otherwise()
 
-an alternative way for having safer routes is to declare an `.otherwise()` at the end. this block will be used if non of the routes match. The common pattern is to use the `redirectTo` key: 
+an alternative way for having safer routes is to declare an `.otherwise()` at the end. this block will be used if non of the routes match. The common pattern is to use the `redirectTo` key:
 
 ```javascript
   $routeProvider
@@ -672,7 +672,7 @@ Go and enter an invalid url like `/blah/blah/blah/fooo/fooo/bazzz` and see where
 
 #### Using resolve for preprocessing on a route
 
-Similar to http provider stack, where a set of functions were executed before each http request, `resolve` has the same functionality for route changes. You can define a set of functions or promises to be executed/resolved before routing to a specific address. 
+Similar to http provider stack, where a set of functions were executed before each http request, `resolve` has the same functionality for route changes. You can define a set of functions or promises to be executed/resolved before routing to a specific address.
 
 The resolve property inside each route will define these prerequisites. Each key inside `resolve` must have a function associated with it. this function can return a value immediately, or it can return a promise. Here we are going to examine it with the promise. In the simplest form, return a promise inside the function and, and never resolve the promise!
 
@@ -695,20 +695,20 @@ The resolve property inside each route will define these prerequisites. Each key
     ...
 ```
 
-This will cause the route to `/github` to be loaded with a 3 second delay, because we are resolving a promise inside after 3 seconds. A good practice is to perform authentication or meta data gathering steps inside `resolve`. 
+This will cause the route to `/github` to be loaded with a 3 second delay, because we are resolving a promise inside after 3 seconds. A good practice is to perform authentication or meta data gathering steps inside `resolve`.
 
-The last cool thing about resolve is that the key name, `repo` is now available inside the `githubCtrl` and the value that we have passed to it as dara will be placed inside it. Check this: 
+The last cool thing about resolve is that the key name, `repo` is now available inside the `githubCtrl` and the value that we have passed to it as dara will be placed inside it. Check this:
 
 ```javascript
 myApp.controller('githubCtrl', function ($scope, repo){
   console.log(repo);
   ..
-}) ; 
+}) ;
 ```
 
 #### Note on href, ng-href, src, ng-src
 
-Angular provides an `ng-` version for almost all common html attributes. The important thing is that some of them, well they don't do much! at least when a static value is being placed inside it. 
+Angular provides an `ng-` version for almost all common html attributes. The important thing is that some of them, well they don't do much! at least when a static value is being placed inside it.
 
 Go and change one of the `ng-href` attributes to `href`. Now navigate inside the app. No difference, right? The key difference is that with ng-href you can use template syntax inside links, which is very helpful
 
@@ -716,15 +716,13 @@ Go and change one of the `ng-href` attributes to `href`. Now navigate inside the
 <a ng-href="http://yourdomain.com/users/{{userId}}/post/{{postId}}">title</a>
 ```
 
-Note that because of this common usage, ng-href is probably one of the only directives that we **must** use `{{}}` inside it. As you might remember, directives like `ng-if`, `ng-model` did not require `{{}}`. 
+Note that because of this common usage, ng-href is probably one of the only directives that we **must** use `{{}}` inside it. As you might remember, directives like `ng-if`, `ng-model` did not require `{{}}`.
 
-Similarly, `src` and `ng-src` behave exactly the same. with `ng-src` you can do things like: 
+Similarly, `src` and `ng-src` behave exactly the same. with `ng-src` you can do things like:
 ```html
 <img ng-href="http://media.domain.com/users/{{userId}}/post/{{postId}}.jpg" />
 ```
 
 #### More sophisticated routing : UI-Router
 
-[Angular-UI router](https://github.com/angular-ui/ui-router) is another alternative for having routing in your app. it offers more flexibility and more functionality such as nested views, easier parameter management etc. But, keep in mind that if your routing requirements are simple, you can still stick to the official `ngRoute` module. it's simpler, minimal and official. 
-
-
+[Angular-UI router](https://github.com/angular-ui/ui-router) is another alternative for having routing in your app. it offers more flexibility and more functionality such as nested views, easier parameter management etc. But, keep in mind that if your routing requirements are simple, you can still stick to the official `ngRoute` module. it's simpler, minimal and official.

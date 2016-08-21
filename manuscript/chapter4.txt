@@ -1,12 +1,11 @@
-
 # Controllers, templates and more!
 
-In the previous chapter, although we learned some very good fundamental details of Angular (specially on controllers and `$scope`) , but the code that we worked on was mostly like a *Hello World* for Angular.
-In this chapter we will learn more technical details of Angular. by technical I mean that they are going to be details that you surely will need to know them and use them in your next Angular project!
+In the previous chapter, although we learned some very good fundamental details of Angular (specially on controllers and `$scope`), but the code that we worked on was mostly like a *Hello World* for Angular.
+In this chapter we will learn more technical details of Angular. by technical I mean that they are going to be details that you will surely need to know them and use them in your next Angular project!
 
 The code for this chapter can be found under a separate folder under the [github repository](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/master/code/chapter4) associated with this project.
 
-As a *heads up* for this chapter, it is good to mention that we are going to learn a LOT in this chapter. and as the name suggests, they are all going to be implemented inside and using a controller. in the next chapter we are going to dedicate our time to revisit all that we learn here to see which of them are suited to be implemented via a **Service** or a **Directive** so they become **Reusable components**.
+As a *heads up* for this chapter, it is good to mention that we are going to learn a LOT in this chapter. and as the name suggests, they are all going to be implemented inside and using a controller. in the next chapters we are going to dedicate our time to revisit all that we learn here to see which of them are suited to be implemented via a **Service** or a **Directive** so they become **Reusable components**.
 
 We are going to start with a single page application with an `index.html` and `main.js` file linked like the previous chapter. I also included twitter bootstrap to make the pages that we create a little bit brighter! if you are not familiar with it, it's just library that you can use a set of css classes it provides to have a better looking HTML.
 
@@ -42,13 +41,13 @@ If you iterate over this object with the same way as we did before, you'll find 
 	...
 ```
 
-We have no access to the `key` of the object and the values are displayed as plain object.
+We have **no access** to the `key` of the object and the values are displayed as plain object.
 
 Two point will solve this:
 
-**First**, you can use `ng-repeat="for (key, value) in someObject"` to have access to both the keys and both the values.
+**First**, you can use `ng-repeat="for (key, value) in someObject"` to have access to both the keys and the values.
 
-**Second**, you should know that Angular's template syntax actually supports a large subset of javascript operation, like : `{{ a + b }}`, `{{ someFunction(someProp) }}`, `{{ someString + ' , I am concatenated! }}'`, so you can use the **dot operation** to access the properties the object associated with a key. Change the html template:
+**Second**, you should know that Angular's template syntax actually supports a large subset of javascript operation, like : `{{ a + b }}`, `{{ someFunction(someProp) }} `,`{{ someString + ' , I am concatenated! }}'`, so you can use the **dot operation** to access the properties the object associated with a key. Change the html template:
 
 ```html
 <li class="list-group-item" ng-repeat="(name, detail) in actors">
@@ -83,7 +82,7 @@ And your HTML to:
 </li>
 ```
 
-There is a problem here! We really don't want the last `,` there. Let's use some template magic to get rid of it:
+There is a problem here! We really don't want the last "`,`" there. Let's use some template magic to get rid of it:
 
 ```html
 <span ng-repeat="bar in detail.bars">
@@ -91,23 +90,23 @@ There is a problem here! We really don't want the last `,` there. Let's use some
 </span>
 ```
 
-As you see, we used an if statement to check the index of the bar being printed, with the length of all of the bars, and when we reach the last one, we omit the `,`
+As you see, we used an `if` statement to check the index of the bar being printed, with the length of all of the bars, and when we reach the last one, we omit the `,`.
 
-You should know clearly why `$parent.detail.bar` is what we compared it's length with `$index` (nested loops! each creating their own scopes!) , if you don't, jump right back to the section about `ng-repeat` in chapter 3!
+You should know clearly why `$parent.detail.bar` is what we compared it's length with `$index` (nested loops! each creating their own scopes!) , if you don't, jump right back to the section about `ng-repeat` in [chapter 3](#ch3-loop)!
 
 
 ### Filters
 
-Filters provide a way to modify any model binding in your html. By the Term model binding I mean any place that you place one your $scope properties inside HTML. It could be:
+Filters provide a way to modify any **model binding** (using `{{}}` in other words) in your html. By the Term **model** binding we mean any place that you place one your $scope properties inside HTML. It could be:
 
  - Template binding `{{ someModel }}`
  - Loops `<div ng-repeat="item in someModel">`
 
 Or any other place. The filters work similar to Unix pipe style. think of your model as the input and with each `|`operator it will be piped into a filter and the results come out. with this way, multiple pipes can be combined and the output of one of them could be added to the other one.
 
-Like many other situations, Angular provides us with a set of built in filters, but with can extend them to any usage and build our own filter. you can read the full list of filters here[enter link description here](https://docs.angularjs.org/guide/filter).
+Like many other situations, Angular provides us with a set of built in filters, but with can extend them to any usage and build our own filter. you can read the full list of filters [here](https://docs.angularjs.org/guide/filter).
 
-Let's begin testing with some of the built in filters. one of these filters are called `uppercase` and you probably guess from the name what it is going to do! Apply it to the list of beers from the previous section with:
+Let's begin testing with some of the built in filters. One of these filters are called `uppercase` and you probably guess from the name what it is going to do! Apply it to the list of beers from the previous section with:
 
 ```html
 <span ng-repeat="bar in detail.bars">
@@ -133,6 +132,12 @@ Modify the following for an actor's list of favorite beer.
 
 Change the value inside the `input` tag you see that the array of beers will actually get filtered according to that value. As mentioned before, the fact that we never declared `$scope.beerFilter` is not a problem. It will be equal to undefined at the beginning and will have a value as we modify the `input` tag.
 
+Keep in mind that you do not **HAVE** to use a  model as input to the `filter`. You could've just used something like:
+
+```html
+<span ng-repeat="bar in detail.bars | filter : 'someVal'">
+```
+
 The `orderBy` filter works over an array of objects by taking one key name as the filter and sorting the array according to that key. For example: `<div ng-repeat="item in array | orderBy 'keyName'"> ... </div>` will sort an array with the format
 
 ```javascript
@@ -145,7 +150,7 @@ $scope.array = [
 
 according to `key` property.
 
-Let's finish this section with creating a custom filter. Custom filters can be created using the `.filter()` method on a module. it must return o function that takes the input value as argument and returns the new formatted values as output.
+Let's finish this section with creating a custom filter. Custom filters can be created using the `.filter()` method on a module. It must return o function that takes the input value as argument and returns the new formatted values as output.
 
 The following filter simply takes an string input and returns the same value in reverse.
 
@@ -182,7 +187,7 @@ The code until the end of this section can be viewed [here](https://github.com/K
 Angular provides convenient ways to manipulate the DOM attributes or Style. Some of these ways will be described in this section. the key difference between Angular's way and vanilla Javascript's way is that using Angular, as you might expect, we can control element's style and behavior using `$scope` properties, which gives us a better and easier way of control.
 
 ### Using ng-show, ng-hide and ng-if
-Two of the most basic of these UI controls are two directives named: ng-show and ng-hide. as the names suggest, they both hide or show an element based on the expression given to it. Look at the following example:
+Two of the most basic of these UI controls are two directives named: `ng-show` and `ng-hide`. As the names suggest, they both hide or show an element based on the expression given to it. Look at the following example:
 
 ```html
 <div class="row">
@@ -194,7 +199,7 @@ Two of the most basic of these UI controls are two directives named: ng-show and
 </div>
 ```
 
-As you see, the button is there. now change the `ng-show` value to `false`. As you might expect, the button goes away. Now browse the DOM elements with your browser. As you find the button node, you'll see that it has been rendered as:
+As you see, the button is there. now change the `ng-show` value to `false`. As you might expect, the button goes away. Now browse the DOM elements with your browser. When you find the `<button>` node, you'll see that it has been rendered as:
 
 ```html
 <button class="btn btn-success btn-block ng-hide" ng-show="true">
@@ -207,7 +212,7 @@ The `ng-hide` class automatically adds the `display: none` property to the node 
  - This property will hide all of the child elements
  - ng-hide **will not cause the DOM elements to be not rendered**, it just hides them.
 
-The `ng-hide` works exactly in the same manner, but as the name suggests, the Boolean value *is the other way around* and when it is equal to `false`, the element will not be displayed.
+The `ng-hide` works exactly in the same manner, but as the name suggests, the Boolean value *is the other way around* and when it is equal to `true`, the element will not be displayed.
 
 The ng-if directive works almost the same as ng-show, but there is one key difference, if the expression provided to `ng-if` is equal to `false`, the element will actually be **removed** from the DOM, and if later evaluates to `true` again, it will be **recreated** once again.
 
@@ -219,7 +224,7 @@ But so far, even though we learned how ng-show, `ng-hide` and `ng-if` work, we o
 
 Suppose that the button will perform an http request as you click it and you wish for it to display a loading icon during this period and then fade away.
 
-We add to state variables to our scope, indicating weather the button or the icon should be displayed or not, and a function to change them.
+We add to state variables to our scope, indicating wether the button or the icon should be displayed or not, and a function to change them.
 
 ```javascript
 $scope.btnDisplay = true;
@@ -242,6 +247,8 @@ And then just assign these values to the HTML markup that we had:
 	        {{ iconDisplay ? 'Waiting for process' : 'Click me for some process'}}
 </button>
 ```
+
+This is a simple example, of course you can do more! Now you have an understanding of ***How*** and ***Why*** controlling our UI with $scope values is very reflexive.
 
 ### Using ng-class
 
@@ -283,8 +290,15 @@ Ok, with all of this in mind let's add what we described, changing the color of 
 
 ```html
 
-<button ng-class="{'btn-warning' : iconDisplay, 'btn-info': !iconDisplay}" ng-click="doProcess()" ng-if="btnDisplay" class="btn btn-block">
-	<span ng-show="iconDisplay" class="glyphicon glyphicon-cloud-download"></span>
+<button
+  ng-class="{'btn-warning' : iconDisplay, 'btn-info': !iconDisplay}"
+  ng-click="doProcess()"
+  ng-if="btnDisplay"
+  class="btn btn-block">
+	<span
+    ng-show="iconDisplay"
+    class="glyphicon glyphicon-cloud-download">
+  </span>
 	{{ iconDisplay ? 'waiting for process' : 'Click me for some process'}}
 </button>
 ```
@@ -308,11 +322,18 @@ and
 Of course, in this example, as you change the `someClasses`, to button classes change with it.
 
 
-### Further reading and challenges and the code: 
+### Further reading and challenges and the code:
 
-You can read more about ngClass [here](https://docs.angularjs.org/api/ng/directive/ngClass).
+- You can read more about ngClass [here](https://docs.angularjs.org/api/ng/directive/ngClass).
+- Continue the last section and add an input tag which binds its value to an `ngClass`. change the value in the input and see the changes in the `class=''` attribute of the target element.
+- Read about [ng-style](https://docs.angularjs.org/api/ng/directive/ngStyle). It's very similar to ng-class, but it applies an object of css styles like:
 
-The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/fc2829148df144349bb0f996239500a83fb270b9).
+  ```javascript
+  $scope.someStyle = {'width' : 100px , 'display': 'block'};
+  ```
+
+  to an element. Create some HTML elements with dynamic width and style, changing from the UI using `<input>` tags.
+- The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/fc2829148df144349bb0f996239500a83fb270b9).
 
 
 
@@ -352,7 +373,7 @@ To examine these classes first hand we use the template below (in order to get t
 
 Notice how we put `novalidate` attribute on the `form` tag and `required` on each of the inputs.
 
-You can see that before taking any type of action, the form is rendered like:
+By going to your browser's inspection tools, you can see that before taking any type of action, the form is rendered like:
 
 ```html
 <form name="submitform" class="classng-pristine ng-invalid ..."> ... </form>
@@ -364,7 +385,7 @@ You should convince yourself that these classes are logical with respect to the 
 
 You can also find similar class names on each `<input>` inside the form. such as `ng-dirty`, `ng-touched`, indicating the field's state.
 
-These information can also be used inside the controller, there rule, according to which Angular watches forms is:
+These information can also be used inside the controller, the rule, according to which Angular watches forms is:
 
 A property equal to the form's `name=''` attribute will be added to the **scope**, in which the form exists. This new property holds information about whether the form is valid, has it been submitted, have the fields been touched so far or not and so on. To experiment this, try passing a variable named `submitForm` back to controller and log it:
 
@@ -375,10 +396,12 @@ A property equal to the form's `name=''` attribute will be added to the **scope*
 ```javascript
 $scope.submit = function(form) {
 	console.log(form);
+  // or just log it directly
+  console.log($scope.submitFrom)
 }
 ```
 
-You can see how similar information is also stored inside this property ($scope.submitForm, in this case). There are many more details about form validation and you can read more about them [here](https://docs.angularjs.org/guide/forms). Instead of going through every single detail which you probably won't need in a decade, we spend time explaining a common usage pattern for Angular form management.
+You can see how similar information is also stored inside this property ($scope.submitForm, in this case). There are many more details about form validation (such as the exact meaning of each class) and you can read more about them [here](https://docs.angularjs.org/guide/forms). Instead of going through every single detail which you probably won't need in a decade, we spend time explaining a common usage pattern for Angular form management.
 
 
 If you inspect the form object that we logged closely, you'll see that errors associated with classes that were added to `<form>` are stored in:
@@ -418,9 +441,21 @@ Change the email section as following:
 </div>
 ```
 
-Of course there more to it than this, HTML provides more form validation attributes, min/max length , min/max value and so on. All of them could be used and Angular will provide the corresponding error values and classes. Aside from using these attributes, we can use them with a `ng-` prefix and Angular's magical data binding will be available!
+Of course there more to it than this, HTML provides more form validation attributes, min/max length , min/max value and so on. All of them could be used and Angular will provide the corresponding error values and classes. Aside from using these attributes, we can use them with a `ng-` prefix and Angular's magical data binding will be available:
 
-Change the password section to the following to see this:
+```html
+<input type='number' min=10>
+// if we use ng-
+// magic can happen!
+<input type='number' ng-min='dynamicMinValue'>
+```
+
+```javascript
+$scope.dynamicMinValue = 10 ;
+// change it to 12 or so later!
+```
+
+As an example, Change the password section to the following to see this:
 
 ```html
 <div class="form-group">
@@ -441,30 +476,32 @@ $scope.minpwd = 3 ;
 
 must be declared. of course you could also write something like: `ng-minlength="3"`, we just wanted to show the data binding stuff and .. well you get the point!
 
+You should now have a fully functioning demo with proper inline errors for email and password.
+
 Two final notes,
 
-User don't usually like facing a pile of error messages when they haven't even started with filling a form! A good way to prevent this is to add the `submitform.filedname.$touched` condition to display the error messages. This will display the message only when the user types something and leaves the filed (the ***focus*** leaves the filed (notice the passed tense of the name, $touch **ed**).
+1. User don't usually like facing a pile of error messages when they haven't even started with filling a form! A good way to prevent this is to add the `submitform.filedname.$touched` condition to display the error messages. This will display the message only when the user types something and leaves the filed (the ***focus*** leaves the filed (notice the passed tense of the name, $touch**ed**).
 
-Something like this works for our `email` field:
+  Something like this works for our `email` field:
 
-```html
-<span
-  class="label label-danger"
-  ng-show="submitform.email.$error.required && submitform.email.$touched">
-  Required!
-</span>
-<span
-  class="label label-danger"
-  ng-show="submitform.$error.email && submitform.email.$touched">
-  Invalid email!
-</span>
-```
+  ```html
+  <span
+    class="label label-danger"
+    ng-show="submitform.email.$error.required && submitform.email.$touched">
+    Required!
+  </span>
+  <span
+    class="label label-danger"
+    ng-show="submitform.$error.email && submitform.email.$touched">
+    Invalid email!
+  </span>
+  ```
 
-Many times, these simple validation might not suffice, as with HTML that had `pattern`, a simple way is to provide `ng-pattern` with a ***[regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)*** for a more sophisticated validation.
+2. Many times, these simple validation might not suffice, as with HTML that had `pattern`, a simple way is to provide `ng-pattern` with a ***[regular expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)*** for a more sophisticated validation.
 
-After validating a form, thing always end up with making an AJAX call which can be done using $http, which is what we are going to learn in the next section. 
+After validating a form, thing always end up with making an AJAX call which can be done using $http, which is what we are going to learn in the next section.
 
-### Further reading and challenges and the code: 
+### Further reading and challenges and the code:
 
 There are a few simple types of `<input>` tags that we didn't cover here
 
@@ -473,7 +510,7 @@ There are a few simple types of `<input>` tags that we didn't cover here
 - date/time
 - number
 
-Truth be told, all of them are fairly simple to use with Angular and `ngModel` directive and with very similar attributes to the standard HTML. We spared some time here by not explaining each of them separately, but this doesn't mean you don't have to hack with them! Go on and add some of them to your view, bind them and check their values to see how they behave. 
+Truth be told, all of them are fairly simple to use with Angular and `ngModel` directive and with very similar attributes to the standard HTML. We spared some time here by not explaining each of them separately, but this doesn't mean you don't have to hack with them! Go on and add some of them to your view, bind them and check their values to see how they behave.
 
 The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/8e38a27429f9521c53da60fa599853b1ca1cb922).
 
@@ -483,32 +520,32 @@ The code until the end of this section can be viewed [here](https://github.com/K
 ## Using $http and $watch
 
 
-There are many services that you can inject to your controller and use. The most obvious one here is `$scope`. Aside from that, a number of other services that you probably will inevitably use them. we mention all of them here and discuss to of them in detail. 
+There are many services that you can inject to your controller and use them. The most obvious one here is `$scope`. Aside from that, a number of other services that you probably will inevitably use them. we mention all of them here and discuss to of them in detail.
 
 1. $http: service for making **Ajax** calls. Pretty useful!
-2. $watch: a method used for subscribing to state change event on scope properties, services etc. 
+2. $watch: a method used for subscribing to state change event on scope properties, services etc.
 3. $rootScope: a parent for all scopes, which we'll discuss at the end of this chapter.
-4. $state and other route services: a set of services usually providing information about the current route of the application, route parameters etc. We will discuss this in a separate chapter. 
+4. $state and other route services: a set of services usually providing information about the current route of the application, route parameters etc. We will discuss this in a separate chapter.
 5. user defined services: You'll learn soon that building isolated group of functionalities inside a `.factory` or `.service` is one of the most common patterns in angular.
 
 So, let's dive into the first two services that we wanted to discuss.
 
 ### Using $http
 
-As the name suggests, this service helps us make http requests to remote or local servers. The overall syntax of this service could be summarized as: 
+As the name suggests, this service helps us make http requests to remote or local servers. The overall syntax of this service could be summarized as:
 
 ```javascript
 $http({
-	method: "GET", 
+	method: "GET",
 	url: "/some/path",
-	data: {someDataKey : 12}, 
+	data: {someDataKey : 12},
 	headers: {'additional-header': 'hello $http'},
-	params : {'a': 13} 
-}).then( successCallback, errorCallback); 
+	params : {'a': 13}
+}).then( successCallback, errorCallback);
 
 ```
 
-Before we get into more detail, let's discuss the code above. If you have a simple knowledge of http request, none of the keys defined above and passed to `$http` should be ambiguous for you. Just for double checking, it's safe to say that the request above will be translated to: 
+Before we get into more detail, let's discuss the code above. If you have a simple knowledge of http request, none of the keys defined above and passed to `$http` should be ambiguous for you. Just for double checking, it's safe to say that the request above will be translated to:
 
 a GET Request to the same domain - since the path we provided started with `/`
 
@@ -518,27 +555,27 @@ and an additional header added to the default HTTP headers.
 
 and a JSON payload equal to {someDataKey : 12}
 
-Good, moving forward. The next thing that catches out eyes is the `then()` function, which indicated that `$http.get()` returns a **Promise**. Promises are a very important concept in both angular and general javascript (and will be natively supported in ES2016). if you are familiar with promises, you can skip this section, if not hold on tight because what we are about to learn is very important. 
+Good, moving forward. The next thing that catches out eyes is the `then()` function, which indicated that `$http.get()` returns a **Promise**. Promises are a very important concept in both angular and general javascript (and will be natively supported in ES2016). if you are familiar with promises, you can skip this section, if not hold on tight because what we are about to learn is very important.
 
-#### de-tour on Promises and Callbacks 
+#### detour on Promises and Callbacks
 
-Javascript is a single threaded language, therefor it has it's own unique way of handling asynchronous operation. When we have only one thread, it means that the main program's flow can never - should never - **wait** for an operation that takes time. it should move pass it and come back to it later, in an **Event based** manner. There are two famous ways two implement this. ***Promises*** and ***Callback functions***. 
+Javascript is a single threaded language, therefor it has it's own unique way of handling asynchronous operation. When we have only one thread, it means that the main program's flow can never - should never - **wait** for an operation that takes time. it should move pass it and come back to it later, in an **Event based** manner. There are two famous ways two implement this. ***Promises*** and ***Callback functions***.
 
-The Callback way usually works like this: we pass a **function**, to the **function that might take a long** time and say to it : 
+The Callback way usually works like this: we pass a **function**, to the **function that might take a long** time and say to it :
 
-> Hey, long time function! please invoke this function that i'm giving it to you now when you are finished and btw pass the result of your operation to it as argument, if you want. 
+> Hey, long time function! please invoke this function that i'm giving it to you now when you are finished and btw pass the result of your operation to it as argument, if you want.
 
 ```javascript
 
 var someSlowDataFetching = function(args, callback) {
-	operation.start() 
+	operation.start()
 	// my process will take time
-	// some more time 
+	// some more time
 	// even more
 	// seriously, it's gonna take a while
-	
-	
-	// and when I am finally finished: 
+
+
+	// and when I am finally finished:
 	if ( operation.isOK ) {
 		callback(null, operation.data) ;
 	} else {
@@ -547,34 +584,39 @@ var someSlowDataFetching = function(args, callback) {
 }
 
 someSlowDataFetching(args, function(err, data) {})
+// note that the previous line will NOT BLOCK the program
 
 ```
 
-You should read and examine this example carefully and completely understand how javascript handler parallelism with callback function. 
+You should read and examine this example carefully and completely understand how javascript handler parallelism with callback function.
 
 To save time we will not discuss here how promises are implemented, instead we are just going to focus on *how to use them*. We'll begin by defining them.
 
-A promise is ... well, its a **Promise** that assures you of receiving *Some* response about the task which is going to take some time. A promise can either *resolve* or *reject* 
+A promise is ... well, its a **Promise** that assures you of receiving *Some* response about the task which is going to take some time. A promise can either *resolve* or *reject*
 
-- **resolve** means that the async task was completed, regardless of the result, the result could even be e failure, but the task was completed with no errors. 
-- **reject** means that execution of the task was not competed because of some errors. 
+- **resolve** means that the async task was completed, regardless of the result, the result could even be e failure, but the task was completed with no errors.
+- **reject** means that execution of the task was not competed because of some errors.
 
-Async tasks using Promises don't take in a function to invoke it later, instead, they return a promise, which has a `.then()` method, which will be invoked later when the task is completed.  
+Async tasks using Promises don't take in a function to invoke it later, instead, they return a promise, which has a `.then()` method, which will be invoked later when the task is completed.
 
-```
+```javascript
 function someSlowPromiseFn(args) {
-	operation.start() 
+	operation.start();
+  var promise ;
 	// my process will take time
-	// some more time 
+	// some more time
 	// even more
 	// seriously, it's gonna take a while
-	
-	// and when I am finally finished: 
-	if ( operation.isOK ) {
-		promise.resolve(operation.data); 
-	} else {
-		promise.reject(operation.data); 
-	}
+
+	setTimeout(function(){
+    // and when I am finally finished:
+  	if ( operation.isOK ) {
+  		promise.resolve(operation.data);
+  	} else {
+  		promise.reject(operation.data);
+  	}
+  }, 5000);
+  return promise;
 }
 
 
@@ -582,18 +624,18 @@ someSlowPromiseFn(args)
 	.then(
 		function onResolve() {...},
 		function onReject()  {...}
-		); 
+		);
 ```
 
-The name of the functions passed to `then()` were meant to be a hint, to imply that: 
+The name of the functions passed to `then()` were meant to be a hint, to imply that:
 
 ***First argument*** of `then()` will be called when the promise resolves.
 
 ***Second argument*** of `then()` will be called when the promise rejects.
 
-Angular implements Promises with a (hell of a) library called `q`, which you can read about it [here](https://docs.angularjs.org/api/ng/service/$q). [This link](http://andyshora.com/promises-angularjs-explained-as-cartoon.html) also helps you understand promises better. 
+Angular implements Promises with a (hell of a) library called `q`, which you can read about it [here](https://docs.angularjs.org/api/ng/service/$q). [This link](http://andyshora.com/promises-angularjs-explained-as-cartoon.html) also helps you understand promises better.
 
-As we reach the end of our de-tour on promises, the main purpose of this detour has satisfied and now you exactly know what this means: 
+As we reach the end of our de-tour on promises, the main purpose of this detour has satisfied and now you exactly know what this means:
 
 ```javascript
 $http({....}).then(
@@ -605,37 +647,37 @@ $http({....}).then(
 
 #### Continuing with $http
 
-To refresh your mind on what we had: 
+To refresh your mind on what we had:
 
 ```javascript
 $http({
-	method: "GET", 
+	method: "GET",
 	url: "/some/path",
-	data: {someDataKey : 12}, 
+	data: {someDataKey : 12},
 	headers: {'additional-header': 'hello $http'},
-	params : {'a': 13} 
-}).then( successCallback, errorCallback); 
+	params : {'a': 13}
+}).then( successCallback, errorCallback);
 
 ```
 
-Now let's try and make this more realistic by calling a real JSON API. we'll use github's public API for this reason. If you refer to the [documentation](https://developer.github.com/v3/repos/) you'll see that you can fetch the list of repositories by making a `GET` request to: 
+Now let's try and make this more realistic by calling a real JSON API. we'll use github's public API for this reason. If you refer to the [documentation](https://developer.github.com/v3/repos/) you'll see that you can fetch the list of repositories by making a `GET` request to:
 
 ```json
 https://api.github.com/users/{username}/repos
 ```
 
-You can test this with: 
+You can test this with:
 
 ```bash
 curl -i https://api.github.com/users/kianenigma/repos
 ```
 
-in your command line. let's make this call in angular and inspect the result. 
+in your command line. let's make this call in angular and inspect the result.
 
 ```javascript
-myApp.controller("mainCtrl", function($scope, ... , $http ) { 
+myApp.controller("mainCtrl", function($scope, ... , $http ) {
 	// remember to inject $http service
-	
+
 	 $http({
       method: 'GET',
       url: 'https://api.github.com/users/kianenigma/repos',
@@ -648,22 +690,22 @@ myApp.controller("mainCtrl", function($scope, ... , $http ) {
 })
 ```
 
-Now change the username to an invalid one `https://api.github.com/users/invalidUserrrrrblahbalh/repos` and see how the error callback is being invoked. 
+Now change the username to an invalid one `https://api.github.com/users/invalidUserrrrrblahbalh/repos` and see how the error callback is being invoked.
 
-As you might've mentioned, both the success and error callbacks have the same schema and the following keys are the ones you will probably need: 
+As you might've mentioned, both the success and error callbacks have the same schema and the following keys are the ones you will probably need:
 
 - `response.data` : data associated with the response
-- `response.statusCode` : status code of the response. Note that when the success callback is being invoked, we are sure that status code has a value in 200/300 range `2**/3**` and the 400/500 status code ranges are associated with errors, `404 not found` and `500 internal server error` for example. 
-- `response.config.headers` : http headers of the response. it is common to use them specially when using [json web tokens](https://jwt.io/) - aka. JWT - as authentication method. 
+- `response.statusCode` : status code of the response. Note that when the success callback is being invoked, we are sure that status code has a value in 200/300 range `2**/3**` and the 400/500 status code ranges are associated with errors, `404 not found` and `500 internal server error` for example.
+- `response.config.headers` : http headers of the response. it is common to use them specially when using [json web tokens](https://jwt.io/) - aka. JWT - as authentication method.
 
-As final notes on $http: 
+As final notes on $http:
 
-- you'll learn in a separate chapter about a concept named `http interceptor`. It is VERY common to feel the need to add a specific data or header to *ALL* of your http requests, such as web token authentication header. http interceptors help you do this.
-- There is actually another way of watching for an http response, name `success` and `error`. The syntax is like the following: 
+- you'll learn in a [separate chapter](#ch5-intercept) about a concept named `http interceptor`. It is VERY common to feel the need to add a specific data or header to *ALL* of your http requests, such as web token authentication header. http interceptors help you do this.
+- There is actually another way of watching for an http response, name `success` and `error`. The syntax is like the following:
 
 ```javascript
 $http({
-	method : "GET", 
+	method : "GET",
 	...
 })
 	.success(function(data, status, config) {}) // called when request returns fine
@@ -671,32 +713,32 @@ $http({
 	.finally(function() {}) ;  // called either way!
 
 ```
-Although this was my personal favorite syntax (and dark deep secret!), there are many reasons not to use it. You can read about [them](http://www.codelord.net/2015/05/25/dont-use-$https-success/) [here](https://www.peterbe.com/plog/promises-with-$http). 
+Although this was my personal favorite syntax (and dark deep secret!), there are many reasons not to use it. You can read about [them](http://www.codelord.net/2015/05/25/dont-use-$https-success/) [here](https://www.peterbe.com/plog/promises-with-$http).
 
-- the following syntactic sugars are provided for specific http verbs: 
+- the following syntactic sugars are provided for specific http verbs:
 
 ```javascript
 $http.get('/someUrl', config).then(successCallback, errorCallback);
 $http.post('/someUrl', data, config).then(successCallback, errorCallback);
 
-and more for /DELETE /PUT and so on. 
+and more for /DELETE /PUT and so on.
 ```
 You can read the full list [here](https://docs.angularjs.org/api/ng/service/$http).
 
-We'll extend this example of Github in the next section to make something more interesting out of it. 
+We'll extend this example of Github in the next section to make something more interesting out of it.
 
 ### Using $watch
 
-The `$watch` service helps us add `eventListeners` to model changes, as the name suggests. The overall syntax is like this: 
+The `$watch` service helps us add `eventListeners` to model changes, as the name suggests. The overall syntax is like this:
 
 ```javascript
 $scope.$watch("stingEqualToPropertyNameInScope", function(newValue, oldValue) {
-	
+
 })
 
 ```
 
-here, by `stingEqualToPropertyNameInScope ` we mean the name of a property assigned to scope. 
+here, by `stingEqualToPropertyNameInScope ` we mean the name of a property assigned to scope.
 
 As an example, add a `username` property to `$scope` and bind it to the an input tag :
 
@@ -704,67 +746,66 @@ As an example, add a `username` property to `$scope` and bind it to the an input
 <input ng-model="username" />
 ```
 
-and 
+and
 
 ```javascript
-$scope.username = "initialUserName"; 
+$scope.username = "initialUserName";
 
 $scope.$watch("username", function(o, n) {
-	console.log(o,n); 
+	console.log(o,n);
 })
 ```
 
-now change the username value and see the logs for change. 
+now change the username value (via javascript or by binding it to HTML) and see the logs for change.
 
-There are two very common situations when it comes to $watch that you have to pay attention to: 
+There are two very common situations when it comes to $watch that you have to pay attention to:
 
-1. By default, `$scope.watch()` performs a shallow equality test. by shallow we mean that changes like `[1,2] => [1]` , `1 => 2` , `"hello" => "mellow"` are detected, but changes to deep properties like `{ foo : { bar : 1 } } => { foo : {bar : 2}}` are **NOT**. in order to fix this you can set the third argument of the `$watch` to `true`, so that it perform deep search: 
+1. By default, `$scope.watch()` performs a shallow equality test. by shallow we mean that changes like `[1,2] => [1]` , `1 => 2` , `"hello" => "mellow"` are detected, but deep changes to properties like `{ foo : { bar : 1 } } => { foo : {bar : 2}}` are **NOT**. in order to fix this you can set the third argument of the `$watch` to `true`, so that it perform deep search:
 
-```javascript
-$scope.$watch("username", function(o, n) {
-	console.log(o,n); 
-}, true); 
-```
+  ```javascript
+  $scope.$watch("username", function(o, n) {
+  	console.log(o,n);
+  }, true);
+  ```
 
-2. It is extremely! common (actually *common* is not a good word here, it's a *famous*, *must use* - one beast of a - pattern!) to use a `service` for fetching json data from a remote API and store it there. We usually assign a portion of data stored inside a service to `$scope` and display just that portion to the user. So it would be pretty good if we could just listen to changes in data returned by a service too. Turns out that you can't do that .. *directly*. but you easily can do it if you wrap it inside a function. Follow the code below with the comments inside to get a clear idea: 
+2. It is extremely! common (actually *common* is not a good word here, it's a *famous*, *must use* - one beast of a - pattern!) to use a `service` for fetching json data from a remote API and store it there. We usually assign a portion of data stored inside a service to `$scope` and display just that portion to the user. So it would be pretty good if we could just listen to changes in data returned by a service too. Turns out that you can't do that .. *directly*. but you easily can do it if you wrap it inside a function. Follow the code below with the comments inside to get a clear idea:
 
-```javascript
+  ```javascript
 
-// remember factories and their syntax ?
-myApp.factory("dataService", function() {
-	var getSomeData = function () { return someData }
-	
-	return {
-		getSomeData: getSomeData
-	}
-})
+  // remember factories and their syntax ?
+  myApp.factory("dataService", function() {
+  	var getSomeData = function () { return someData }
 
-myApp.controller("mainCtrl", function($scope, dataService) { // remember injection?
-	$scope.data = dataService.getSomeData() ; 
-	
-	// now the dataService might be connected and synced with a remote API
-	// so it can change it's value internally ... 
-	// TaaDaa! :
-	$scope.$watch(function() {return dataService.getSomeData() }, 
-		function(n,o) {} , true 
-	)
-	
-})
-```
+  	return {
+  		getSomeData: getSomeData
+  	}
+  })
+
+  myApp.controller("mainCtrl", function($scope, dataService) { // remember injection?
+  	$scope.data = dataService.getSomeData() ;
+
+  	// now the dataService might be connected and synced with a remote API
+  	// so it can change it's value internally ...
+  	// TaaDaa! :
+  	$scope.$watch(function() {return dataService.getSomeData() },
+  		function(n,o) {} , true
+  	)
+
+  })
+  ```
 
 
-We can extend our last example to make something cool. 
+We can extend our last example to make something cool.
 
-Add the following markup to your html: 
+Add the following markup to your html:
 
 ```html
 <div class="row">
   <div class="col col-sm-6 col-sm-offset-3 form-group">
-    <input 
-    	ng-model-options="{ debounce: 500 }"
-    	class="form-control" 
-    	type="text" 
-    	placeholder="enter username" style="margin : 20px" 
+    <input
+    	class="form-control"
+    	type="text"
+    	placeholder="enter username" style="margin : 20px"
     />
     <label class="label label-success"> Result is here</label>
     <label class="label label-warning"> Searching </label>
@@ -781,19 +822,19 @@ Add the following markup to your html:
 
 You can easily guess what we want to do. search a username and display a list of repositories!
 
-Let's first explain how. 
+Let's first explain how.
 
 - First, add a `$scope.username` property and bind it to input tag.
-- $watch form changes and make the $http call that we performed in the previous chapter to get the list of repositories. 
-- Show the loading span while the request is being performed. 
-- Show the success message if request comes back .. well, obviously, successfully. 
-- Show the error message if the request fails for any reason. 
-- render the list of repositories. 
+- $watch form changes and make the $http call that we performed in the previous chapter to get the list of repositories.
+- Show the loading span while the request is being performed.
+- Show the success message if request comes back .. well, obviously, successfully.
+- Show the error message if the request fails for any reason.
+- render the list of repositories.
 
-The trivial approach to this would be to simply just do : 
+The trivial approach to this would be to simply just do :
 
-```javascript 
-// assuming that $scope.username is the name 
+```javascript
+// assuming that $scope.username is the name
 $scope.$watch("username", function(n, o) {
 	// make the http call
 })
@@ -801,22 +842,22 @@ $scope.$watch("username", function(n, o) {
 
 This is ... not good. because we did not wanted to make 10 http calls during the time when  i type my own  github username : `kianenigma`
 
-If you go to Angular's documentation over [forms](https://docs.angularjs.org/guide/forms), you'll see that we can use a `debounce` property. When for example we set it to 250, it means that the model in $scope will only update, when the input in UI stays fix for 250ms, hence the $watch will be invoked only then. Change the input tag to: 
+If you go to Angular's documentation over [forms](https://docs.angularjs.org/guide/forms), you'll see that we can use a `debounce` property. When for example we set it to 250, it means that the model in $scope will only update, when the input in UI stays fix for 250ms, hence the $watch will be invoked only then. Change the input tag to:
 
 ```html
-<input 
+<input
 		ng-model="username"
     	ng-model-options="{ debounce: 500 }"
-    	class="form-control" 
-    	type="text" 
-    	placeholder="enter username" style="margin : 20px" 
+    	class="form-control"
+    	type="text"
+    	placeholder="enter username" style="margin : 20px"
 />
 ```
-write a `$watch` statement for `$scope.username`, log the values and change the debounce value. See how the behavior differs! 
+write a `$watch` statement for `$scope.username`, log the values and change the debounce value. See how the behavior differs!
 
-Now, the main deal! 
+Now, the main deal!
 
-add the following javascript code to your controller: 
+add the following javascript code to your controller:
 
 ```javascript
 $scope.repos = [];
@@ -844,18 +885,18 @@ $scope.$watch("username", function (n, o) {
 })
 ```
 
-Note that `reqStatus` is a variable we use to show one of the `label`s indication the status. storing the list of repositories (`response.data`) inside `$scope.repos` is trivial and same as what we did before when we discussed iteration. Also we wrapped the request inside the `if ()` so that it wont get fired when the input is empty. 
+Note that `reqStatus` is a variable we use to show one of the `label`s indication the status. storing the list of repositories (`response.data`) inside `$scope.repos` is trivial and same as what we did before when we discussed iteration. Also we wrapped the request inside the `if ()` so that it wont get fired when the input is empty.
 
 In the final draft of our HTML, we just added the `ng-show` directives to show one of the labels, and added the `ng-repeat` to `ul`
 
 ```html
 <div class="row">
   <div class="col col-sm-6 col-sm-offset-3 form-group">
-    <input 
+    <input
     	ng-model-options="{ debounce: 500 }"
-    	class="form-control" 
-    	type="text" 
-    	placeholder="enter username" style="margin : 20px" 
+    	class="form-control"
+    	type="text"
+    	placeholder="enter username" style="margin : 20px"
     />
     <label ng-show="reqStatus == 0" class="label label-success"> Result is here</label>
     <label ng-show="reqStatus == 1" class="label label-warning"> Searching </label>
@@ -865,13 +906,13 @@ In the final draft of our HTML, we just added the `ng-show` directives to show o
 <div class="row">
   <ul class="list-group">
      <li ng-repeat="repo in repos" class="list-group-item">
-     	<strong> {{ repo.name }} </strong> : {{ repo.description }} 
+     	<strong> {{ repo.name }} </strong> : {{ repo.description }}
      </li>
   </ul>
 </div>
 ```
 
-This example turned out to be better than what i had expected! Not on;y that we used our main topics, `$http` and `$watch`, we also used some `forms` and `ngClasses`. Perfect! 
+This example turned out to be better than what i had expected! Not only that we used our main topics, `$http` and `$watch`, we also used some `forms` and `ngClass`. Perfect!
 
 ### Further reading and challenges and the code
 
@@ -883,50 +924,51 @@ The code until the end of this section can be viewed [here](https://github.com/K
 
 ## Controller events and communication
 
-There are many situations where you want two or more controllers to communicate with each other. Like Sending a change event, propagate user updates, etc. It's always a good pattern to break even one page of your application with different responsibilities into different controllers. This will help you have a much cleaner and maintainable code, but you have to take the burden of controller communication. 
+There are many situations where you want two or more controllers to communicate with each other. Like Sending a change event, propagate user updates, etc. It's always a good pattern to break even one page of your application with different responsibilities into different controllers. This will help you have a much cleaner and maintainable code, but you have to take the burden of controller communication.
 
-Before we start, let's recap a fact about `$scope` and `controller`. You probably have understood it till now and have a clear vision of what they are, but it's a very common mistake for newcomers to Angular to think that controllers and scopes are the same thing. Yes Yes, a controller will create a scope with it but this does not imply a one to one relation! As you remember, we mentioned that directives can have a `$scope`, you can also identify all scopes inside your HTML by searching for `class="ng-scope"`. So aside from remembering that a `$scope` and a controller are not the same thing, and not related strictly, keep the following simple definitions in mind: 
+Before we start, let's recap a fact about `$scope` and `controller`. You probably have understood it till now and have a clear vision of what they are, but it's a very **common mistake** for newcomers to Angular to think that **controllers and scopes are the same thing**. Yes Yes, a controller will create a scope with it but this does not imply a one to one relation! As you remember, we mentioned that directives can have a `$scope`, you can also identify all scopes inside your HTML by searching for `class="ng-scope"`. So aside from remembering that a `$scope` and a controller are not the same thing, and not related strictly, keep the following simple definitions in mind:
 
 - Controller is one of main blocks of an angular application (and technically nothing more that a simple javascript object).
 - Scope is an object that can be used for data binding between javascript code and HTML. and turns out that each controller, after it's initialization, will be given a $scope to work with!
 
-Moving forward. The reason that we emphasized on the difference of controllers and scopes was that all of the functions and API's for events in Angular are actually the properties of scopes, not controllers, and therefore could be used with scopes created by directives and so on. Perhaps a better title of this section was *Scope events and communication*. But, since it's much more common to use it with controllers I decided to go with *Controller events and communication*. 
+Moving forward. The reason that we emphasized on the difference of controllers and scopes was that all of the functions and API's for events in Angular are actually the properties of ***scopes***, not ***controllers***, and therefore could be used with scopes created by directives and so on. Perhaps a better title of this section was *Scope events and communication*. But, since it's much more common to use it with controllers I decided to go with *Controller events and communication*.
 
-One last reminder is that scopes inside a module can have **a parent** (one direct parent and many *ancestors*), **one or more children** and **one or more siblings**. 
+One last reminder is that scopes inside a module can have **a parent** (one direct parent and many *ancestors*), **one or more children** and **one or more siblings**.
 
 Angular provides a simple API for communication and it's quite similar to any other Publish/Subscribe based system:
 
-```
+```javascript
 // will listen to an event with title 'someEventName'
 $scope.on("someEventName", function(evnet, args){
 	// do something with args
-}); 
+});
 
-// will send an event downwards - to children - with title 'someEventName' and a data 
+// will send an event downwards - to children -
+// with title 'someEventName' and a data
+// var eventParam = 1
+// var eventParam = 'hello mellow'
 var eventParam = { anyKey : 'can have any value' }
-// var eventParam = 1 
-// var eventParam = 'hello mellow' 
-var eventParam = { anyKey : 'can have any value' }
-$scope.$broadcast("someEventName", evnetParam); 
+$scope.$broadcast("someEventName", evnetParam);
 
-// same as $broadcast but it will go upwards (the parent and ancestors)
-$scope.emit("someEventName", eventParam); 
+// same as $broadcast but it will go upwards
+// (to the parents and ancestors)
+$scope.emit("someEventName", eventParam);
 ```
 
 Inside `$on('...', function (evt, data) {})` the callback function takes two arguments, `evt, data` in this case (as you know, names are not important here!). The first argument is an object with information about the event itself, and the second is the data that we send with the event (second argument to `$broadcast` and `$emit`)
 
-Without further detail, let's try and implement this with our last example. Here is what we are going to do: Move the list of repositories from the last section to a new controller inside `mainCtrl`. the main controller will watch for user input changes, make the http call and then it will notify the `repoListCtrl` for changes. 
+Without further detail, let's try and implement this with our last example. Here is what we are going to do: Move the list of repositories from the last section to a new controller inside `mainCtrl`. the main controller will watch for user input changes, make the http call and then it will notify the `repoListCtrl` for changes.
 
 ```javascript
 myApp.controller('repoListCtrl' , function($scope){
-	$scope.repos = []; 
-	
+	$scope.repos = [];
+
 	$scope.$on('repo_update', function(evt, args) {
 		if ( args.status ) {
-			$scope.repos = args.repos; 
+			$scope.repos = args.repos;
 		}
 		else {
-			$scope.repos = [] ; 
+			$scope.repos = [] ;
 		}
 	})
 })
@@ -943,65 +985,65 @@ myApp.controller("mainCtrl", function($scope) {
       .then(function (response) {
         $scope.reqStatus = 0;
         $scope.$broadcast("repo_update", {
-          status: true, 
+          status: true,
           repos: response.data
         })
       }, function (err) {
         $scope.reqStatus = 2;
         $scope.$broadcast("repo_update", {
-          status: true, 
-          repos: null 
+          status: false,
+          repos: null
         })
       })
-      
-    } // end of if 
-  }) // end of $watch 
 
-}) 
+    } // end of if
+  }) // end of $watch
+
+})
 ```
 
-and add this controller inside HTML: 
+and add this controller inside HTML:
 
-```html 
+```html
 <div ng-controller="repoListCtrl" class="row">
   <ul class="list-group">
-    .. 
+    ..
     <!-- nothing needs to change here, since the name of repos property is still the same! -->
   </ul>
 </div>
 ```
 
-And hopefully, now everything works just as before! A few things to notice: 
+And hopefully, now everything works just as before! A few things to notice:
 
 - we used $broadcast to send an event from a parent to a child
-- the names of event - obviously - have to be the same. a good pattern is to use a provides ( a `.service()` or `.constant()` to share these types of CONSTANT strings inside an app. 
+- the names of event - obviously - have to be the same. a good pattern is to use a provides ( a `.service()` or `.constant()` to share these types of CONSTANT strings inside an app.
 
 
-### Unsubscribing 
+### Unsubscribing
 
-One small thing is left behind here. what we subscribe to an event, but any time in the future, change our mind and what un unsubscribe? You could achieve this by wrapping the content of you event handler inside an if statement, but we both know thats too messy! 
+One small thing is left behind here. what we subscribe to an event, but any time in the future, change our mind and what un unsubscribe? You could achieve this by wrapping the content of you event handler inside an if statement, but we both know thats too messy!
 
 ```javascript
-$scope.$on('..' ,function() { 
+$scope.$on('..' ,function() {
 	if () {
-	
+
 	}
 })
 ```
 
-The correct way to do this is to store the value returned by `$on()`. This value is an unsubscribe function that we can call it any time later to unsubscribe from the event and any further events will be ignored.
+The correct way to do this is to store the value returned by `$on()`. This value is an ***unsubscribe function*** that we can call it any time later to unsubscribe from the event and any further events will be ignored.
 
 ```javascript
 var unsubscribe = $scope.$on('..', function() { ... }) ;
 
-// later on 
+// later on
 // probably inside a callback or something
-unsubscribe();  
+unsubscribe();
 ```
 
 Easy as that!
 
-As you play around a little with the code and events, you might find two main *flaws* here. there is no way to send an event between: 
+As you play around a little with the code and events, you might find two main *flaws* here. there is no way to send an event between:
 
 - sibling scopes
 - from a service to scope or *vica versa*
@@ -1009,7 +1051,7 @@ As you play around a little with the code and events, you might find two main *f
 Fixing this requires us to get familiar with a new scope called `#rootScope`, which we'll get to it in the next section.
 
 
-### Further reading and challenges and the code: 
+### Further reading and challenges and the code:
 
 - Add a `RepoService` with public functions for fetching a list of repositories, and storing it locally. as a challenge **only allow this service to make http calls and store a permanent list of repositories**. controllers will only allow to call this service (either synchronously or asynchronously) to get the list. try different approaches to implement this. This is important because using controllers for data management is like a **Tabu** in Angular (because of many consequences) and you should get familiar with this pattern of Service/Ctrl for data management.
 
@@ -1020,74 +1062,74 @@ The code until the end of this section can be viewed [here](https://github.com/K
 
 ## The great $rootScope
 
-Until now, you have learned fairly enough about how controllers are nested and each have a parent and so forth, so i'm not gonna repeat anything here and get to the main point directly. 
+Until now, you have learned fairly enough about how controllers are nested and each have a parent and so forth, so i'm not gonna repeat anything here and get to the main point directly.
 
-Even if you do not do ANYTHING inside your app, just by creating a module, a `$scope` (aka `$rootScope`) will be created for it when you assign to an HTML tag with `ng-app`.  You don't believe me? go and open your editor.make sure that the mainCtrl (`ng-controller`) and myApp (`ng-app`) are not on the same tag (`ng-controller` directive is **inside** `ng-app`) and watch the **classes of the tag containing ng-app**. I Know! there is a `ng-scope` class there! (as an example, `<body ng-app=‘…’ class='ng-scope'> .. `). There was no controller on this tag so it must be something that Angular created! And indeed it is! A top level $scope with no parent itself (sad, isn't it?) called: `$rootScope`.
+Even if you do not do ANYTHING inside your app, just by creating a module, a `$scope` (aka `$rootScope`) will be created for it when you assign to an HTML tag with `ng-app`.  You don't believe me? go and open your editor. Make sure that the mainCtrl (`ng-controller`) and myApp (`ng-app`) are not on the same tag (`ng-controller` directive is **inside** `ng-app`) and watch the **classes of the tag containing ng-app**. I Know! there is a `ng-scope` class there! (as an example, `<body ng-app=‘…’ class='ng-scope'> .. `). There was no controller on this tag so it must be something that Angular created! And indeed it is! A top level $scope with no parent itself (sad, isn't it?) called: `$rootScope`.
 
 This mighty scope has some interesting properties.
 
 - as mentioned, it has to parent
-- since it's a scope, it can be treated as a scope! it can be injected into controllers, directives and services, data and functions assigned to it can be used or triggered from the HTML etc. 
-- since it is at the highest level, an event broadcasted downwards from $rootScope reaches everyone 
-- due to same reason, data binded ([bound or binded](http://grammarist.com/usage/binded-bound/)?) to this scope is accessible **everywhere** 
+- since it's a scope, it can be treated as a scope! it can be injected into controllers, directives and services, data and functions assigned to it can be used or triggered from the HTML etc.
+- since it is at the highest level, an event broadcasted downwards from $rootScope reaches everyone
+- due to same reason, data binded ([bound or binded](http://grammarist.com/usage/binded-bound/)?) to this scope is accessible **everywhere**
 
-The last properly above might turn on a light on your head: 
+The last property above might turn on a light on your head:
 
 So, this scope is everywhere, no need for scope communication, no data duplication, easy as pie! let's build the entire app inside this scope. **Or use it whenever we face a problem we can't solve**.
 
-I have a serious argument to make with every reader at this very moment. The light that a mentioned above about using rootScope whenever we face a problem. remember it? **Turn IT OFF**. don't get me wrong, i'm not saying don't use rootScope! i'm saying it is not a **plan B** for any problem. I've seen many many many .. many application that used rootScope excessively and it never leads to anything good. 
+I have a serious argument to make with every reader at this very moment. The light that a mentioned above about using rootScope whenever we face a problem. remember it? **Turn IT OFF**. don't get me wrong, i'm not saying don't use rootScope! i'm saying it is not a **plan B** for any problem. I've seen many many many .. many application that used rootScope excessively and it never leads to anything good.
 
-So what should we use rootScope for? as the name suggests, ***it should be used for data of functionality that is really spread throughout the _entire_ app by nature***. Global data like date and time, events that are global like handling a keyboard press event, and so on. I personally will forgive you if you use rootScope for these purposes! 
+So what should we use rootScope for? as the name suggests, ***it should be used for data of functionality that is really spread throughout the _entire_ app by nature***. Global data like date and time, events that are global like handling a keyboard press event, and so on. I personally will forgive you if you use rootScope for these purposes!
 
-There are many more situation that the idea of using rootScope pop into our mind, and to be honest it's nor mine or anyone's decision to clearly say that doing it is good or not. The developer facing the challenge should decide and the main rule to follow, aside from the generality criteria mentioned above, is that it should not harm the main architecture of your application. 
+There are many more situation that the idea of using rootScope pops into our mind, and to be honest it's nor mine or anyone's decision to clearly say that doing it is good or not. The developer facing the challenge should decide and the main rule to follow, aside from the generality criteria mentioned above, is that it should not harm the main architecture of your application.
 
-As mentioned above `$rootScope` can be injected from anywhere.Testing this feature is left for the reader to do in this chapter, since writing some: 
+As mentioned above `$rootScope` can be injected from anywhere.Testing this feature is left for the reader to do in this chapter, since writing some:
 
-```javascript 
+```javascript
 $rootScope.test = "Hello World"
 // and that saying *Yaaaaay* after printing it somewhere!
 ```
 
-is now fairly below our level! 
+is now fairly below our level!
 
 so you should go on and do the importing
 
 ```javascript
 myApp.controller("anyCtrl", function($scope, $rootScope) {
-	console.log($rootScope) ; 
+	console.log($rootScope) ;
 	// i highly suggest inspecting this scope at least once by logging it!
-	// or use an Angular specific debug extention inside chrome or firefox 
-}); 
+	// or use an Angular specific debug plugin inside chrome or firefox
+});
 
-myApp.service("anyService", funciton($rootScope) {});
+myApp.service("anyService", function($rootScope) {});
 
-myApp.directive("anyDirective", funciton($rootScope) {});
+myApp.directive("anyDirective", function($rootScope) {});
 ```
 
-and assign values to them from different places and check how they change. But, there is one thing to note here. You probably want to display the values inside rootScope inside the HTML (otherwise it wouldn’t be fun and somehow pointless). We mentioned that accessing the parent controller is possible via `$parent` property. For example: 
+and assign values to them from different places and check how they change. But, there is one thing to note here. You probably want to display the values inside rootScope inside the HTML (otherwise it wouldn’t be fun and somehow pointless). We mentioned that accessing the parent controller is possible via `$parent` property. For example:
 
 ```html
-<span> 
+<span>
 	{{ ownPorperty }} // equal to $socpe.ownPropery
 	{{ $parent.prop }} // equal to $scop.$parent.prop
 </span>
 ```
 
-So this means that we should call `$parent` a specific number of times in HTML (depending on inside which controller we are now) like `$parent.$parent.$parent... `? That sounds silly. Good news: rootScope is accessible everywhere by calling the `$root`. so inside your HTML just write : 
+So this means that we should call `$parent` a specific number of times in HTML (depending on inside which controller we are now) like `$parent.$parent.$parent... `? That sounds silly. Good news: rootScope is accessible everywhere by calling the `$root`. so inside your HTML just write :
 
 ```html
-<span> 
+<span>
 	{{ $root.prop }} // equal to $rootScope.prop
 </sapn>
 ```
 
 ### Using $rootScope for $broadcasting events
 
-Aside from everything said, there is an other famous use case for rootScope. recall from the last section that sending a message between siblings, and from service to controller has no straight ways. 
+Aside from everything said, there is an other famous use case for rootScope. recall from the last section that sending a message between siblings, and from service to controller has no straight ways.
 
-Before getting into using rootScope for solving this I want to give a bad news. *You already know the answer to both of these questions*! at least some cases of it in a general manner. Let's first review some other solutions. 
+Before getting into using rootScope for solving this I want to give a bad news. *You already know the answer to both of these questions*! at least some cases of it in a general manner. Let's first review some other solutions.
 
-For managing sibling controllers, a straight forward way is to wrap them inside a third top level manager controller (**if it makes sense** to have this extra controller!). If `firstCtrl` and `secondCtrl` are sibling and they want to send events or messages to one another, you could easily do this with: 
+For managing sibling controllers, a straight forward way is to wrap them inside a third top level manager controller (**if it makes sense** to have this extra controller!). If `firstCtrl` and `secondCtrl` are sibling and they want to send events or messages to one another, you could easily do this with:
 
 ```html
 <div ng-controller="managerCtrl">
@@ -1098,45 +1140,43 @@ For managing sibling controllers, a straight forward way is to wrap them inside 
 
 and use the `managerCtrl` as a transport way to share state between two child controller.
 
-And for the controller/service problem, yes you don't have a direct way of sending an **event** from a service to controller, but remember that you can listen to change in any value returned by the service from your controller (which in many cases is like an event) with `$watch`. remember something like this? 
+And for the controller/service problem, yes you don't have a direct way of sending an **event** from a service to controller, but remember that you can listen to change in any value returned by the service from your controller (which in many cases is like an event) with `$watch`. remember something like this?
 
 ```javascript
 $scope.$watch(
-function() {return aService.getvalue() }, 
+function() {return aService.getvalue() },
 function(n, o) {
-	... 
+	...
 })
 ```
 
 And passing an event from the controller to the service? Well you have a reference to your service inside your controller/directive (by injecting it), just use a function that the service expose as an event! Is that bad? No! we just had to think a little more out of the box, right?
 
-Now, *back to implementing these with $rootScope*. Yet again, we'er not gonna re-write any code since it's 100% equal to what we had with `$scope`, it's just called `$rootScope` this time. 
+Now, *back to implementing these with $rootScope*. Yet again, we'er not gonna re-write any code since it's 100% equal to what we had with `$scope`, it's just called `$rootScope` this time.
 
-To pass an event between a service and a controller, both parties could listen on rootScope and also broadcast on rootScope. note that when a scope broadcasts a message, it reaches that scope too. 
+To pass an event between a service and a controller, both parties could listen on rootScope and also broadcast on rootScope. note that when a scope broadcasts a message, it reaches that scope too.
 
 ```javascript
 // inside any scope. controller, directive etc
-// just import the rootScope 
+// just import the rootScope
 
-//send something 
+//send something
 $rootScope.$broadcast("title", null) ;
 
-// wait for something 
-$rootScope.$on("anotherTitle", function(evt, data){}) ; 
+// wait for something
+$rootScope.$on("anotherTitle", function(evt, data){}) ;
 
-// same goes for services. 
+// same goes for services.
 
 ```
 
-Using this technique for messages between sibling scopes should be clear at this point. both the sender and receiver send and listen on `$rootScope`. Simple as that. 
+Using this technique for messages between sibling scopes should be clear at this point. both the sender and receiver send and listen on `$rootScope`. Simple as that.
 
-There are two small considerations about this technique. First, it might violate my personal rule of ***"restriction of using rootScope for non-general purposes"*** a little. So if there is a better way, give that a try too. Secondly, a message sent through rootScope, will reach every other scope who listens on rootScope, and *every other scope is allowed to listen on rootScope*. You don't have the ***Upwards*** or ***Downwards*** option for sending, so make sure the names of messages are clear and elegant enough, to cause no confusion. 
+There are two small considerations about this technique. First, it might violate my personal rule of ***"restriction of using rootScope for non-general purposes"*** a little. So if there is a better way, give that a try too. Secondly, a message sent through rootScope, will reach every other scope who listens on rootScope, and *every other scope is allowed to listen on rootScope*. You don't have the ***Upwards*** or ***Downwards*** option for sending, so make sure the names of messages are clear and elegant enough, to cause no confusion.
 
-### Further reading and challenges and the code: 
+### Further reading and challenges and the code:
 
 #### Note on $parent and scopes inheritance?
 
 
 The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/9de4155a051423134bf9e5bad6a88798ed422fb2).
-
-
