@@ -41,4 +41,7 @@ Just remember to grab the latest ***1.x*** version!
 
 To try the node server that we have just installed, write something inside your `<body>` tag and just run `live-server` inside your Terminal, inside the directory that the `index.html` file exists. You will probably see it pops up inside your browser. `live-server` actually has ***live-reloading*** as well which will be very useful later in this book. Now you are good to go. In the next chapter, we'll actually start learning Angular, brace yourself!
 
+## Inspection and dev tools inside browser
+
+As you might know, debugging an application inside the browser is possible using console. In the upcoming chapters, we use `console.log() / console.warn()` methods very often to debug our values and you are also encouraged to do so. Each browser provides for specific debugging tools, since they can be different, we do not cover them directly here. Just to mention a suggestion, I highly recommend Google Chrome + [AngularJS Batarang](https://chrome.google.com/webstore/detail/angularjs-batarang/ighdmehidhipcmcojjgiloacoafjmpfk?hl=en) plugin. 
 

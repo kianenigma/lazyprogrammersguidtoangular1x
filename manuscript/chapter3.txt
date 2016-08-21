@@ -2,30 +2,31 @@
 
 Enough with small talk! Let's code: 
 
-In this chapter we will begin with importing Angular library and discuss the structure of an Application built with Angular, Its main components and the duty of each of these components. 
+In this chapter we will begin with importing Angular library and discuss the structure of an Application built with Angular, Its main components and the duty of each of its components. 
 
 ## Building blocks of an Angular app
 
-Angular provides a modular structure for creating applications. Which means we can (and should) use them to encapsulate different pieces of our application together, meanwhile keeping each module simple and clean. 
+Angular provides a **modular** structure for creating applications. Which means we can (and should) use them to encapsulate different pieces of our application together, meanwhile keeping each module simple and clean. 
 
-An Angular module itself is actually.. well nothing but one line of code declaring its name and dependencies. But, what gives power to a module are the components that can *attach* to a module. Each module is usually consisted of the following *major* components: 
+An Angular module itself is actually.. well nothing but one line of code declaring its name and dependencies. But, what gives power to a module are the components that can ***attach*** to a it. Each module is usually consisted of the following *major* components: 
+
 
 1. A list of dependencies (which is just a list of other modules)
- 2. One or more **Controller**. Where each is responsible for managing the **UI Logic** a specific section (AKA. scope) of the page.
- 3. One or more **Factories** . Where each is responsible for managing **Data / Business Logic** of a specific entity. 
- 4. One or more **Directives**. Where each is responsible for creating a *reusable* DOM element to be used inside that module.
+2. One or more **Controllers**. Where each is responsible for managing the **UI Logic** a specific section (AKA. scope) of the page.
+3. One or more **Services** . Where each is responsible for managing **Data / Business Logic** of an specific entity. 
+4. One or more **Directives**. Where each is responsible for creating a *reusable* DOM element to be used inside that module.
+
  
-(Above definitions are somehow simplistic, because at this point we want things to be simple. a more sophisticated definition of each of the following will be provided on the chapter dedicated to each of them)
+(Above definitions are somehow simplistic, because at this point we want things to be simple. a more sophisticated definition of each of them will be provided in a dedicated chapter)
 
 and - perhaps - the following *minor* components : 
 
  1. Filters 
- 2. Services
- 3. Providers and Services
- 4. Constants
- 5. Etc. 
+ 2. Providers and Services
+ 3. Constants
+ 4. Etc. 
 
-In the upcoming sections we will scratch each of these components briefly so that you get clear understanding of what they really are, and then focus on each of them more in a separate chapter. 
+In the upcoming sections we will scratch the surface of each of these components briefly so that you get clear understanding of what they really are, and then focus technically on each of them more in a separate chapter. 
 
 ## Module
 
@@ -41,17 +42,17 @@ Create a `main.js` file in your working directory and link it to your HTML after
 </head>
 ```
 
-define a module inside your js file with the following syntax: 
+Define a module inside your js file with the following syntax: 
 
 ```javascript
 var myApp = angular.module('myApp', []) ;
 ```
 
-Where the first argument, `myApp` is the actual name of the module. The variable name is just for further referencing this module (for more information see the section [Referencing a module](#Referencingamodule) under [Extra detail](#ExtraDetails)) . 
+Where the first argument, `myApp` is the actual name of the module. The variable name is just for further referencing this module (for more information see the section [Referencing a module](#ref-a-module) under [Further reading](#further-reading-3)) . 
 
-The second argument is an empty array indication module dependencies. Which is fine because now we do not have any dependent angular module.
+The second argument is an empty array indication module dependencies. Which is fine to be empty because now we do not have any dependent angular modules.
 
-Now, when this module want's to take control of the HTML in the future, it must have an idea of which portion of our HTML. This could be done using the `ng-app` directive. we'll discuss directives later on, for now just think about it as an indicator that links a **module** (Javascript logic ), to a **portion of HTML**. We'll assign this module to our entire `<body>` tag for now.
+Now, when this module want's to take control of the HTML in the future, it must have an idea of which portion of our HTML. This could be done using the `ng-app` ***directive***. we'll discuss directives later on, for now just think about it as an indicator that links a **module** (Javascript logic ), to a **portion of HTML**. We'll assign this module to our entire `<body>` tag for now.
 
 ```html
 <body ng-app="myApp">
@@ -63,7 +64,7 @@ Now, when this module want's to take control of the HTML in the future, it must 
 
 And your first module is now set up!
 
-## Controller, Scope, Data binding and more
+## Controllers, Scopes and Data binding
 
 Good. Refresh and double check the console is your browser for no errors. Unfortunately a module alone can't give us much to see. Let's add a controller to this module, assign it to control some input tag and a button! 
 
@@ -73,27 +74,31 @@ Add the following to your `main.js` javascript file.
 myApp.controller('mainCtrl', function ($scope) {})
 ```
 
- Similar, to defining a module, we create a controller with the first argument being the name and the second argument a function that the main logic of our Controller will go into. Two good points can be mentioned here:
+Similar, to defining a module, we create a controller with the first argument being the name and the second argument a function that the main logic of our Controller will go into. Two good points can be mentioned here:
  
  **First**, unlike a module, we are **not** calling a construction from the library (`angular.module(..)`) to create something, we are calling a constructor from the module that we created (`myApp.controller(..)`) earlier! this is why it's common to say that *Some Controller* attaches to *Some Module*.
  
- **Secondly**, a module had some dependencies, a controller has that too! the list of arguments passed to the function declaring the controller is actually **Injecting** the dependencies into the controller. for example, here the `$scope` variable is dependency being injected into the controller. These dependencies are either angular internal services (services are like re-usable pieces of code, or functions that can be injected and used anywhere else. we'll learn about them in a second!) , which all start with a `$`, or the services that we write them our self. We'll examine this dependency injection later on this book.
+ **Secondly**, a module had some dependencies, a controller has that too! the list of ***arguments*** passed to the function declaring the controller is actually **Injecting** the dependencies into the controller. for example, here the `$scope` variable is dependency being injected into the controller. These dependencies are either angular internal services (services are like re-usable pieces of code, or functions that can be injected and used anywhere else. we'll learn about them in a second!), which all start with a `$`, or the services that we write them ourself. We'll examine this dependency injection later in this book.
 
-So, going back to the controller. Just like linking the module to the HTML with an `ng-app`, we must to the same with controllers with `ng-controller` directive. Just for simplicity, add an internal `<div>` to your `<body>` tag and assign `ng-controller='mainCtrl'` to it. check again for errors.
+So, going back to the controller. Just like linking the module to the HTML with an `ng-app`, we must to the same with controllers with `ng-controller` directive. Just for simplicity, add an internal `<div>` to your `<body>` tag and assign `ng-controller='mainCtrl'` to it. Check again for errors.
 
 ```html
-<div ng-controller='mainCtrl'>
+<body ng-app="myApp">
+  <div ng-controller='mainCtrl'>
     <h3>
       Hello Angular!
     </h3>
-</div>
+  </div>
+</body>
 ```
 
-The `$scope` variable that we inject into to controller is a special Angular variable which is binded to the view. This enables a lot a functionality and we're going to see some of them now.
+The `$scope` variable that we inject into to controller is a special Angular variable which is ***bounded*** to the view. This enables a lot a functionality and we're going to see some of them now.
 
-### Any property added to the $scope variable will be visible for rendering inside HTML with angular's Template Syntax. And the binding is two way**. this is the most important thing to know about each controller. 
+### Data Binding 
 
-Let's test this. remove the text inside `<h2>` and replace it with `{{ Title }}`. Placing anything between `{{ }}` will mean that *Angular will expect to find it as properties* of the `$scope` and replace them with the appropriate value. To complete this, add the **Title** as a property of `$scope`. 
+***Any property added to the $scope variable will be visible for rendering inside HTML with angular's Template Syntax. And the binding is two way. this is the most important thing to know about each controller.***
+
+Let's test this. remove the text inside `<h2>` and replace it with `{{ Title }}`. Placing anything between `{{ }}` will mean that *Angular will expect to find it in properties* of the `$scope` and replace them with the appropriate value. To complete this, add the **Title** as a property of `$scope`. 
 
 ```javascript
 myApp.controller('mainCtrl', function($scope){
@@ -101,11 +106,13 @@ myApp.controller('mainCtrl', function($scope){
 });
 ```
 
-You should see the new text displayed inside `<h2>`. Open up your browser inspection tools and see how the content of the `<h2>` is being replaced. 
+You should see the new text displayed inside the `<h2>`. Open up your browser inspection tools and see how the content of the `<h2>` is being replaced. 
 
 OK, Cool! What else? 
 
-### Any function assigned to $scope can be used as event listeners for different events (aside from being visible inside {{}} ) 
+### Using functions
+
+***Any function assigned to $scope can be used as event listeners for different events (aside from being visible inside {{}}) ***
 
 On normal vanilla Javascript we listen to events like `onclick`, `oninit` etc. Angular provides wrappers around these events as directives and if we want to use *$scope defined function* as listeners, we must use angular's directives instead of normal event listeners. One of these directives is `ng-click`. That's what we're going to use.Add some functions to your $scope:  
 
@@ -130,39 +137,53 @@ and inside html:
 </div>
 ```
 
-note how the names of `title` and `Title` must match and how `title` comes with a `()` because it's actually a function. 
+note how the names of `title` and `Title` must match, and how `title` comes with a `()` because it's actually a function. 
 
 Also, notice how the names of variables and functions **inside directives that are provided by angular** do not need to be wrapped inside `{{ }}`. 
 
-think of it as this way: when it comes to writing some property of any `$scope` inside HTML, whenever we are inside the territory of Angular, we don't need to have `{{ }}` . for example, just as we had something like ng-click instead of `onclick`, we have `ng-href` instead of `href` and inside an `ng-href` you just put : `<a ng-href="someModelNamefromScope"></a>`. but if for any reason you needed to write a `$scope` property inside plain HTML attributes, or inside plain HTML, you need to wrap it inside `{{ }}` like this : `<a href="{{someModelNameFromScope}}"></a>` (the is indeed a difference between `href` and `ng-href` which we'll get to it later) .
+think of it this way: when it comes to writing some property of any `$scope` inside HTML, whenever we are ***inside the territory of Angular***, we don't need to have `{{ }}`. for example, just as we had something like ng-click instead of `onclick`, we have `ng-change` instead of `onchange` and inside an `ng-chnage` you just put : 
 
-Just to double check this, add an `<input type="text">` and try ti assign its `value` property to `$scope.Title` how would you do this? Keep in mind that `value` is a generic HTML attribute, not a directive, so something like this would do: 
+```html
+<!--  Angular territory --> 
+<select ng-change="someModelNamefromScope">...</select>
+
+<!-- global territory - although this is not a good practice, we mentioned it just to prove a point here --> 
+<select href="{{someModelNamefromScope}}">...</select> 
+```
+
+But if for any reason you needed to write a `$scope` property inside plain HTML attributes, or inside plain HTML, you need to wrap it inside `{{ }}` like this : `<a href="{{someModelNameFromScope}}"></a>` (the is indeed a difference between `href` and `ng-href`, which we'll get to it later).
+
+Just to double check this, add an `<input type="text">` and try ti assign its `value` property to `$scope.Title` how would you do this? Keep in mind that `value` is a generic HTML attribute, not an Angular directive, so something like this would do: 
 
 ```html
 <input type="text" value="{{Title}}" />
 ```
 
-Last thing to know is that keep in mind that all of this is happening, you have the power over your UI from a controller because you are doing all of it inside the `ng-controller` try and move the `{{Title}}` outside and see that nothing happens!
+Last thing to know is all of this is happening, you have the power over your UI from a controller because you are doing all of it inside the `ng-controller` try and move the `{{Title}}` outside and see that nothing happens!
 
-What we actually did right now, assigning a `$scope` variable to `value="..."` is something that we actually should never do! Angular has a very powerful directive for HTML tags that have a **value**, it's called `ng-model` and we're going to write about it in our next **Bold Title**: 
+What we actually did right now, assigning a `$scope` variable to `value="..."` is something that we ***actually should never do***! Angular has a very powerful directive for HTML tags that have a **value**, it's called `ng-model` and we're going to write about it in our next **Bold Title**: 
 
-### Any attribute of the $scope can be binded two ways to a HTML value using the ng-model directive
+### The holy: ng-model 
 
-What do we mean by two-way? it means that if you change the value from your code, the HTML will update automatically and if a value gets changed by the user from the HTML, the value in `$scope` will be changed automatically. we mentioned the property earlier but we didn't really test it. First let's do some tests.
+***Any attribute of the $scope can be bounded - two way - to a HTML value using the ng-model directive***
 
-We mentioned that Angular services can be injected inside a controller as an argument. One of these services is `$interval` which is actually just a wrapper around `setInterval()` function and has the same functionality. Inject this service into the controller and change the value of `$scope.Title` and see what happens: 
+What do we mean by ***two way***? it means that if you change the value from your code, the HTML will update automatically and if a value gets changed by the user from the HTML, the value in `$scope` will be changed automatically. We mentioned the property earlier but we did not really test it. First let's do some tests.
+
+We mentioned that Angular services can be injected inside a controller as an argument. One of these services is `$interval` which is actually just a wrapper around `window.setInterval()` function and has the same functionality. Inject this service into the controller and change the value of `$scope.Title` and see what happens: 
 
 ```javascript
-myApp.controller('mainCtrl', function($scope, $interval){
+myApp.controller('mainCtrl', function($scope, $interval){ // note how we injected $interval through an argument
   $scope.Title = 'Hello Angualr from data binding';
-  $interval(function() {$scope.Title = 'Hello Angualr from data binding at ' + new Date()}, 1000);
-  // ...
+  $interval(function() {
+    $scope.Title = 'Hello Angualr from data binding at ' + new Date()
+    }, 1000);
+   ...
 }); 
 ```
 
 You should see that the value of title is getting changed inside the UI every second with the new time. this is just one possible way, let's try it the other way around! 
 
-Now let's make things more interesting with `ng-model`.  Assign this directive to an attribute in your `$scope`, meanwhile display it somewhere in the page. 
+Now let's make things more interesting with `ng-model`. Assign this directive to an attribute in your `$scope`, meanwhile display it inside an input tag. 
 
 ```html
 <div ng-controller='mainCtrl'>
@@ -172,37 +193,50 @@ Now let's make things more interesting with `ng-model`.  Assign this directive t
   </div>
 ```
 
-You'll see that as you change the value of `inputModel` (which can be accessed via `$scope.inputModel` from the controller), the value inside `{{inputModel}}` updates on the fly!
+You'll see that as you change the value of `ng-model='inputModel'` inside `<input/>` (which can be accessed via `$scope.inputModel` from the controller), the value inside `{{inputModel}}` updates on the fly!
 
-You might have felt something suspicious inside the last snippet. `inputModel` was never defined, yet we are assigning a value to it `ng-model="inputModel"`  and the value is being assign and we can actually see it inside `{{ inputModel }}`. This is actually something that has more to do with javascript than Angular. In javascript, if you have an object name `foo` that has no properties, and then try to access a property from it (`bar` for example) **No errors will be raised**. it will just be undefined and until some value is assigned, or it will simply keep being `undefined`!
+You might have felt something suspicious inside the last snippet. `inputModel` was never defined, yet we are using it inside `ng-model="inputModel"` and the value is being assign and we can actually see it inside `{{ inputModel }}`. This is actually something that has more to do with javascript than Angular. In javascript, if you have an object name `foo` that has no properties, and then try to access a property from it (`foo.bar / foo['bar']` for example) **No errors will be raised**. it will just be undefined and until some value is assigned, or it will simply keep being `undefined`!
 
 ```javascript
-var foo = { prop : 'prop' };
+var foo = {};
 console.log(foo.prop) // will return undefined
+
+foo.bar = 'baz' ; 
+console.log(foo.prop) // will return buz
 ``` 
 
-Here, just like the Example we just hade, `$scope.inputModel` was never declared, so accessing it via `{{ inputModel }}` will be evaluated to `undefined` and nothing will be displayed in the HTML. Eventually, you will change the value inside the `<input>` and only just then, `$scope.inputModel` will be defined.
+Here, just like the Example we just hade, `$scope.inputModel` was never declared, so accessing it via `{{ inputModel }}` will be evaluated to `undefined` and nothing will be displayed in the HTML. Eventually, you will change the value inside the `<input>` and only just then, `$scope.inputModel` will be defined. You can easily go inside your controller and assign an inital value to it: 
 
-So far we saw how controller can be used to control the HTML and bind data to it, we also saw how some of the build in directives of angular work, line `ng-model` and `ng-click`. In the next section we will focus on Directives!
+```javascript 
+myApp.controller('mainCtrl', function($scope, $interval){
+  $scope.inputModel = "initialValue"
+}); 
+```
 
-the examples of this section can be found in [this link](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/f2de9170ca9c34a24046ed6eaa2ff4cee67db923/code).
+So far we saw how a controller can be used to control the HTML and bind data to it, we also saw how some of the build in directives of angular work, line `ng-model` and `ng-click`. In the next section we will focus on Directives!
+
+The code until the end of this section can be found in [this link](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/f2de9170ca9c34a24046ed6eaa2ff4cee67db923/code).
 
 
 ## Directives, adding supernatural power to HTML
 
-So far we have seen some of angular directives in action, `ng-model` and `ng-click`. you might have noticed that all of them start with `ng-*`. this means that they are directives that angular provides out of the box. but of course, we can create them our selfs too. 
+So far we have seen some of Angular's directives in action, `ng-model` and `ng-click`. you might have noticed that all of them start with `ng-*`. this means that they are directives that angular provides out of the box. but of course, we can create them our selfs too. 
 
 Actually these directives names which are now **dash-delimited**, can be referenced as **camelCase** . like `ngModel=""` etc. you can read more about them [here](https://docs.angularjs.org/guide/directive). 
 
-We will first examine some of the other important built in directives, and then write a simple one using the `directive()` constructor. 
+We will first examine some other important built in directives, and then write a simple one using the `directive()` constructor. 
 
-**List and Objects can be easily iterated with ng-repeat.** let's jump into how this works directly. Create an array inside your controller, attached to `$scope` (obviously) . 
+### Iterating over objects
+
+***List and Objects can be easily iterated with ng-repeat.***
+
+let's directly jump into how this works. Create an array inside your controller, attached to `$scope` (obviously) . 
 
 ```javascript
 $scope.actors = ["Marshall", "Ted", "Barney", "Robin"] ; 
 ```
 
-Now create an HTML `ul` element and display this list, item by item inside it:
+Now create a HTML `<ul>` element and display this list, item by item inside it using ***ng-repeat*** with the following syntax:
 
 ```html
 <ul>
@@ -212,15 +246,18 @@ Now create an HTML `ul` element and display this list, item by item inside it:
 </ul>
 ```
 
-You should see the actor names being rendered properly inside the `ul` element. In this code snippet, the `actors` variable is the same as what yo you defined in `mainCtrl`. the `actor` variable is trivial with respect to `mainCtrl`. Meaning that it could be anything and  it is used to reference the current index of the `actors` array. You could replace it with `ng-repeat="foo in actors"` and inside the template just type : `{{ foo }}`.
+You should see the actor names being rendered properly inside the `ul` element. In this code snippet, the `actors` variable is the same of the property you defined in `mainCtrl`. the `actor` variable is trivial with respect to `mainCtrl`. Meaning that it could be anything and  it is used to reference the current index of the `actors` array. You could replace it with `ng-repeat="foo in actors"` and inside the template just type : `{{ foo }}`.
 
-What happens here is very important in concept of understanding the **heirachy of controllers/scopes**. We mentioned that a page/app can be consisted of many controllers, this means that one controller could be placed inside another. This is actually exactly what is happening here. Each directive **might** have it's own `$scope` nested inside the parent `$scope`. ng-repeat is a directive that creates a separate `$scope` for each of its elements and each of these `$scope` variables have a property named the same as we declared inside `ng-repeat`, `actor` in this case. You can easily check this by testing weather any `{{actor}}` property is visible outside the `ng-repeat` or not. 
+What happens here is very important in concept of understanding the **heirachy of controllers/scopes**. We mentioned that a/an page/app can be consisted of many controllers, this means that one controller could be placed inside another. This is actually exactly what is happening here. Each directive **might** have it's own `$scope` nested inside the parent `$scope`. ng-repeat is a directive that creates a separate `$scope` for each of its elements and each of these `$scope` variables have a property named the same as we declared inside `ng-repeat`, `actor` in this case. You can easily check this by testing weather any `{{actor}}` property is visible outside the `ng-repeat` or not. 
 
 Angular automatically adds a class named `ng-scope` / `ng-isolate-scope` to all HTML tags that act as the holder of a `scope`. you can see them inside your HTML. [Read](https://docs.angularjs.org/guide/scope) more about scopes here.
 
 So always keep in mind that directives can created their own -child- $scopes. Another property that this child $scope has is a property called `$index`. try and change the content of `<li>` to `{{ $index }} ) {{ actor }}` and see what happens. 
 
+![an example of scope created by ng-repeat](images/scope.png)
+
 If the rendered version of the above code was something like: 
+
 ```html
 <ul>
   <li ng-repeat="actor in actors">
@@ -242,7 +279,8 @@ If the rendered version of the above code was something like:
 </ul>
 ```
 
-Another cool thing about nested $scopes is that each child $scope, has access to its parent $scope properties (well, not always, but it has by default. you learn more about this soon). this means that inside the ng-repeat, we can still use the $scope associated with `mainCtrl` and its a attributes. 
+Another cool thing about nested $scopes is that each child $scope, has access to its parent $scope properties (well, not always, but it has ***by default***. you learn more about this soon). this means that inside the ng-repeat, we can still use the `$scope` associated with `mainCtrl` and its a attributes. 
+
 Try this with: 
 
 ```html
@@ -253,10 +291,12 @@ Try this with:
 </ul>
 ```
 
-Although you have access to all of the values that you bind into your html from your `$scope`, inside that `$scope`, but you can also pass some of them back as arguments of listener functions back to `$scope`. As an example, let's pass the `actor`  property from `ng-repeat` back to a function inside the `mianCtrl`. Create a function `onListItemClick` inside the controller:
+Although you have access to all of the values that you bind into your html from your `$scope`, inside that `$scope` (naturally!), but you can also pass some of them back as arguments of listener functions back to `$scope`. As an example, let's pass the `actor`  property from `ng-repeat` back to a function inside the `mianCtrl`. Create a function `onListItemClick` inside the controller:
 
 ```javascript
-  $scope.onListItemClick = function ( actor ) { alert('Hello ' + actor) }  
+  $scope.onListItemClick = function ( actor ) { 
+  alert('Hello ' + actor) 
+ }  
 ``` 
 
 and pass the `actor` to it :
@@ -267,7 +307,7 @@ and pass the `actor` to it :
 </li>
 ```
 
-----------
+### Creating custom directives
 
 Now let's go into creating a custom directive. Like controllers, directives must also be attached to a module.
 
@@ -292,19 +332,27 @@ myApp.directive('titleEditor', function() {
 
 Just like a controller, a directive has a name as the first argument. note that since we mentioned that a directive name like `ngModel` is equivalent to `ng-model`, **a Directive name MUST start with lowercase letter**. Let's begin by inspecting the code. the second argument, the function, **must return an object that declares the directive**. this object must have specific keys that each have e meaning: 
 
- - **restrict**: defines how this directive can be used. `A` stand for a attribute ( like `<div title-editor> ..`) and `E` stands for element (like `<title-editor></title-editor>`
- - **scope**: declares weather the directive creates a new scope of it owns or not. Remember what we said about how `ng-repeat` is creating multiple scopes, each having `actor` and `$index` properties? this is exactly that! We can define here weather our directive has a scope or not, does it inherit from it parent or not etc.
- - **template**: defines the html template that should be rendered inside the directive. you can also use `templateUrl` to link an HTML file to be rendered inside. 
- - **controller**: just like normal declaration of a controller, a directive can also define its own controller. notice that we can inject `$scope` variable (and services like `$timeout` etc.) in the same way inside this directive's controller too. 
- - **link**: a function that will be invoked as the template is getting rendered, which has access to the directives scope, controller, DOM element and DOM attributes. So it's actually quite good for manipulation the DOM or binding events! 
+- **restrict**: defines how this directive can be used. `A` stand for a attribute ( like `<div title-editor> ..`) and `E` stands for element (like `<title-editor></title-editor>`
+- **scope**: declares weather the directive creates a new scope of it owns or not. Remember what we said about how `ng-repeat` is creating multiple scopes, each having `actor` and `$index` properties? this is exactly that! We can define here weather our directive has a scope or not, does it inherit from it parent or not etc.
+- **template**: defines the html template that should be rendered inside the directive. you can also use `templateUrl` to link an HTML file to be rendered inside. 
+- **controller**: just like normal declaration of a controller, a directive can also define its own controller. notice that we can inject `$scope` variable (and services like `$timeout` etc.) in the same way inside this directive's controller too. 
+- **link**: a function that will be invoked as the template is getting rendered, which has access to the directives scope, controller, DOM element and DOM attributes. So it's actually quite good for manipulation the DOM or binding events! 
 
 **Unfortunately**, there is more to these attributes, and more detail that can be learned. **Fortunately** the portion above is what you probably need (might even more that what you need) and we are only going to cover these for now.
 
-With all things said, let's start examining the directive. Look the `titleEditor` directive carefully again, how we are logging some details inside the `link` and specially the template that we declared for it. Then place a `<title-editor></title-editor>` anywhere inside the `mainCtrl` and see both the HTML and your console. 
+With all things said, let's start examining the directive. Look the `titleEditor` directive carefully again, how we are logging some details inside the `link` and specially the template that we declared for it. Then place a `<title-editor></title-editor>` anywhere inside the `ng-controller='mainCtrl'` and see both the HTML and your console. 
+
+```html
+<body ng-app="myApp">
+	<div ng-controller="mainCtrl">
+		<title-editor></title-editor>
+	</div>
+</body>
+```
 
 You should notice that: 
 
-Since we did not declared an isolated scope for this directive, and since it is inside `mainCtrl` it has access to all it's properties. aside from `{{Title}}` which is being displayed in the screen, you can see in the console that when we logged the `scope` parameter of the `link` function, it actually has all of the:
+Since we did not declared an isolated scope for this directive, and since it is inside `mainCtrl` ***it has access to all it's properties***. aside from `{{Title}}` which is being displayed in the screen, you can see in the console that when we logged the `scope` parameter of the `link` function, it actually has all of the:
 
 ```
 Title "Hello Angular from data binding at Mon Aug 01 2016"
@@ -313,20 +361,23 @@ actors Array[4]
 onListItemClick = function(actor)
 ```
  
- You should check yourself that if we place `<title-editor>` outside of the `mainCtrl` we do not get this properties like `{{ Title }} `anymore. 
+ Again, this is because scopes - by default - inherit from each other. We'll learn about this feature alter in this chapter.
+ 
+ You should check yourself that if we place `<title-editor>` outside of the `mainCtrl` we do not get properties like `{{ Title }} `anymore. 
 
-So, let's start by making the directive isolated. Directives are meant to be **Reusable** component, so it is a very bad idea to let each of them have *Full Access* to its parent scope. 
+So, let's start by making the directive isolated. Directives are meant to be **Reusable** component, so it is a very *bad idea* to let each of them have *Full Access* to its parent scope. 
 
 Change `scope: true` inside the directive declaration and check the results again.
-You see no changes. why is the new scope still having access to the parent scope? Well, because so far we have defined a scope for the directive, but no specific **isolation**! this is because scopes naturally inherit from their parents, unless said not to do so! So we basically created a copy of the scope associated with `mainCtrl` inside the scope associated with `<title-editor>`. there is one small thing that you can use to convince yourself that this **a new scope**, even though it has the same `Title` and .. it is not the same. on the log of the scope inside `link` function pay attention to an attribute named `$id`. you should see that there are not the same with `scope: true/ false` and actually when it is `false` it is equal to the `$id` inside `mainCtrl`! (try the `$id` of `mianCtrl` with printing `$scope.$id` inside it) 
 
-Now let's change to `scope: {}` and see what happens. You should see no more sign of the `{{Title}}` inside of `titleEditor` and the `$id` must be different from `mainCtrl`. Now we have an isolated Scope! 
+You see no changes. why is the new scope still having access to the parent scope? Well, because so far we have defined a scope for the directive, but no specific **isolation** was defined! this is because scopes ***naturally inherit*** from their parents, ***unless said not to do so***! So we basically created a copy of the scope associated with `mainCtrl` inside the scope associated with `<title-editor>`. there is one small thing that you can use to convince yourself that this **a new scope**, even though it has the same `Title` and .. it is not the same. on the log of the scope inside `link` function pay attention to an attribute named `$id`. you should see that there are not the same with `scope: true/ false` and actually when it is `false` it is equal to the `$id` inside `mainCtrl`! (check the `$id` of `mianCtrl` with printing `$scope.$id` inside it)
+
+Now let's change to `scope: {}` and see what happens. You should see no more sign of the `{{Title}}` inside of `titleEditor` and the `$id` must be different from `mainCtrl`. ***Now we have an isolated Scope***! 
 
 But this is ... well, not good! It might be a very common situation that we need to access something from the parent scope or pass a data back to it. There are ways for that to! Actually, there are two ways, a good one and a bad one.
 
 **The bad way** is to use the `$parent` property in a scope. As you - should - remember, scopes are nested inside each other. and each scope has a reference to its parent scope under `$parent` name. Check inside the console to see that a `$parent` property which contains `Title`, `sayHey()`, `title()`, `actors[]` and..  exists inside the directive's scope. we can use them  inside javascript and HTML  by using the `$parent` prefix . Change `{{Title}}` to `{{ $parent.Title }}` and see that the title from `mainCtrl` is visible again. 
 
-Speaking of the devil.. I mean controllers and scopes, let's uncomment the controller section as well inside the directive declaration object and check `$parent` inside of that. aside from that a property named `directiveData` should be as well visible now. 
+Speaking of the devil.. I mean controllers and scopes, let's uncomment the controller section as well inside the directive declaration object and check `$parent` inside of that. Aside from that a property named `directiveData` should be as well visible now.
 
 ```javascript
 return { 
@@ -342,9 +393,17 @@ return {
 }
 ```
 
-**The Good Way** for getting the data from a parent scope to a directive scope is to specify them inside `scope: {}`. The simplest of examples. Define scope inside directive as the following: `scope: {parentTitle: @title}`
+What we did before, using `$parent` is actually a ***backdoor*** for accessing parent scope. It can be used anywhere but to be honest, ***almost always it's a bad idea to use it, specially for changing something***. One of the only safe use cases of $parent is inside nested loops. As me mentioned, each ng-repeat will create a scope for each of its items, and these scopes will inherit their parent's properties. But the thing is that each of these scopes have the same properties, so they'll override their parent's properties and hence, ***each child loop will not have access to its parent index or other properties***. In this situation, it's safe and common to use expressions such as: 
 
-What this means is that a property named `parentTitle` will be added to the **Isolated Scpoe** (since we are using `{}` as the `scope` value, not `ture/false`) and **its expecting to receive its value from the parent scope via an attribute named**:  `title`. Ignore the `@` for now. we'll get to that in a second. Let's implement this inside ou HTML and javascript file. 
+```
+{{ $parent.$index }} 
+```
+
+To access the parent loop index. 
+
+**The Good Way** for getting the data from a parent scope to a directive scope is to specify them inside `scope: {}`. The simplest of examples: Define scope inside the directive as following: `scope: {parentTitle: @title}`
+
+What this means is that a property named `parentTitle` will be added to the **Isolated Scope** (since we are using `{}` as the `scope` value, not `ture/false`) and **its expecting to receive its value from the parent scope via an attribute named**: `title`. Ignore the `@` for now. we'll get to that in a second. Let's implement this inside ou HTML and javascript file. 
 
 ```javascript
 // inside main.js directive function
@@ -370,41 +429,58 @@ And inside your html file:
 <title-editor title="{{Title}}"></title-editor> 
 ```
 
- Note that here, Title belongs to `mainCtrl`.
+Note that here, `{{ Title }}` belongs to `mainCtrl`.
 
-So what was the deal with that mysterious `@`? There are basically 3 main ways to bind data to a directive scope. any of these ways have a special character that you must put before the name for angular to recognize it : 
+So what was the deal with that mysterious `@`? There are basically 3 main ways to bind data to a directive scope via ***attributes***. any of these ways have a special character that you must put before the name for angular to recognize it : 
 
- 1. `@` binds a local scope property to the value defined inside the DOM attribute. this means that the value that we provided to the `title=""` attribute, `{{Title}}` will be resolved and then binded to `parentTitle` of the directive's scope. Since DOM attributes are strings by nature, the values binded to the scope are also strings by nature. Try something like `<title-editor title="Some String and a template : {{Title}}"></title-editor> ` and explain to yourself how this works. 
- 2. `=` binds a **Two way** data to a local property. this might look similar to the last one, but there is crucial difference between `=` and `@`. `@` interprets an expression as *string* and then just passes it down to directive's scope. But `=` knows that there is going to be a binding between a **Property** (AKA. a **Model**) from the two scopes, so it actually does not expect to see something like `{{ Title }}`, instead the **Name** of that  **property**. Long story short, if you want to achieve the same thing with two way data binding, you should to something like: `<title-editor title="Title"></title-editor>` and `scope: {'parentTitle': '=title'}`.
+1. `@` - binds a local scope property to the value defined inside the DOM attribute. Recall our example from the last section :
+
+	```javascript
+	scope: {
+      'parentTitle': '@title'
+    },		
+	```
+	
+	```html
+	<title-editor title="{{Title}}"></title-editor> 
+	```
+	
+	this means that the value that we provided to the `title=""` attribute, `{{Title}}`, will be resolved and then binded to `parentTitle` of the directive's scope. Since DOM attributes are ***strings*** by nature, the values bounded to the scope are also strings by nature. Try something like `<title-editor title="Some String and a template : {{Title}}"></title-editor> ` and explain to yourself how this works. 
+3. `=` binds a **Two way** data to a local property. this might look similar to the last one, but there is crucial difference between `=` and `@`. `@` interprets an expression as ***string*** and then just passes it down to directive's scope. But `=` knows that there is going to be a binding between  **Properties** (AKA. a **Models**) of the two scopes, so it actually does not expect to see something like `{{ Title }}`, instead the **Name** of that  **property**. Long story short, if you want to achieve the same thing with two way data binding, you should to something like: `<title-editor title="Title"></title-editor>` and `scope: {'parentTitle': '=title'}`.
  3. The `<` works exactly the same as `=` but it has a one way flow of data, **meaning that changes in parent scope will reflect on child scope, but changes on child scope will not reflect on the parent scope.**  
 
-Another way, `&` is only for when we want to pass an executable expression and is (in my experience) rarely used. for more info on scope binding types, see [this link](https://docs.angularjs.org/api/ng/service/$compile#directive-definition-object).
+There is one last way, which we do not fully cover here, `&` is only for when we want to pass an executable expression to a child scope and is (in my experience) rarely used. for more info on scope binding types, see [this link](https://docs.angularjs.org/api/ng/service/$compile#directive-definition-object).
 
-Let's move on to the last part. The `link` function, with the arguments that you are already familiar with, gets called only when the directive is being mapped inside the HTML, once in its lifetime in other words. The main advantage of link function is that it has full access to the DOM Node associated with this directive, therefor it is pretty good to bind some events! 
+Let's move on to the last part. The `link` function, with the arguments that you are already familiar with, gets called only when the directive is being mapped inside the HTML, ***once in its lifetime*** in other words. The main advantage of link function is that it has full access to the *DOM Node* associated with this directive (after all, directives will eventually render as some HTML/non-HTML tags inside the page!), therefor it is pretty good to bind some events! 
+
 As an example you could easily do something like: 
 
 ```javascript
 link: function(scope, iElem, iAttr, ctrl) {
       iElem.on('click', function(){
-        console.log("clicked!");
+        alert("clicked!");
       })
  }
 ```
 
 To listen to some events, manipulate directive scope, manipulate the parent scope (which we just learned how using the `=`) etc.
 
-To wrap up our understanding of directives, we are going to complete a simple directive that gets a property from a parent controller using `=` in scope definition, and provide user with an input tag tag to change that title, and we can then clearly see how these changes propagate everywhere.Actually, doing this is quite easy. just add this to directive `template`: `'<input ng-model="parentTitle" type="text" />' + `. And from now on, you will probably see the changes to both `$scope.title` and `$scope.parentTitle` will be reflected everywhere. 
+To wrap up our understanding of directives, we are going to complete a simple directive that gets a property from a parent controller using `=` in scope definition, and provide user with an input tag tag to change that property, and we can then clearly see how these changes propagate everywhere.Actually, doing this is quite easy. just add this to directive `template`: `'<input ng-model="parentTitle" type="text" />' + `. And from now on, you will probably see the changes to both `$scope.title` and `$scope.parentTitle` will be reflected everywhere. 
 
 The code for this section so far could be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/e5fdd4ca9056e11478b5625df2ba01a2e5f458f7/code). 
  
 
 ## Services, handling the data logic properly 
 
-We mentioned till now, Services as objects that can be *injected* into a function, a controller etc. Sometimes these Services are referenced to as *Providers*, or *Factories*. The argument about the correct name is not our main purpose here, instead let's revisit the core definition of a **Service**: **An injectable object**. There are many use cases for these objects. So far you are familiar with something like `$interval` which is a wrapper around `window.setInterval`. When it comes to creating custom services the following scenario is the most common: 
+We mentioned ***Services*** as objects that can be *injected* into a function, a controller , a directive etc. Sometimes these Services are referenced to as *Providers*, or *Factories*. The argument about the correct name is not our main purpose here, instead let's stick the core definition of a **Service** for now: **An injectable object**. 
+
+### Why we might need a Service?
+
+There are many use cases for these objects. So far you have gotten familiar with something like `$interval` which is a wrapper around `window.setInterval`. When it comes to creating custom services the following scenario is the most common: 
 
 So far we have only had one controller, one module, life is good, huh? We all know that this is just temporary. if you attempt to build a complete angular application with only just one controller, I assure you, it is going to be biggest mistake of your life! soon or late you have to expand your application to multiple modules and multiple controllers and one of your first needs is: **Sharing data** between controllers. this is one of the main cases where we need to have a service which controls and shares the data between two controllers.
 
-Before getting to these points exactly and defining different types of providers and services (yes, yes, there are many types of providers!) let's create a simple one for now. Add the following to your `mian.js`:
+Before getting to these points exactly and defining different types of providers and services (yes, yes, there are many types of services!) let's create a simple one for now. Add the following to your `mian.js`:
 
 ```javascript
 myApp.factory("actorService", function() {
@@ -425,9 +501,9 @@ Let's go through the code step by step:
 
 **First,** Like literally everything else in Angular, the first argument of the `factory` method is it's name.
 
-**Second,** Factory is one of many types of providers that we can use. think of it as a function/constructor that can have many methods and properties, but only those that come in the return statement are public and can be used by the object that is injecting this factory.
+**Second,** Factory is one of many types of providers that we can use. think of it as a function/constructor that can have many methods and properties, but only those that come in the return statement are public and can be used by objects injecting this factory.
 
-The rest of the code is just for having something to show. You get the point of it! Let's go to the part that we inject this! as you might've mentioned we planned on using this service to provide the `mainCtrl` with the list of actors that it already had. This way if another controller wants this list of  actors, we do not need to re write a single line of code here! We just inject this factory again and ask it for the list of actors.
+The rest of the code is just for having something to show. You get the point of it! Let's go to the part that we inject this! as you might've mentioned we planned on using this service to provide the `mainCtrl` with the list of actors that it already had. This way if another controller wants this list of  actors, we do not need to rewrite anything there! We just inject this factory again and ask it for the list of actors.
 
 Go to the `mainCtrl` section and modify the code: 
 
@@ -439,22 +515,25 @@ myApp.controller('mainCtrl', function($scope, $interval, actorService) {
 })
 ```
 
-Notice how we injected the actorService (which is equivalent to the name that we declared for it) just like any other provider or service that angular has.
+Notice how we injected the ***actorService*** (which is ***equivalent*** to the name that we declared for it) just like any other provider or service that angular has.
+
+### Different types
 
 Let's continue with explaining different types of providers
 
-### Constants
+#### Constants
 
 As the name suggest, they are only key-value like constant values.
 
 ```javascript
 myApp.constant("key", "value");
-myApp.controller("mainCtrl", function($scope, key){}) 
+myApp.constant("aName", {value1: 'key1', value2: 'key2'});
+myApp.controller("mainCtrl", function($scope, key, aName){}) 
 ``` 
 
-### Values 
+#### Values 
 
-Same as a constant, but unlike a constant since its value can be changed, it can be interpreted by a decorator (which we will learn about in the next chapters).
+A Value is same as a constant, but unlike a constant its value can be changed and it can be interpreted by a decorator (which we will learn about in the final chapter).
 
 ```javascript
 myApp.value("key", "value");
@@ -468,9 +547,9 @@ myApp.value("someFn", function() {console.log('here!') });
 myApp.controller("mainCtrl", function($scope, someFn){}) 
 ``` 
 
-### Service
+#### Service
 
-Think of services as `values` that are always `object` and can have dependency injection them self. in the previous example, consider what would happen if `myApp.value("key", "value")` wanted to use some other value provider, like `someOtherService`! A dead lock! Because of this property **service** are the best fit for when we just want to share some data/functionality between different components.
+Think of services as `value` that is always an `object` and can have ***dependency injection***. in the previous example, consider what would happen if `myApp.value("key", "value")` wanted to use some other value provider, like `someOtherService`! A dead lock! Because of this property **service** are the best fit for when we just want to share some data/functionality between different components.
 
 You can entirely replace the factory above with the following service: 
 
@@ -485,11 +564,12 @@ myApp.service('actorService', function($timeout) {
 
 Notice how we injected the `$timeout` in `actorService`. anything that you attach to `this` inside a `service()` will be public for the world to see. So in some sense, service is like an `object` (as we mentioned above: Think of services as `values` that are always `object`) and using the function declaration is only to allow them have dependencies.
 
-### Factories 
+#### Factories 
 
-think of factories as Services that inject a `function` instead an `object`. this somehow makes sense with what we already saw from factories. they could have some private APIs, some public ones, the code inside them get executed like a constructor and so on. And you probably already know about how in javascript a function as *somehow* like a class (if you don't, please search it on google ASAP. you might hate the entire concept and let go of it the first time. please search again!) , so I'm not going to talk about them again. 
+think of factories as a ***Service*** that injects a `function` instead of an `object`. this somehow makes sense with what we already saw from factories. they could have some private APIs, some public ones, the code inside them get executed like a constructor and so on. And you probably already know about how in javascript a function as *somehow* like a class (if you don't, please search it on google ASAP. you might hate the entire concept and let go of it the first time. please search again!), so I'm not going to talk about them again. 
 
 Just to refresh your mind on the factory that we already had and to compare it again with the service: 
+
 ```javascript
 myApp.factory("actorService", function() {
   // Internal | Private functions and variables
@@ -505,36 +585,36 @@ myApp.factory("actorService", function() {
 })
 ```
 
-There are two other types of providers to learn, *Provider* and *Decorator*, which we will cover them in a seperate chapter. To give you brief view of what they are
+There are two other types of providers to learn, *Provider* and *Decorator*, which we will cover them in a separate chapter. To give you brief view of what they are
 
-- As mentioned above, a `.decorator()` is a wrapper for `.value()`. it can be applied to modify a `.value()`
-- A `.provider()` is like a parent to all other types of providers and services that we learned in this chapter. As the name suggest, a provider can be used to create a new instance of a class. ***It can provide it***.   
+- As mentioned above, a `.decorator()` is a wrapper for `.value()`. it can be applied to modify a `.value()` at the beginning of the runtime.
+- A `.provider()` is like a parent to all other types of services that we learned in this chapter. As the name suggest, a provider can be used to create a new instance of a class. ***It can provide it***.   
 
-
-Since we just declared *Provider* as a type of *Providers*, and of course this sounds a little strange to you now, let's go back to the naming argument in the beginning of this section and conclude it.
+Let's go back to the naming argument in the beginning of this section and conclude it:
  
-Angulars **Injectable Object/functions** are called providers because: the `provider()` function can be used to create them and inject them.
+Angular's **Injectable Object/functions** are sometimes called providers because: the `provider()` function can be used to create them and inject them.
 
-Sometimes, these **Injectable Object/functions** are named as *Factory*, or *Service* because `factory()` and `service()` are the most common.
+Mostly, these **Injectable Object/functions** are named as *Factory*, or *Service* because `factory()` and `service()` are the most common.
 
-For the rest of this book, we refer to all of `.service()`, `.factory()`, `.constant()`, as a type of ***Service***. By ***Provider*** we only specifically mean `.provider()`.
+For the rest of this book, we refer to all of `.service()`, `.factory()`, `.constant()` etc. as a type of ***Service***. By ***Provider*** we only specifically mean `.provider()`.
 
-### Into the next chapters
+## Into the next chapters
 
-Don't take this the wrong way, you have not learned everything yet, but beleive me, what you have learned untill here is probably the only *conceptual* thing that you need to know about Angular 90% of the time. from here in, in the next chapters, we will focus more on technical details, tricks, solutions to well known problems etc.  
+Don't take this the wrong way, you have not learned *everything* yet, but believe me, what you have learned untill here is probably the only *conceptual* thing that you need to know about Angular 90% of the times. From here on, in the next chapters, we will focus more on technical details, tricks and solutions to well known problems.
 
-### Further reading and challenges
+## Further reading and challenges{#further-reading-3}
 
-#### More ideas to hack around with 
+### More ideas to hack around with 
 
- - Try writing a custom `ng-click` that has the exact same API as Angular's `ng-click` but it outputs a log of that click event to the console every time a click event occurs. Imagine you need it for debugging or testing purposes. Call it something like `click-log='...'`. Keep in mind that you probably need to use the `&` notation for passing a function to the isolated scope of your directive. So get your hands dirty with jumping into Angular guides on directive!
+ - Try writing a custom `ng-click` that has the exact same API as Angular's `ng-click` but it outputs a log of each click event to the console every time a click event occurs. Imagine you need it for debugging or testing purposes. Call it something like `click-log='...'`. Keep in mind that you probably need to use the `&` notation for passing a function to the isolated scope of your directive. So get your hands dirty with jumping into Angular guides on directive!
  - 
 
-#### Referencing a module
+### Referencing a module{#ref-a-module}
 
 In our code, we named the variable containing the module `var myApp = angular.module(.. ` and used it for further reference. there is actually another common way to do this. 
 
-the syntax `angular.module(aName)` is actually a lookup for any module created before with the name `aName` and the syntax `angular.module(aName, [])` is actually the constructor. So you could created the controllers and directives with : 
+the syntax `angular.module(aName)` is actually a ***lookup*** for any module created before with the name `aName` and the syntax `angular.module(aName, [])` is actually the ***constructor***. So you could created the controllers and directives with : 
+
 ```javascript 
 angular.module('myApp' , []);
 
@@ -544,6 +624,7 @@ angular.module('myApp').directive( ... ) ;
 
 #### Debug Angular in your browser and learn about $scopes
 
-There are many extensions for Angular in Chrome/Firefox. many of them provide **$scope inspector** which let you examine the value of your $scope variables and their heirachy at runtime. Aside for being useful for development, are very very good for learning. search around in extensions of your web browser and install some of them and try to examine some of your code with it.
+There are many extensions for Angular in Chrome/Firefox. many of them provide **$scope inspector** which let you examine the value of your $scope variables and their heirachy at runtime. Aside from being useful for development, they are **VERY VERY** good for learning. search around in extensions of your web browser and install some of them and try to examine some of your code with it. [AngularJS Batarang](https://chrome.google.com/webstore/detail/angularjs-batarang/ighdmehidhipcmcojjgiloacoafjmpfk?hl=en) for chrome is one of the bests.
+
 
 
