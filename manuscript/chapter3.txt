@@ -347,7 +347,7 @@ Just like a controller, a directive has a name as the first argument. note that 
 
 - **restrict**: defines how this directive can be used. `A` stand for a attribute ( like `<div title-editor> ..`) and `E` stands for element (like `<title-editor></title-editor>`
 - **scope**: declares weather the directive creates a new scope of it owns or not. Remember what we said about how `ng-repeat` is creating multiple scopes, each having `actor` and `$index` properties? this is exactly that! We can define here weather our directive has a scope or not, does it inherit from it parent or not etc.
-- **template**: defines the html template that should be rendered inside the directive. you can also use `templateUrl` to link an HTML file to be rendered inside.
+- **template**: defines the html template that should be rendered inside the directive. you can also use `templateUrl` to link an HTML file to be rendered inside. Note that in Angular whenever we have a `template` option, we can replace it with `templateUrl`. This is generally a cleaner approach, but for learning purposes we stick with inline `template`.
 - **controller**: just like normal declaration of a controller, a directive can also define its own controller. notice that we can inject `$scope` variable (and services like `$timeout` etc.) in the same way inside this directive's controller too.
 - **link**: a function that will be invoked as the template is getting rendered, which has access to the directives scope, controller, DOM element and DOM attributes. So it's actually quite good for manipulation the DOM or binding events!
 
