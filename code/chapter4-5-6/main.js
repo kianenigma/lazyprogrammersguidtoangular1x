@@ -26,17 +26,34 @@ myApp.run(function ($rootScope) {
   })
 })
 
-myApp.factory('githubService', function ($http) {
+var _githubService = function ($http, prefix) {
   var getRepoListByUser = function (user) {
-    return $http.get('https://api.github.com/users/' + user + '/repos')
+    return $http.get(prefix + user + '/repos')
   }
   return {
     getRepoListByUser: getRepoListByUser
   }
+}
+
+myApp.provider('githubService', function () {
+  var apiPrefix = 'https://api.github.com/';
+
+  this.setAPIPrefix = function (aPrefix) {
+    apiPrefix = aPrefix;
+  }
+
+  this.getAPIPrefix = function () {
+    return apiPrefix;
+  }
+
+  this.$get = ['$http', function ($http) {
+    return new _githubService($http, apiPrefix);
+  }]
 })
 
 
-myApp.config(function ($httpProvider, $routeProvider, $locationProvider) {
+myApp.config(function ($httpProvider, $routeProvider, $locationProvider, githubServiceProvider) {
+  githubServiceProvider.setAPIPrefix('http://blah.blah');
   $httpProvider.interceptors.push('customInterceptor');
 
   $routeProvider

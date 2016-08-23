@@ -1,20 +1,214 @@
 # Appendix and further reading
 
-Congratulations! you are almost done with this book. In this last chapter, we are going to cover some of the missed point that weren't really fit for any of the previous chapter (or I just wanted to spare them for this chapter!)
+Congratulations! you are almost done with this book. In this last chapter, we are going to cover some of the missed point that weren't really fit for any of the previous chapters (or I just wanted to spare them for this chapter!).
 
-## a better way for injecting (minify) 
+## A better way for injecting dependencies
 
-## Constants and providers
+Sa far, we have injected all of our services using the **Implicit Annotation** method. this means that must pass the service as an argument, with the exact same name, so that Angular's injector can find it. But you have probably seen that in minified javascript code, the names of the parameters are replaced with shorter names! so this method of dependency injection will not work in minified code:
 
-## Two types of people: self vs $scope
+```javascript
+myApp.controller('aName', function($scope, myService) {})
 
-## $scope.apply
+// will translate to
+myApp.controller('aName', function(a, b) {}) // => crash
+```
 
-## Using $log 
+There are [two other ways](https://docs.angularjs.org/guide/di) for injecting a dependency, one recommended by Angular team and thats what we are going to mention now:
+
+Use wrap the entire controller definition inside an array, with the last index being the actual controller function and the previous indexes being the name of dependencies, in order, to be injected:
+
+```javascript
+myApp.controller('aName', ['$scope', 'myService' function($scope, myService) {
+
+}])
+```
+
+Note that now then names placed inside the function arguments are trivial, the first argument will be the first index in the array and so on. We could even do:
+
+```javascript
+myApp.controller('aName', ['$scope', 'myService' function(SCOPE, MYSERVICE) {
+
+}])
+```
+
+which is not recommended. So in this method, you must be very carful to keep the dependencies inside the array and function ***in order, synced***.
+
+***NOTE***: This syntax is not restricted to controllers! that was just an example! Anywhere inside your app, where you have a function with arguments being the dependencies (and sensitive to name), you can replace it with :
+
+```javascript
+['arg1', 'arg2', ... , function(arg1, arg2, ...)];
+```
+
+## Providers
+
+We mentioned many types of services, `.service()`, `.constant()`, `.factory()`, `.value()`. But one of them was left behind: `.provider()`. In chapter 5, you learned that providers are parents to other types of services, they create services, and their main difference is that they are available inside the `.config()` phase. This somehow answers one question: When should be implement a provider?
+
+> When you need to have a service, but it's behavior might vary on each client, hence needs to be configured inside the `.config()` block.
+
+A Provider, is very similar to to a service, the main difference is that it must implement a `$get()` method, which indicated how the service is instantiated. It's good to even think of services and providers as coupled pairs, because each service MUST have a provider, and if we don't declared it, Angular will create one for us, under the hood. This provider has the same name as our Service, with a `Provider` postfix. Without changing any code, go to a `.config()` block and try to inject an argument name: `githubServiceProvider`. YES! no error raises because we had such provider. we have created the `githubService`, and angular created a provider for it on the fly. As you see, it has the `$get` method too.
+
+Let's extend our `githubService` with a realistic example and turn in into a provider! By doing this, we prevent Angular from creating a default `Provider` for it and instead, use our Provider. The `githubService` currently makes http calls, but let's assume that we want to configure the API prefix ('https://api.github.com/'). This is how we're going to do this:
+
+- Upgrade the githubService to a provider.
+- add a private variable for keeping the prefix inside it, with get/set functions.
+- give it a `$get` method to create the githubService when being injected, and pass the private API prefix to it. Note that the `$get` method will be creating an instance of the githubService
+- Note that we don't change the name form `githubService` to `githubServiceProvider`! As you saw, angular will create a provider with the appropriate prefix for each service.
+
+First, we move the githubService declaration to a separate function. We still give it the `$http`, and an additional `prefix`:
+
+```javascript
+var _githubService = function ($http, prefix) {
+  var getRepoListByUser = function (user) {
+    return $http.get(prefix + user + '/repos')
+  }
+  return {
+    getRepoListByUser: getRepoListByUser
+  }
+}
+```
+
+Next, we change the `.factory()` to `.provider()` and give it the internal prefix variable, and a `$get()` method. Inside the `$get()` method we create an instance of `_githubService()` and pass the prefix and the `$http` to it:
+
+```javascript
+myApp.provider('githubService', function () {
+  var apiPrefix = 'https://api.github.com/';
+
+  this.setAPIPrefix = function (aPrefix) {
+    apiPrefix = aPrefix;
+  }
+
+  this.getAPIPrefix = function () {
+    return apiPrefix;
+  }
+
+  this.$get = function ($http) {
+    return new _githubService($http, apiPrefix);
+  }
+})
+```
+
+Note that we could use the better injection method inside `$get()` and write:
+
+```javascript
+this.$get = ['$http', function ($http) {
+  return new _githubService($http, apiPrefix);
+}]
+```
+
+And that's it! check the log inside the `.config()` again and see the new `githubServiceProvider`. Now you can do something:
+
+```javascript
+myApp.config(function ($httpProvider, $routeProvider, $locationProvider, githubServiceProvider) {
+  // which doesn't work obviously, but you get the point!
+  githubServiceProvider.setAPIPrefix('http://blah.blah');
+
+  // rest of the code
+  $httpProvider.interceptors.push('customInterceptor');
+
+})
+
+```
+
+## Two types of people: this vs $scope
+
+Angular provides an alternative way to implement a controller, without having a magical `$scope` in the middle, at least for data binding. The way through is that, you can bind all of the properties and functions that you want to expose to the UI, to `this` inside the controller, and then use to `controllerAs` syntax:
+
+```javascript
+myApp.controller('mainCtrl', function() {
+  // note that we don't need to inject scope
+  this.data = 'hello' ;
+})
+```
+
+and then inside the HTML:
+
+```html
+<div ng-controller='mainCtrl as ctrl'>
+  {{ ctrl.data }}
+</div>
+```
+
+consequently, you can declare route controllers as `controllerAs` instead of `controller`. This syntactic sugar was added to Angular at version 1.2 and started to gain attention immediately, But still it seems that the old $scope way is more popular. It's good to know both and the important point is to stick to one of them. None of them is specifically better, it really depends on you and which you find easier. Some people like me think that scope is better because it's easier to understand. Some think that `this` is better and closer to real javascript objects.
+
+There are some slight differences that you have to notice:
+
+- `this` has some tricks to learn, if you are not familiar with them already. perhaps the most obvious one is that each function will create its own context, hence will have a separate `this`, therefor you probably want to do something like :
+
+  ```javascript
+  myApp.controller('mainCtrl', function() {
+    var self = this ;
+    // and use self from now on
+
+    this.data = 'hello' ;
+  })
+  ```
+
+  to deal with this.
+
+- Using `this`, your HTML files will be a little bit cleaner and easier to understand. Specially when we have nested controllers:
+
+  ```html
+  <div ng-controller="fooCtrl">
+    <div ng-controller="barCtrl">
+      <div ng-controller="buzCtrl">
+        {{ prop }}
+        {{ $parent.prop }}
+        {{ $parent.$parent.prop }}
+      </div>
+    </div>
+  </div>
+  ```
+
+  But with controllerAs:
+
+  ```html
+  <div ng-controller="fooCtrl as foo">
+    <div ng-controller="barCtrl as bar">
+      <div ng-controller="buzCtrl as buz">
+        {{ buz.prop }}
+        {{ bar.prop }}
+        {{ foo.prop }}
+      </div>
+    </div>
+  </div>
+  ```
+
+  Which is easier to understand.
+
+- Even if you hate scope, you still need it for some of the methods that it has, such as `$broadcast`, `$on` and `$watch`. In these cases you have to inject it normally and use it. Keep in mind that even if you inject `$scope` for these functions, don't mix up your data binding between `$scope` and `this`!
+
+- Note that if you use controllerAs and you inject `$scope` to have `$watch`, you need to watch changes similar to how you watched for changes inside a Service:
+
+  ```javascript
+  myApp.controller('mainCtrl', function($scope) {
+    var self = this;
+    self.data = 'hello' ;
+
+    $scope.$watch(function() {return self.data}, function(n, o))
+
+    // $scope.$watch(function() {return this.data}, function(n, o))
+    // Note that this wont work, because of the 'this' issue!
+
+    // or use:
+    // $scope.$watch(angular.bind(this, function() {return self.data}), function(n, o))
+  })
+  ```
+
+## Note on $scope.$apply
+
+As mentioned before, Angular provides directives and wrappers for most common async operations, but in case you want to perform an async operation, and if it's not inside Angular's context, you have to wrap it inside `.$apply()`. Try changing a $scope property inside `setTimeout` instead `$timeout`. This is common, specially when we want to modify and override native HTML behavior. We have already mentioned how this works, now we want to introduce something new: Using $scope.$apply(), specially in unnecessary situations can lead to errors inside the console. This is because when an `.$apply()` phase (aka .$digest) is taking place, request another one to happen will raise an error. Whenever you face this problem, and you ***Really HAVE TO used .$apply()*** [this useful gist](https://gist.github.com/siongui/4969449) for having a ***safe Apply*** might help. This function simple checks for a $digest phase and then performs the `$apply()`;
 
 ## Controller before destroy
 
+If you bind events inside your event, or any other type of async operation, like `$on()`, and if your controller is not meant to live forever, meaning that it belongs to a page, it's ***important*** to undo everything when the user leaves the page and the controller is about to be destroyed. To do this, you can use the $destroy event of the $scope:
+
+```javascript
+$scope.$on("$destroy", function () {
+  // unsubscribe from events.
+})
+
+```
+
 ## Style guide and best practices
 
-## Where to go next?
-
+Now that you are finished with this book, I highly recommend reading a good [Style Guide](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#services) for angular, they help you both increase your knowledge, and organize them.

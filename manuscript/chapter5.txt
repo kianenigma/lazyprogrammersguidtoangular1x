@@ -604,6 +604,7 @@ This chapter contains much more information about routing placed under the ***Fu
 ### Further reading, challenges and the code
 
 - Read more about single page applications [here](http://singlepageappbook.com/goal.html).
+- Note that for cleaner code, you can have multiple `.run()` or `.config()` blocks in each module.
 - Challenge: you now have list of repositories, and you know how to navigate to a new page. create a new `repoDetail` route and controller. user should navigate to it after clicking on a repo name inside the list. pass the name of this repo to the controller of this new page via path parameters, fetch some new datas such as commits, stars and issues of this repo and display them. you can visit [github API](https://developer.github.com/v3/) for more information.
 - The The code until the end of this section can be viewed [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/53d9301a5404d09010fac3a315530bd203802c60)
 
