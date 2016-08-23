@@ -1,69 +1,71 @@
 # Refactoring to a large scale application
 
-In the previous chapters we learned a lot about Angular, but there was one main flow. It was mostly about **controllers**! this is not a bad thing at first, but soon or late, when your project scales into a real deal, a real Web app, you're going to face a problem: You'll end up with an some fat *controller-oriented* code and if you are hoping for some clean, testable and maintainable code, you're going to want to change that. Collaboration becomes suddenly hard, scope functions and properties become too coupled and changing anything might cause the app to crash and that's when you are doomed to **refactor** your app, yes I said refactor, not you're doomed to fail.
+In the previous chapters we learned a lot about Angular, but there was one main flow. It was mostly about **controllers**! this is not a bad thing at first, but soon or late, when your project scales into a real deal, a real Web app, you're going to face a problem: You'll end up with an some fat *controller-oriented* code and if you are hoping for some clean, testable and maintainable code, you're going to want to change that. Collaboration becomes suddenly hard, scope functions and properties become too coupled and changing anything might cause the app to crash and that's when you are doomed to **refactor**, yes I said refactor, not you're doomed to fail.
 
-Refactoring an application is a natural part of its lifecycle. You simmply can't start an application and design it beforehand 100% correct! Soon or late you'll have to refactor because you have had some wrong estimations, and that's **completely fine**. Don't' think of it as '***Oh my god! I've been doing it all wrong for the past month and now i have to re write everything from scratch!***'. If you don't face the problems I mentioned above, that's when you have to be worried. 
+Refactoring an application is a natural part of its lifecycle. You simply can't start an application and design it beforehand 100% correct! Soon or late you'll have to refactor because you have had some wrong estimations, and that's **completely fine**. Don't' think of it as '***Oh my god! I've been doing it all wrong for the past month and now i have to re write everything from scratch!***'. If you **don't** face the problems I mentioned above, that's when you have to be worried.
 
-In Angular, this happens mostly because all tutorials on Angular, almost always start with controllers, and the developer learning suddenly finds himself/herself looking at a tool - ***controller*** - that almost everything can be implemented using it and says: 
+In Angular, this happens mostly because all tutorials on Angular, almost always start with controllers, and the developer learning suddenly finds himself/herself looking at a tool - ***controller*** - that almost everything can be implemented using it and says:
 
 > Hey! this controller thing is like magic! I can do everything with it, why bother implementing a service or a directive?
 
-To describe it, aside from scalability problem, overusing controllers can be viewed as eating a meal, but only using a fork! That's not logical, right? 
+To describe this, aside from the scalability problem, overusing controllers can be viewed as eating a meal, but only using a fork! That's not logical, right?
 
-To explain even more, recall to the last chapter where we argued about implementing something using a separate controller, or just use to `rootScope` to get it working. This argument is valid, but here we are thinking about eveything from one step higher, we are thinking a little bigger! **We are arguing what should be implemented using controllers/rootScope, and what shouldn't**.
+To explain even more, recall to the last chapter where we argued about implementing something using a separate controller, or just use to `rootScope` to get it working. This argument is valid, but here we are thinking about everything ***from one step higher***, we are thinking a little bigger! **We are arguing what should be implemented using controllers/rootScope, and what shouldn't**.
 
-This chapter is going to be rather short, but understanding is very important, it somehow gaurantees that you can use the knowledge you gave learned so far, properly.
+This chapter is going to be rather short, but understanding is very important, it somehow guaranties that you can use the knowledge you gave learned so far, properly.
 
-## Controllers are meant to controll the UI, no more
+## Controllers are meant to control the UI, no more
 
-One of the most common mistakes that I see very often on Angular js projects is overusing a controller, for purposes that are way above the main intention of a controller. 
+One of the most common mistakes that I see very often on Angular js projects is overusing a controller, for purposes that are way beyond the main intention of a controller.
 
-A Controller's main duty is to manage to data that needs to be bounded to the UI. no more no less. Of course, This includes some functions as well. And by data that needs to be bounded, we mean `$scope` properties that are currently being shown to the user. So far we have mentioned this point a few times in previous chapters. As a last emphasis, pay attention to the following example: 
+A Controller's main duty is to manage to *data that needs to be bounded to the UI*. No more no less. Of course, This includes some functions as well. And by data that needs to be bounded, we mean `$scope` properties that are currently being shown to the user. So far we have mentioned this point a few times in previous chapters. As a last emphasis, pay attention to the following example:
 
-A **VERY** wrong thing to do: 
+A **VERY** wrong thing to do:
 
 ```javascript
 myApp/controller('mainCtrl', function($http) {
 	$scope.data = [] ;
 	$scope.getData = function() {
 
-      // 1) don't make http calls inside controller   
+      // 1) don't make http calls inside controller
 	  $http.get('domain.com/api/')
-	  
+
 	    .then(function (response) {
 	      // 2) don't do data reformation or preprocessing inside controller
 	      var _data = response.data.map(function () {..})
-		  
-		  // 3) don't do any validation inside controller 
+
+		  // 3) don't do any validation inside controller
 		  if ( checkIfOk(_data) ) {
 			$scope.data = _data
 		  }
 	    }, function (response) {
 	      // 4) don't de error handling, specially in a repetitive way here
-		  $scope.showErrorModal(response); 
+		  $scope.showErrorModal(response);
 		})
 	}
-	
-	... 
 
-	// at the end of the controller 
-	// call all of the datas that need to be fetched initially 
+	...
+
+	// at the end of the controller
+	// call all of the datas that need to be fetched initially
 	// 5) preferably, use resolve
-	$scope.getData() ; 
+	$scope.getData() ;
 })
 ```
 
-The code above is just one mock controller with one mock function, and it's already looking bad. Think about what would happen if you had a dozen of each of these. The best case is that the code inside your controller should be as clean and minimal as possible, so that by looking at it you can understand a general overview of what's happening.
+The code above is just one mock controller with one mock function, and it's already looking bad. Think about what would happen if you had a dozen of each of these functions and many many controllers. The best case is that:
 
-I think we have mentioned most of the details about why this code is not good, and how should it be refactored. Think about it one more time and then go to the next section to see a better version of this code. 
+> The code inside your controller should be as clean and minimal as possible, so that by looking at it you can understand a general overview of what's happening.
 
-## Separating data loginc and helper functions into Services
+I think we have mentioned most of the details about why this code is not good, and how should it be refactored. Think about it one more time and then go to the next section to see a better version of this code.
 
-### Data Services 
+## Separating data logic and helper functions into Services
 
-One of the first steps for having a cleaner code is to place all of the data logic inside a sepeare service. Well, not *a service*, a service per each data entity. Let's implement such service for our repository list search from last chapter. 
+### Data Services
 
-Inside your main script file, add: 
+One of the first steps for having a cleaner code is to place all of the data logic inside a separate service. Well, not *a service*, a service per each data entity. Let's implement such service for our repository list search from last chapter.
+
+Inside your main script file, add:
 
 ```javascript
 myApp.factory('githubService', function ($http) {
@@ -83,37 +85,44 @@ And then, inside your `mainCtrl` replace:
 $http.({
 	method: "get",
 	url: 'https://api.github.com/users/' + n + '/repos'
-}).then(...) 
+}).then(...)
 ```
 
-with 
+with
 
 ```javascript
+// note that you must inject githubService
 githubService.getRepoListByUser(n).then(...)
 ```
 
-You might say that not that much have changes, instead in terms of number of lines of code, we now have 2 lines less, was that such a big deal? Yes. because: 
+You might say that the change is not that significant. In terms of number of lines of code, we now have 2 lines less, was that such a big deal? **Yes**. because:
 
-- Keep in mind that this is just a tutorial, many more steps are usually performed before each request such as data validation etc. 
-- even if the number of lines of code were the same, it would still be different, it's a matter of readability here. If i were the one seeing the previous code before refactoring into a service, i would think: 
+- Keep in mind that this is just a tutorial, many more steps are usually performed before each request such as data validation etc.
+- even if the number of lines of code were the same, it would still be different, *it's a matter of readability* here. If i were the one seeing the previous code (in the last section with all of the logic and http calls inside a controller) before refactoring into a service, i would think:
 
-  > So there's a http request here.. and it hits an API in guthub which i have no idea what it is.. and it might change so let's hope that doesn't happen.. 
-	
-	But when is see the new code, i see: 
-	
-	> There is a service which operates on github API and it has a method which return a promise which will resolve to a list of repos. and even if the API changes, we can just modify this service and changes will apply everywhere. 
+  > So there's a http request here.. and it hits an API in guthub which i have no idea what it is.. and it might change so let's hope that doesn't happen.. and this http call code is mixed with rest of the logic, like data reformating and UI logic.. ok.. I can get what's happening here.. can I?
 
-	you can feel the difference, right? 
+	But when is see the new code, i see:
 
-Like before you have the option of using a callback or a promise. you can wait for the promise to resolve inside the service and then pass the data back as a callback. My personal way is to have the data returned by the callback separated into **Data** and **Status** to show the success or failure. 
+	> There is a service which operates on github API and it has a method which return a promise which will resolve to a list of repos. and even if the API changes, we can just modify this service and changes will apply everywhere.
 
-```javascript 
+	you can feel the difference, right?
+
+Like before, you have the option of using a callback or a promise. you can wait for the promise to resolve inside the service and then pass the data back as a callback. My personal way is to have the data returned by the callback separated into **Data** and **Status** to show the success or failure (somehow overwriting the original callback):
+
+```javascript
+	// inside repoService
+
   var getRepoListByUser = function (user, callback) {
     return $http.get('https://api.github.com/users/' + user + '/repos')
     .then(
-		function(response) { callback( response,  true ) },
-		function(error) { callback( error,false ) }
-	) 
+		function(response) {
+		  callback( response,  true )
+		},
+		function(error) {
+		  callback( error,false )
+	 }
+	)
   }
   return {
     getRepoListByUser: getRepoListByUser
@@ -129,7 +138,7 @@ githubService.getRepoListByUser(n, function(data, status) {
 	if ( status ) {}
 	else {}
 
-	// note that as mentioned before, managing error outside 
+	// note that as mentioned before, managing error outside
 	// the controller is a better idea
 	// but anyway! just to cover all situations
 })
@@ -137,17 +146,17 @@ githubService.getRepoListByUser(n, function(data, status) {
 
 ### Helper functions
 
-I don't exactly remember when and how i came up with this word `helpre function`! By helper function I mean **stateless** functions that operate on a data, return a modified version or boolean value indication status etc. The key point is that they are not a part of the main business logic and they are stateless. Some great examples are validation functions. refactoring functions (preparing a data to be send via http or after being received via http) , Utility functions etc. They are all best candidates for being implemented via a service, both for readability of the code and reusability.    
+I don't exactly remember when and how i came up with this word `helper function`! By helper function I mean **stateless** functions that operate on a data, **return** a modified version or boolean value (very similar to functional programming concepts) indication a status etc. The key point is that they are not a part of the main business logic and they are stateless. Some great examples are validation functions. reformatting functions (preparing a data to be send via http or after being received via http), Utility functions etc. They are all best candidates for being implemented via a service, both for readability of the code and reusability.
 
 ## Using Directives for reusable components
 
-We covered directives before, now we are going to focus on one implementation case. As you might remember, we implemented a cool button that changed it's color while and after doing some async process. That WAS cool, indeed. but now when you want to have a dozens of it inside your application. You don't want to copy and paste the same logic over and over, do you? 
+We covered directives before, now we are going to focus on one implementation case. As you might remember, we implemented a cool button that changed it's color while and after doing some async process, using `ngClass`. That WAS cool, indeed. but now when you want to have a dozens of it inside your application. You don't want to copy and paste the same logic over and over, do you?
 
-Let's first explain how we are going to implement this: 
+Let's first explain how we are going to implement this:
 
-We're going to create a generic progress button, it's going to take a function as input via data binding, run that function when a click event happens, and when change its state when the function callback returns. 
+We're going to create a generic progress button, it's going to take a function as input via data binding, run that function when a click event happens, and then change its state when the function callback returns.
 
-Before going into the main code, there is something to explain here. We mentioned that angular provides wrappers around famous async function (`$timeout`) or event listeners (`ng-click`). This is because of the way angular handles data binding between javascript models and UI. go and replace a `$timeout` with `setTimeout()` and change a value inside it. You'll see that no error happens but the value won't update inside HTML. in these case, we can use `scope.$apply()` which enforces a rendering cycle update to be performed, therefor all changes will reflect inside the UI. You can read more about `$apply` in the last chapter. Here, because we are binding a native event listener, `.bind('click')`, we need to use $apply() to reflect our changes to the UI. Let's see the code: 
+Before going into the main code, there is something to explain here. We mentioned that angular provides wrappers around famous async function (`$timeout`) or event listeners (`ng-click`). This is because of the way angular handles data binding between javascript models (aka $scope properties) and UI. go and replace a `$timeout` with `setTimeout()` and change a value inside it. You'll see that no error happens but the value won't update inside HTML. in these case, we can use `scope.$apply()` which enforces a rendering cycle update to be performed, therefor all changes will reflect inside the UI. You can read more about `$apply` in the last chapter. Here, because we are binding a native event listener, `.bind('click')`, we need to use $apply() to reflect our changes to the UI. Let's see the code:
 
 ```javascript
 myApp.directive('progressBtn', function () {
@@ -156,7 +165,7 @@ myApp.directive('progressBtn', function () {
       fn: '<fn'
     },
     restrict: 'AE',
-    template: `<button class='btn btn-sm' ng-class='classes'>` + 
+    template: `<button class='btn btn-sm' ng-class='classes'>` +
 			  `{{ text }} </button>`,
     link: function (scope, elem, attr, ctrl) {
       scope.classes = 'btn-success';
@@ -167,6 +176,9 @@ myApp.directive('progressBtn', function () {
           scope.text = 'Now wait!';
         });
         scope.fn(function () {
+					// after the fn function
+					// is complete and its callback
+					// is invoked:
           scope.$apply(function () {
             scope.classes = 'btn-success';
             scope.text = "Click me";
@@ -178,20 +190,20 @@ myApp.directive('progressBtn', function () {
 })
 ```
 
-reviewing the points real quick again: 
+Let's go through this code step by step:
 
 - create a directive with one way data binding property, `<fn`
-- Set initial values for button class and text when the button is being created, `link()`
+- Set initial values for button class and text when the button is being created, `link()` function.
 - Change these values when the button is clikced
 - wrap all changes inside `$apply()` so that they will reflect inside the UI
 
-In order to use this directive: 
+In order to use this directive:
 
 ```html
 <progress-btn fn="someFunc"></progress-btn>
 ```
 
-and inside the parent controller: 
+and inside the parent controller:
 
 ```javascript
 $scope.someFunc = function (callback) {
@@ -201,32 +213,32 @@ $scope.someFunc = function (callback) {
   }
 ```
 
-Note that: 
+Note that:
 
-- unlike last few examples, here chose the callback based function here, it's good to get familiar with both of them! You can try and implement this using a promise as a challenge
+- unlike last few examples, here chose the callback based function, it's good to get familiar with both of them! You can try and implement this using a promise as a challenge.
 - You can extend this example so that the directive return a value to the parent scope after doing the promise (in different ways!). There are actually many libraries around for such progress button. Go on and create one for yourself and publish it!
 
 
-The code until the end of this section could be found [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/f917c7a3121b9870f61c7d48d553fcd8d922b959). 
+The code until the end of this section could be found [here](https://github.com/Kianenigma/lazyprogrammersguidtoangular1x/tree/f917c7a3121b9870f61c7d48d553fcd8d922b959).
 
 ## Using constants for cleaner code
 
-Another simple trick to have a cleaner code is to use constants for reusing, well, .. constant values (was that to obvious?). Constant strings such as error messages, api url prefixes are the most common usages: 
+Another simple trick to have a cleaner code is to use constants for reusing, well, .. constant values (was that to obvious?). Constant strings such as error messages, api url prefixes are the most common usages:
 
 ```javascript
-myApp.constant('globals', {
+myApp.constant('global', {
 	'host': 'http://localhost', // for development
-	//'host': 'xx.yy.zz.qq', // a real ip for production 
-	'port': 3000, // if it's is going to be variable 
+	//'host': 'xx.yy.zz.qq', // a real ip for production
+	'port': 3000, // if it's is going to be variable
 })
 
 // now you can easily use them everywhere
 // when making an http call
 
-$http.get(global.host + global.port + 'api/a/postfix/').then(...); 
+$http.get(global.host + global.port + 'api/a/postfix/').then(...);
 ```
 
-## Module level scaling and File structure 
+## Module level scaling and File structure
 
 We've had a horrible module and file structure since now. It's acceptable for learning but not in production . There are two main thing to change.
 
@@ -235,40 +247,37 @@ We've had a horrible module and file structure since now. It's acceptable for le
 
 There are two levels for doing this.
 
-### 1- Grouping similar objects 
-You'll probably start with a messed up code (like the one that we currently have), and then you want to re organize. For medium level projects, it's common to group different objects and functions together inside a module. By similar objects I mean one module for controller, one module for services etc.
+### 1- Grouping similar objects
+You'll probably start with a messed up code (like the one that we currently have), and then you want to re organize. For medium level projects, it's common to group similar objects and functions together inside a module. By similar objects I mean one module for controller, one module for services etc.
 
-```javascript 
-var controllers = angular.module('app.controllers', []); 
-controllers.controller('fooCtrl', function($scope) {}) ; 
-controllers.controller('barCtrl', function($scope) {}) ;  
+```javascript
+var controllers = angular.module('app.controllers', []);
+controllers.controller('fooCtrl', function($scope) {}) ;
+controllers.controller('barCtrl', function($scope) {}) ;
 
-var services = angular.module('app.services', []) ; 
-services.services('buzService', function($http) {}); 
+var services = angular.module('app.services', []) ;
+services.services('buzService', function($http) {});
 services.factory('buzFactory', function($http) {});
 
-// this will be the main app 
-// routing and config will happen here. 
-// all of the controllers and services are available 
+// this will be the main app
+// routing and config will happen here.
+// all of the controllers and services are available
 // and injectable since they are declared as dependency
-var app = angular.module('app', ['app.controllers', 'app.services']);  
+var app = angular.module('app', ['app.controllers', 'app.services']);
 ```
 
-Of course, your file structure will change accordingly. You should now place your files like : 
+Of course, your file structure will change accordingly. You should now place your files like :
 
 ```
-index.html 
-app.js 
-controllers 
-	--/ 
+index.html
+app.js
+./controllers
 	fooCtrl.js
 	barCtrl.js
-services
-	--/
+./services
 	buzService.js
 	buzFactory.js
-views
-	--/ 
+./views
 	foo.html
 	bar.html
 	buz.html
@@ -276,29 +285,25 @@ views
 
 You just have to be carful to import all of the files in the correct order of dependency inside your main HTML file.
 
-### 2- Grouping similar features 
+### 2- Grouping similar features
 
-For much bigger projects, a better pattern is to place different features inside a separate module. `feature` is an abstract phrase here, in most cases it could be translated to a page or an data entity. As an example, if your site has login, search and edit as main features: 
+For much bigger projects, a better pattern is to place similar features inside a separate module. `feature` is an abstract phrase here, in most cases it could be translated to a page or an data entity. As an example, if your site has login, search and edit as main features:
 
-```javascript 
-var loginModule = angular.module('loginModule', []); 
+```javascript
+var loginModule = angular.module('loginModule', []);
 loginModule.controller('loginCtrl', function($scope) {});
-loginModule.service('loginService', function($http) {}) ; 
+loginModule.service('loginService', function($http) {}) ;
 
 var searchModule = angular.moduel('searchModule', []) ;
 searchModule.controller('searchController', function($scope) {});
-searchModule.service('searchService', function($http) {}); 
+searchModule.service('searchService', function($http) {});
 
 ...
 
 
-var app = angular.module('app', ['loginModule', 'searchModule']); 
+var app = angular.module('app', ['loginModule', 'searchModule']);
 ```
 
-Variables defined for each module are available globally, meaning that it's ok to define `loginModule` in file and use it inside another file to create a controller for it. You also have the choice of using `angular.module('')` with no second parameter as a getter for a module. 
+Variables defined for each module are available globally, meaning that it's ok to define `loginModule` in a file and use it inside another file to create a controller for it. You also have the choice of using `angular.module('')` with no second parameter as a getter for a module.
 
-each of these modules can also depend on one another, this is really implementation dependent, but the key point is that you have 100% freedom to organaze your modules, so make the best out of it!
-
-
-
-
+each of these modules can also depend on one another, this is really implementation dependent, but the key point is that you have 100% freedom to organize your modules, so make the best out of it!
