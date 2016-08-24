@@ -41,7 +41,7 @@ which is not recommended. So in this method, you must be very carful to keep the
 
 ## Providers
 
-We mentioned many types of services, `.service()`, `.constant()`, `.factory()`, `.value()`. But one of them was left behind: `.provider()`. In chapter 5, you learned that providers are parents to other types of services, they create services, and their main difference is that they are available inside the `.config()` phase. This somehow answers one question: When should be implement a provider?
+We mentioned many types of services, `.service()`, `.constant()`, `.factory()`, `.value()`. But one of them was left behind: `.provider()`. In chapter 5, you learned that providers are parents to other types of services, they create services, and their main difference is that they are available inside the `.config()` phase. This somehow answers one question: When should we implement a provider?
 
 > When you need to have a service, but it's behavior might vary on each client, hence needs to be configured inside the `.config()` block.
 
@@ -139,7 +139,7 @@ There are some slight differences that you have to notice:
     var self = this ;
     // and use self from now on
 
-    this.data = 'hello' ;
+    self.data = 'hello' ;
   })
   ```
 
