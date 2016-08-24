@@ -1,8 +1,8 @@
-# lazyprogrammersguidtoangular1x
+# lazyprogrammersguidetoangular1x
 
 Or ... 
 
-#  Lazy Programmer's Guid to Angular 1.x 
+#  Lazy Programmer's Guide to Angular 1.x 
 
 ![](https://s3.amazonaws.com/titlepages.leanpub.com/lazyprogrammersguidtoangular1x/hero?1471960261)
 
